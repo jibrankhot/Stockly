@@ -1,32 +1,64 @@
-<div class="dashboard">
+<div class="dashboard animate-fade-in">
 
-    <!-- Page Header -->
-    <div class="page-header">
+    <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
 
-        <div>
-            <h1>Dashboard</h1>
-            <p>Overview of your business activity</p>
+    <section class="page-header">
+
+        <div class="page-heading">
+
+            <span class="eyebrow">
+                Business Overview
+            </span>
+
+            <h1>
+                Dashboard
+            </h1>
+
+            <p>
+                Monitor your sales, inventory and business activity.
+            </p>
+
         </div>
 
         <div class="header-date">
-            27 Aug 2026
+
+            <span class="date-icon" aria-hidden="true">
+                ◷
+            </span>
+
+            <div>
+                <span class="date-label">
+                    Today
+                </span>
+
+                <strong>
+                    {{ currentDate | date:'dd MMM yyyy' }}
+                </strong>
+            </div>
+
         </div>
 
-    </div>
+    </section>
 
-    <!-- Statistics -->
-    <section class="stats-grid">
 
-        @for (stat of stats; track stat.title) {
+    <!-- =====================================================
+       STATISTICS
+       ===================================================== -->
 
-        <article class="stat-card">
+    <section class="stats-grid" aria-label="Business statistics">
 
-            <div class="stat-card-header">
+        @for (
+        stat of stats;
+        track stat.title;
+        let index = $index
+        ) {
 
-                <div class="stat-icon">
-                    {{ stat.icon }}
-                </div>
+        <article class="stat-card card-interactive" [style.animation-delay.ms]="index * 60">
 
+            <div class="stat-icon">
+                {{ stat.icon }}
             </div>
 
             <div class="stat-content">
@@ -51,24 +83,48 @@
 
     </section>
 
-    <!-- Main Dashboard Content -->
+
+    <!-- =====================================================
+       MAIN DASHBOARD GRID
+       ===================================================== -->
+
     <section class="dashboard-grid">
 
-        <!-- Recent Invoices -->
+        <!-- ===================================================
+         RECENT INVOICES
+         =================================================== -->
+
         <article class="dashboard-card invoices-card">
 
             <div class="card-header">
 
-                <div>
-                    <h2>Recent Invoices</h2>
-                    <p>Latest sales invoices</p>
+                <div class="card-heading">
+
+                    <span class="section-icon">
+                        ▤
+                    </span>
+
+                    <div>
+                        <h2>
+                            Recent Invoices
+                        </h2>
+
+                        <p>
+                            Latest sales invoices
+                        </p>
+                    </div>
+
                 </div>
 
-                <a routerLink="/sales/invoices" class="view-all">
+                <a routerLink="/invoices" class="view-all">
                     View all
+                    <span aria-hidden="true">
+                        →
+                    </span>
                 </a>
 
             </div>
+
 
             <div class="table-wrapper">
 
@@ -106,9 +162,13 @@
                             </td>
 
                             <td>
+
                                 <span class="status-badge" [class]="getStatusClass(invoice.status)">
+                                    <span class="status-dot" aria-hidden="true"></span>
+
                                     {{ invoice.status }}
                                 </span>
+
                             </td>
 
                             <td class="date">
@@ -127,21 +187,42 @@
 
         </article>
 
-        <!-- Low Stock -->
+
+        <!-- ===================================================
+         LOW STOCK
+         =================================================== -->
+
         <article class="dashboard-card stock-card">
 
             <div class="card-header">
 
-                <div>
-                    <h2>Low Stock</h2>
-                    <p>Products that need attention</p>
+                <div class="card-heading">
+
+                    <span class="section-icon warning-icon">
+                        !
+                    </span>
+
+                    <div>
+                        <h2>
+                            Low Stock
+                        </h2>
+
+                        <p>
+                            Products that need attention
+                        </p>
+                    </div>
+
                 </div>
 
                 <a routerLink="/inventory/low-stock" class="view-all">
                     View all
+                    <span aria-hidden="true">
+                        →
+                    </span>
                 </a>
 
             </div>
+
 
             <div class="stock-list">
 
@@ -154,7 +235,8 @@
 
                     <div class="stock-item-header">
 
-                        <div>
+                        <div class="stock-product">
+
                             <strong>
                                 {{ product.name }}
                             </strong>
@@ -162,6 +244,7 @@
                             <span>
                                 SKU: {{ product.sku }}
                             </span>
+
                         </div>
 
                         <span class="stock-count">
@@ -172,7 +255,9 @@
 
                     </div>
 
-                    <div class="stock-bar">
+                    <div class="stock-bar" role="progressbar" [attr.aria-valuenow]="product.currentStock"
+                        [attr.aria-valuemin]="0" [attr.aria-valuemax]="product.minimumStock"
+                        [attr.aria-label]="product.name + ' stock level'">
 
                         <div class="stock-progress" [style.width.%]="getStockPercentage(product)"></div>
 
@@ -188,54 +273,135 @@
 
     </section>
 
-    <!-- Quick Actions -->
+
+    <!-- =====================================================
+       QUICK ACTIONS
+       ===================================================== -->
+
     <section class="quick-actions-card">
 
         <div class="card-header">
 
-            <div>
-                <h2>Quick Actions</h2>
-                <p>Common tasks</p>
+            <div class="card-heading">
+
+                <span class="section-icon">
+                    +
+                </span>
+
+                <div>
+                    <h2>
+                        Quick Actions
+                    </h2>
+
+                    <p>
+                        Common tasks
+                    </p>
+                </div>
+
             </div>
 
         </div>
 
+
         <div class="quick-actions">
 
-            <a routerLink="/sales/invoices/create" class="quick-action">
-                <span class="quick-action-icon">+</span>
+            <a routerLink="/invoices/create" class="quick-action">
 
-                <span>
-                    <strong>Create Invoice</strong>
-                    <small>Create a new sales invoice</small>
+                <span class="quick-action-icon" aria-hidden="true">
+                    +
                 </span>
+
+                <span class="quick-action-content">
+
+                    <strong>
+                        Create Invoice
+                    </strong>
+
+                    <small>
+                        Create a new sales invoice
+                    </small>
+
+                </span>
+
+                <span class="quick-action-arrow" aria-hidden="true">
+                    →
+                </span>
+
             </a>
+
 
             <a routerLink="/products/create" class="quick-action">
-                <span class="quick-action-icon">+</span>
 
-                <span>
-                    <strong>Add Product</strong>
-                    <small>Add a product to inventory</small>
+                <span class="quick-action-icon" aria-hidden="true">
+                    +
                 </span>
+
+                <span class="quick-action-content">
+
+                    <strong>
+                        Add Product
+                    </strong>
+
+                    <small>
+                        Add a product to inventory
+                    </small>
+
+                </span>
+
+                <span class="quick-action-arrow" aria-hidden="true">
+                    →
+                </span>
+
             </a>
+
 
             <a routerLink="/customers/create" class="quick-action">
-                <span class="quick-action-icon">+</span>
 
-                <span>
-                    <strong>Add Customer</strong>
-                    <small>Create a new customer</small>
+                <span class="quick-action-icon" aria-hidden="true">
+                    +
                 </span>
+
+                <span class="quick-action-content">
+
+                    <strong>
+                        Add Customer
+                    </strong>
+
+                    <small>
+                        Create a new customer
+                    </small>
+
+                </span>
+
+                <span class="quick-action-arrow" aria-hidden="true">
+                    →
+                </span>
+
             </a>
 
-            <a routerLink="/purchases/orders/create" class="quick-action">
-                <span class="quick-action-icon">+</span>
 
-                <span>
-                    <strong>Purchase Order</strong>
-                    <small>Create a purchase order</small>
+            <a routerLink="/purchases/create" class="quick-action">
+
+                <span class="quick-action-icon" aria-hidden="true">
+                    +
                 </span>
+
+                <span class="quick-action-content">
+
+                    <strong>
+                        Purchase Order
+                    </strong>
+
+                    <small>
+                        Create a purchase order
+                    </small>
+
+                </span>
+
+                <span class="quick-action-arrow" aria-hidden="true">
+                    →
+                </span>
+
             </a>
 
         </div>

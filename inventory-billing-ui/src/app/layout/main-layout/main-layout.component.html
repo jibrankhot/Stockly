@@ -1,23 +1,57 @@
-<div class="main-layout" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen">
+<div class="main-layout" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen"
+    [class.is-navigating]="isNavigating">
+
+    <!-- =====================================================
+       NAVBAR
+       ===================================================== -->
+
     <app-navbar (menuToggle)="toggleSidebar()" />
+
+
+    <!-- =====================================================
+       LAYOUT BODY
+       ===================================================== -->
 
     <div class="layout-body">
 
+        <!-- ===================================================
+         SIDEBAR
+         =================================================== -->
+
         <app-sidebar [isOpen]="isSidebarOpen" />
 
+
+        <!-- ===================================================
+         MOBILE SIDEBAR OVERLAY
+         =================================================== -->
+
         @if (isSidebarOpen) {
+
         <button type="button" class="sidebar-overlay" aria-label="Close navigation menu"
             (click)="closeSidebarOnMobile()"></button>
+
         }
+
+
+        <!-- ===================================================
+         MAIN CONTENT
+         =================================================== -->
 
         <main class="main-content">
 
             <div class="content-wrapper">
 
+                <!-- Breadcrumb -->
+
                 <app-breadcrumb />
 
-                <div class="page-content">
-                    <router-outlet></router-outlet>
+
+                <!-- Page Content -->
+
+                <div class="page-content" [class.page-transition-active]="!isNavigating">
+
+                    <router-outlet />
+
                 </div>
 
             </div>
@@ -25,4 +59,38 @@
         </main>
 
     </div>
+
+
+    <!-- =====================================================
+       NAVIGATION LOADING OVERLAY
+       ===================================================== -->
+
+    @if (isNavigating) {
+
+    <div class="navigation-loader" role="status" aria-live="polite" aria-label="Loading page">
+
+        <div class="navigation-loader-card">
+
+            <div class="navigation-spinner">
+                <span></span>
+            </div>
+
+            <div class="navigation-loader-content">
+
+                <strong>
+                    Loading
+                </strong>
+
+                <span>
+                    Preparing your page...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+
 </div>

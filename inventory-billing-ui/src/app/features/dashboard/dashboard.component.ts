@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -27,11 +27,17 @@ interface LowStockProduct {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, RouterLink],
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    DatePipe
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
+
+  readonly currentDate = new Date();
 
   readonly stats: DashboardStat[] = [
     {
