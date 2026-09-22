@@ -1,10 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink
+} from '@angular/router';
 import { filter } from 'rxjs';
 
 interface BreadcrumbItem {
   label: string;
   url: string;
+  active: boolean;
 }
 
 @Component({
@@ -24,20 +29,23 @@ export class BreadcrumbComponent {
     this.router.events
       .pipe(
         filter(
-          event => event instanceof NavigationEnd
+          (event): event is NavigationEnd =>
+            event instanceof NavigationEnd
         )
       )
-      .subscribe(() => {
-        this.buildBreadcrumbs();
+      .subscribe(event => {
+        this.buildBreadcrumbs(event.urlAfterRedirects);
       });
 
-    this.buildBreadcrumbs();
+    this.buildBreadcrumbs(this.router.url);
   }
 
-  private buildBreadcrumbs(): void {
-    const url = this.router.url.split('?')[0];
+  private buildBreadcrumbs(url: string): void {
+    const cleanUrl = url
+      .split('?')[0]
+      .split('#')[0];
 
-    const segments = url
+    const segments = cleanUrl
       .split('/')
       .filter(segment => segment.length > 0);
 
@@ -45,20 +53,29 @@ export class BreadcrumbComponent {
 
     let currentUrl = '';
 
-    for (const segment of segments) {
+    segments.forEach((segment, index) => {
       currentUrl += `/${segment}`;
 
       breadcrumbs.push({
         label: this.formatLabel(segment),
-        url: currentUrl
+        url: currentUrl,
+        active: index === segments.length - 1
       });
-    }
+    });
 
     this.breadcrumbs = breadcrumbs;
   }
 
   private formatLabel(segment: string): string {
-    return segment
+    const decodedSegment = decodeURIComponent(segment);
+
+    // Dynamic route ID
+    // Example: /products/25 → Details
+    if (/^\d+$/.test(decodedSegment)) {
+      return 'Details';
+    }
+
+    return decodedSegment
       .replace(/[-_]/g, ' ')
       .replace(/\b\w/g, character => character.toUpperCase());
   }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
@@ -47,6 +47,10 @@ export class UserMenuComponent {
     return initials || user.username.charAt(0).toUpperCase();
   }
 
+  get roleName(): string {
+    return this.currentUser?.roles?.[0] || 'User';
+  }
+
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
@@ -57,12 +61,20 @@ export class UserMenuComponent {
 
   goToProfile(): void {
     this.closeMenu();
+
     this.router.navigate(['/settings/company']);
   }
 
   logout(): void {
     this.closeMenu();
+
     this.authService.logout();
+
     this.router.navigate(['/auth/login']);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.closeMenu();
   }
 }

@@ -1,16 +1,25 @@
-<div class="main-layout" [class.sidebar-collapsed]="!isSidebarOpen">
+<div class="main-layout" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen">
     <app-navbar (menuToggle)="toggleSidebar()" />
 
     <div class="layout-body">
 
         <app-sidebar [isOpen]="isSidebarOpen" />
 
+        @if (isSidebarOpen) {
+        <button type="button" class="sidebar-overlay" aria-label="Close navigation menu"
+            (click)="closeSidebarOnMobile()"></button>
+        }
+
         <main class="main-content">
 
-            <app-breadcrumb />
+            <div class="content-wrapper">
 
-            <div class="page-content">
-                <router-outlet></router-outlet>
+                <app-breadcrumb />
+
+                <div class="page-content">
+                    <router-outlet></router-outlet>
+                </div>
+
             </div>
 
         </main>

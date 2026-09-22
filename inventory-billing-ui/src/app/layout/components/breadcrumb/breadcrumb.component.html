@@ -1,7 +1,17 @@
 <nav class="breadcrumb" aria-label="Breadcrumb">
+
+    <!-- Home -->
+
     <a class="breadcrumb-item breadcrumb-home" routerLink="/dashboard">
-        Home
+        <span class="home-icon" aria-hidden="true">
+            ⌂
+        </span>
+
+        <span>
+            Home
+        </span>
     </a>
+
 
     @for (
     breadcrumb of breadcrumbs;
@@ -9,13 +19,14 @@
     let last = $last
     ) {
 
-    <span class="breadcrumb-separator">
+    <span class="breadcrumb-separator" aria-hidden="true">
         /
     </span>
 
+
     @if (last) {
 
-    <span class="breadcrumb-item current">
+    <span class="breadcrumb-item current" aria-current="page">
         {{ breadcrumb.label }}
     </span>
 
@@ -28,4 +39,5 @@
     }
 
     }
+
 </nav>

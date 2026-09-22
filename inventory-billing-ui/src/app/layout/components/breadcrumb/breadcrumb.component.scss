@@ -2,35 +2,209 @@
   display: block;
 }
 
+/* =========================================================
+   BREADCRUMB
+   ========================================================= */
+
 .breadcrumb {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+
+  gap: 6px;
+
   min-height: 24px;
-  margin-bottom: 20px;
+
+  margin-bottom: var(--space-5);
+
   font-size: 13px;
+
+  animation:
+    stockly-fade-in
+    var(--duration-fast)
+    var(--ease-standard)
+    both;
 }
 
-.breadcrumb-item {
-  color: #6b7280;
-  text-decoration: none;
-  transition: color 0.15s ease;
+/* =========================================================
+   BREADCRUMB ITEM
+   ========================================================= */
 
-  &:hover {
-    color: #111827;
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+
+  max-width: 240px;
+
+  overflow: hidden;
+
+  color: var(--color-text-muted);
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1.4;
+
+  text-decoration: none;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  border-radius: var(--radius-sm);
+
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.breadcrumb-item:hover {
+  color: var(--color-primary-700);
+
+  background: var(--color-primary-50);
+}
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+.breadcrumb-home {
+  gap: 5px;
+}
+
+.home-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  color: var(--color-text-muted);
+
+  font-size: 14px;
+
+  transition:
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.breadcrumb-home:hover .home-icon {
+  color: var(--color-primary-700);
+}
+
+/* =========================================================
+   SEPARATOR
+   ========================================================= */
+
+.breadcrumb-separator {
+  display: inline-flex;
+  align-items: center;
+
+  color: var(--color-text-muted);
+
+  font-size: 13px;
+
+  user-select: none;
+}
+
+/* =========================================================
+   CURRENT PAGE
+   ========================================================= */
+
+.breadcrumb-item.current {
+  color: var(--color-text-primary);
+
+  font-weight: 650;
+
+  cursor: default;
+
+  background: transparent;
+}
+
+.breadcrumb-item.current:hover {
+  color: var(--color-text-primary);
+
+  background: transparent;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+
+  .breadcrumb {
+    margin-bottom: var(--space-4);
   }
 }
 
-.breadcrumb-home {
-  color: #6b7280;
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+  .breadcrumb {
+    gap: 5px;
+
+    margin-bottom: var(--space-4);
+
+    font-size: 12px;
+  }
+
+  .breadcrumb-item {
+    max-width: 180px;
+
+    font-size: 12px;
+  }
+
+  .breadcrumb-separator {
+    font-size: 12px;
+  }
+
+  .home-icon {
+    width: 15px;
+    height: 15px;
+
+    font-size: 13px;
+  }
 }
 
-.breadcrumb-separator {
-  color: #9ca3af;
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 479px) {
+
+  .breadcrumb {
+    gap: 4px;
+  }
+
+  .breadcrumb-item {
+    max-width: 120px;
+  }
+
+  /*
+   Hide the Home text on very small screens.
+   The home icon remains visible.
+  */
+
+  .breadcrumb-home span:not(.home-icon) {
+    display: none;
+  }
 }
 
-.breadcrumb-item.current {
-  color: #111827;
-  font-weight: 600;
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .breadcrumb {
+    animation: none;
+  }
+
+  .breadcrumb-item,
+  .home-icon {
+    transition: none;
+  }
 }

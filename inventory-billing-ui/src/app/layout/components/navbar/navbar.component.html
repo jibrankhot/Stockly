@@ -1,22 +1,44 @@
 <header class="navbar">
 
+  <!-- =====================================================
+       LEFT SECTION
+       ===================================================== -->
+
   <div class="navbar-left">
 
-    <button type="button" class="menu-button" aria-label="Toggle sidebar" (click)="onMenuToggle()">
+    <!-- Sidebar Toggle -->
+
+    <button type="button" class="menu-button" aria-label="Toggle sidebar" title="Toggle sidebar"
+      (click)="onMenuToggle()">
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <div class="mobile-brand">
-      <span class="brand-mark">S</span>
-      <span class="brand-name">Stockly</span>
-    </div>
+
+    <!-- Mobile Brand -->
+
+    <a class="mobile-brand" routerLink="/dashboard" aria-label="Stockly Dashboard">
+      <span class="brand-mark" aria-hidden="true">
+        S
+      </span>
+
+      <span class="brand-name">
+        Stockly
+      </span>
+    </a>
 
   </div>
 
+
+  <!-- =====================================================
+       RIGHT SECTION
+       ===================================================== -->
+
   <div class="navbar-right">
+
     <app-user-menu />
+
   </div>
 
 </header>

@@ -1,36 +1,53 @@
 <div class="user-menu">
 
+    <!-- =====================================================
+       USER BUTTON
+       ===================================================== -->
+
     <button type="button" class="user-button" aria-label="Open user menu" [attr.aria-expanded]="isMenuOpen"
-        (click)="toggleMenu()">
-        <span class="avatar">
+        [attr.aria-haspopup]="true" (click)="toggleMenu()">
+
+        <span class="avatar" aria-hidden="true">
             {{ initials }}
         </span>
 
         <span class="user-info">
+
             <span class="user-name">
                 {{ displayName }}
             </span>
 
             <span class="user-role">
-                {{ currentUser?.roles?.[0] || 'User' }}
+                {{ roleName }}
             </span>
+
         </span>
 
-        <span class="dropdown-arrow" [class.open]="isMenuOpen">
+        <span class="dropdown-arrow" [class.open]="isMenuOpen" aria-hidden="true">
             ▾
         </span>
+
     </button>
+
+
+    <!-- =====================================================
+       USER DROPDOWN
+       ===================================================== -->
 
     @if (isMenuOpen) {
 
-    <div class="user-dropdown">
+    <div class="user-dropdown" role="menu">
+
+        <!-- User Information -->
 
         <div class="dropdown-header">
-            <span class="dropdown-avatar">
+
+            <span class="dropdown-avatar" aria-hidden="true">
                 {{ initials }}
             </span>
 
             <div class="dropdown-user-info">
+
                 <strong>
                     {{ displayName }}
                 </strong>
@@ -38,21 +55,45 @@
                 <span>
                     {{ currentUser?.email || 'No email available' }}
                 </span>
+
             </div>
+
         </div>
 
+
         <div class="dropdown-divider"></div>
 
-        <button type="button" class="dropdown-item" (click)="goToProfile()">
-            <span class="item-icon">◉</span>
-            <span>Company Profile</span>
+
+        <!-- Company Profile -->
+
+        <button type="button" class="dropdown-item" role="menuitem" (click)="goToProfile()">
+
+            <span class="item-icon" aria-hidden="true">
+                ◉
+            </span>
+
+            <span>
+                Company Profile
+            </span>
+
         </button>
 
+
         <div class="dropdown-divider"></div>
 
-        <button type="button" class="dropdown-item logout-item" (click)="logout()">
-            <span class="item-icon">↪</span>
-            <span>Logout</span>
+
+        <!-- Logout -->
+
+        <button type="button" class="dropdown-item logout-item" role="menuitem" (click)="logout()">
+
+            <span class="item-icon" aria-hidden="true">
+                ↪
+            </span>
+
+            <span>
+                Logout
+            </span>
+
         </button>
 
     </div>

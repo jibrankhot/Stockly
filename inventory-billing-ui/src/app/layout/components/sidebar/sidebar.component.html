@@ -1,25 +1,45 @@
-<aside class="sidebar" [class.sidebar-closed]="!isOpen">
+<aside class="sidebar" [class.sidebar-closed]="!isOpen" [attr.aria-hidden]="!isOpen">
+
+    <!-- =====================================================
+       SIDEBAR HEADER
+       ===================================================== -->
+
     <div class="sidebar-header">
-        <div class="brand">
-            <span class="brand-mark">S</span>
+
+        <a class="brand" routerLink="/dashboard" title="Stockly Dashboard">
+            <span class="brand-mark">
+                S
+            </span>
 
             <span class="brand-name">
                 Stockly
             </span>
-        </div>
+        </a>
+
     </div>
 
-    <nav class="sidebar-nav">
 
-        @for (item of navigationItems; track item.label) {
+    <!-- =====================================================
+       SIDEBAR NAVIGATION
+       ===================================================== -->
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+
+        @for (item of sidebarItems; track item.label) {
+
+        <!-- =================================================
+           MENU WITH CHILDREN
+           ================================================= -->
 
         @if (hasChildren(item)) {
 
         <div class="nav-group">
 
             <button type="button" class="nav-item nav-parent" [class.expanded]="isMenuExpanded(item.label)"
-                (click)="toggleMenu(item.label)">
-                <span class="nav-icon">
+                [attr.title]="!isOpen ? item.label : null" [attr.aria-expanded]="isMenuExpanded(item.label)"
+                [attr.aria-label]="!isOpen ? item.label : null" (click)="toggleMenu(item.label)">
+
+                <span class="nav-icon" aria-hidden="true">
                     {{ item.icon }}
                 </span>
 
@@ -27,10 +47,16 @@
                     {{ item.label }}
                 </span>
 
-                <span class="nav-arrow">
+                <span class="nav-arrow" aria-hidden="true">
                     {{ isMenuExpanded(item.label) ? '−' : '+' }}
                 </span>
+
             </button>
+
+
+            <!-- =================================================
+               SUBMENU
+               ================================================= -->
 
             @if (isMenuExpanded(item.label)) {
 
@@ -41,14 +67,17 @@
                 track child.label
                 ) {
 
-                <a class="nav-item submenu-item" [routerLink]="child.route" routerLinkActive="active">
-                    <span class="nav-icon">
+                <a class="nav-item submenu-item" [routerLink]="child.route" routerLinkActive="active"
+                    [title]="!isOpen ? child.label : ''">
+
+                    <span class="nav-icon" aria-hidden="true">
                         {{ child.icon }}
                     </span>
 
                     <span class="nav-label">
                         {{ child.label }}
                     </span>
+
                 </a>
 
                 }
@@ -59,17 +88,25 @@
 
         </div>
 
-        } @else {
+        }
+
+        <!-- =================================================
+           SINGLE MENU ITEM
+           ================================================= -->
+
+        @else {
 
         <a class="nav-item" [routerLink]="item.route" routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }">
-            <span class="nav-icon">
+            [routerLinkActiveOptions]="{ exact: true }" [title]="!isOpen ? item.label : ''">
+
+            <span class="nav-icon" aria-hidden="true">
                 {{ item.icon }}
             </span>
 
             <span class="nav-label">
                 {{ item.label }}
             </span>
+
         </a>
 
         }
@@ -77,4 +114,5 @@
         }
 
     </nav>
+
 </aside>
