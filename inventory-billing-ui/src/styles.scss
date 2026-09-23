@@ -10,22 +10,22 @@
 
 :root {
   /* Brand */
-  --color-primary-50: #f0fdfa;
-  --color-primary-100: #ccfbf1;
-  --color-primary-200: #99f6e4;
-  --color-primary-300: #5eead4;
-  --color-primary-400: #2dd4bf;
-  --color-primary-500: #14b8a6;
-  --color-primary-600: #0d9488;
-  --color-primary-700: #0f766e;
-  --color-primary-800: #115e59;
-  --color-primary-900: #134e4a;
+  --color-primary-50: #f3faef;
+  --color-primary-100: #e4f3df;
+  --color-primary-200: #c9e8bf;
+  --color-primary-300: #addca0;
+  --color-primary-400: #7fc56d;
+  --color-primary-500: #5ba846;
+  --color-primary-600: #4f9a38;
+  --color-primary-700: #489327;
+  --color-primary-800: #397820;
+  --color-primary-900: #2e621a;
 
   /* Backgrounds */
-  --color-background: #f8fafc;
+  --color-background: #f7faf7;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-surface-hover: #f8fafc;
+  --color-surface-muted: #f1f5f1;
+  --color-surface-hover: #f7faf7;
 
   /* Text */
   --color-text-primary: #0f172a;
@@ -35,8 +35,8 @@
   --color-text-inverse: #ffffff;
 
   /* Borders */
-  --color-border: #e2e8f0;
-  --color-border-light: #f1f5f9;
+  --color-border: #e2e7e2;
+  --color-border-light: #edf1ed;
   --color-border-focus: var(--color-primary-500);
 
   /* Status */
@@ -60,6 +60,17 @@
   --sidebar-width: 256px;
   --sidebar-collapsed-width: 72px;
   --navbar-height: 68px;
+
+  /* Sidebar / application chrome */
+  --sidebar-background: #1e1e1e;
+  --sidebar-background-soft: #232323;
+  --sidebar-border: #303030;
+  --sidebar-text: #e5e7eb;
+  --sidebar-text-muted: #a3a3a3;
+  --sidebar-text-hover: #ffffff;
+  --sidebar-active-background: #489327;
+  --sidebar-active-hover: #5ba846;
+  --sidebar-active-text: #ffffff;
 
   --content-max-width: 1600px;
 
@@ -85,6 +96,11 @@
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.10);
+
+  /* Dashboard / premium surfaces */
+  --shadow-card: 0 2px 7px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 6px 16px rgba(15, 23, 42, 0.09);
+  --color-card-border: #cbd5df;
 
   /* Typography */
   --font-family:
@@ -126,7 +142,7 @@
   --duration-slow: 360ms;
 
   /* Premium shadows */
-  --shadow-focus: 0 0 0 3px rgba(20, 184, 166, 0.16);
+  --shadow-focus: 0 0 0 3px rgba(72, 147, 39, 0.18);
   --shadow-dialog: 0 24px 70px rgba(15, 23, 42, 0.18);
   --shadow-toast: 0 12px 32px rgba(15, 23, 42, 0.14);
 

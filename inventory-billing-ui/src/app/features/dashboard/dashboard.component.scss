@@ -75,13 +75,14 @@
 
   padding: 10px 14px;
 
-  border: 1px solid var(--color-border);
+  border: 1px solid #cbd5e1;
 
   border-radius: var(--radius-md);
 
   background: var(--color-surface);
 
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
 .date-icon {
@@ -93,6 +94,8 @@
   justify-content: center;
 
   flex-shrink: 0;
+
+  border: 1px solid var(--color-primary-100);
 
   border-radius: var(--radius-sm);
 
@@ -152,13 +155,18 @@
 
   padding: var(--space-5);
 
-  border: 1px solid var(--color-border);
+  /*
+   * Clearly visible boundary around every KPI card.
+   */
+  border: 1px solid #bcc9d6;
 
   border-radius: var(--radius-lg);
 
   background: var(--color-surface);
 
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 2px 7px rgba(15, 23, 42, 0.05),
+    0 1px 2px rgba(15, 23, 42, 0.04);
 
   opacity: 0;
 
@@ -167,6 +175,20 @@
     var(--duration-normal)
     var(--ease-emphasized)
     forwards;
+
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.stat-card:hover {
+  border-color: #aebdcb;
+
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.08);
+
+  transform: translateY(-1px);
 }
 
 .stat-icon {
@@ -245,7 +267,7 @@
 }
 
 /* =========================================================
-   DASHBOARD GRID
+   MAIN DASHBOARD GRID
    ========================================================= */
 
 .dashboard-grid {
@@ -255,10 +277,14 @@
     minmax(0, 1.7fr)
     minmax(300px, 1fr);
 
-  gap: var(--space-5);
+  gap: var(--space-6);
 
   margin-bottom: var(--space-6);
 }
+
+/* =========================================================
+   MAJOR SECTION CARDS
+   ========================================================= */
 
 .dashboard-card,
 .quick-actions-card {
@@ -266,13 +292,30 @@
 
   overflow: hidden;
 
-  border: 1px solid var(--color-border);
+  /*
+   * Same visual weight as KPI cards.
+   */
+  border: 1px solid #bcc9d6;
 
   border-radius: var(--radius-lg);
 
   background: var(--color-surface);
 
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 2px 7px rgba(15, 23, 42, 0.05),
+    0 1px 2px rgba(15, 23, 42, 0.04);
+
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.dashboard-card:hover,
+.quick-actions-card:hover {
+  border-color: #aebdcb;
+
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.07);
 }
 
 /* =========================================================
@@ -288,7 +331,9 @@
 
   padding: var(--space-5);
 
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #cbd5df;
+
+  background: #f8fafc;
 }
 
 .card-heading {
@@ -310,6 +355,8 @@
 
   flex-shrink: 0;
 
+  border: 1px solid var(--color-primary-100);
+
   border-radius: var(--radius-sm);
 
   background: var(--color-primary-50);
@@ -321,6 +368,8 @@
 }
 
 .warning-icon {
+  border-color: #fde68a;
+
   background: var(--color-warning-light);
 
   color: var(--color-warning);
@@ -392,7 +441,9 @@ table {
 }
 
 thead {
-  background: var(--color-surface-muted);
+  background: #eef2f6;
+
+  border-bottom: 1px solid #cbd5df;
 }
 
 th {
@@ -414,7 +465,7 @@ th {
 td {
   padding: 13px var(--space-4);
 
-  border-top: 1px solid var(--color-border-light);
+  border-top: 1px solid #e1e7ed;
 
   color: var(--color-text-secondary);
 
@@ -504,7 +555,7 @@ tbody tr:hover {
 .stock-item {
   padding: 14px 0;
 
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid #e1e7ed;
 }
 
 .stock-item:last-child {
@@ -618,7 +669,7 @@ tbody tr:hover {
 
   padding: 14px;
 
-  border: 1px solid var(--color-border);
+  border: 1px solid #d1dae3;
 
   border-radius: var(--radius-md);
 
@@ -861,6 +912,9 @@ tbody tr:hover {
     animation: none;
   }
 
+  .stat-card,
+  .dashboard-card,
+  .quick-actions-card,
   .stat-icon,
   .view-all,
   .stock-progress,

@@ -4,24 +4,85 @@
   min-height: 100vh;
 }
 
+/* =========================================================
+   MAIN APPLICATION SHELL
+   ========================================================= */
+
 .main-layout {
-  position: relative;
+  --expanded-sidebar-width: 192px;
+  --collapsed-sidebar-width: 72px;
+
+  display: grid;
+
+  grid-template-columns:
+    var(--expanded-sidebar-width)
+    minmax(0, 1fr);
 
   min-height: 100vh;
 
   background: var(--color-background);
+
+  transition:
+    grid-template-columns
+    var(--duration-normal)
+    var(--ease-emphasized);
 }
 
 /* =========================================================
-   LAYOUT BODY
+   COLLAPSED SIDEBAR
    ========================================================= */
 
-.layout-body {
+.main-layout.sidebar-closed {
+  grid-template-columns:
+    var(--collapsed-sidebar-width)
+    minmax(0, 1fr);
+}
+
+/* =========================================================
+   NAVIGATION COLUMN
+   ========================================================= */
+
+.navigation-column {
   position: relative;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+
+  z-index: var(--z-sidebar, 800);
+
+  background: var(--sidebar-background);
+
+  overflow: visible;
+}
+
+/*
+ * The sidebar component owns the actual navigation.
+ *
+ * MainLayout only provides the column.
+ */
+
+.navigation-column app-sidebar {
+  display: block;
+
+  width: 100%;
+}
+
+/* =========================================================
+   MAIN APPLICATION COLUMN
+   ========================================================= */
+
+.application-column {
+  position: relative;
+
+  min-width: 0;
+  min-height: 100vh;
 
   display: flex;
 
-  min-height: calc(100vh - var(--navbar-height));
+  flex-direction: column;
+
+  background: var(--color-background);
 }
 
 /* =========================================================
@@ -32,15 +93,12 @@
   flex: 1;
 
   min-width: 0;
+
   min-height: calc(100vh - var(--navbar-height));
 
   overflow-x: hidden;
 
   background: var(--color-background);
-
-  transition:
-    margin-left var(--duration-normal) var(--ease-standard),
-    width var(--duration-normal) var(--ease-standard);
 }
 
 .content-wrapper {
@@ -57,17 +115,54 @@
   padding: var(--space-6);
 }
 
-/*
- * The class is toggled after navigation finishes.
- * This makes the routed page smoothly enter instead
- * of simply appearing instantly.
- */
+/* =========================================================
+   PAGE TRANSITION
+   ========================================================= */
 
 .page-transition-active {
   animation:
     stockly-page-enter
     var(--duration-normal)
     var(--ease-emphasized)
+    both;
+}
+
+/* =========================================================
+   MOBILE SIDEBAR OVERLAY
+   ========================================================= */
+
+.sidebar-overlay {
+  display: none;
+
+  position: fixed;
+
+  inset: var(--navbar-height) 0 0;
+
+  z-index: var(--z-overlay);
+
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: rgba(15, 23, 42, 0.46);
+
+  cursor: pointer;
+
+  /*
+   * Do NOT use backdrop-filter here.
+   *
+   * The sidebar and the content behind it should
+   * remain visually sharp.
+   */
+
+  animation:
+    stockly-overlay-in
+    var(--duration-normal)
+    var(--ease-standard)
     both;
 }
 
@@ -102,6 +197,10 @@
     both;
 }
 
+/* =========================================================
+   NAVIGATION LOADER CARD
+   ========================================================= */
+
 .navigation-loader-card {
   display: flex;
 
@@ -111,7 +210,9 @@
 
   min-width: 210px;
 
-  padding: var(--space-4) var(--space-5);
+  padding:
+    var(--space-4)
+    var(--space-5);
 
   border: 1px solid var(--color-border);
 
@@ -143,9 +244,12 @@
 
   flex-shrink: 0;
 
-  border: 3px solid var(--color-primary-100);
+  border:
+    3px solid
+    var(--color-primary-100);
 
-  border-top-color: var(--color-primary-700);
+  border-top-color:
+    var(--color-primary-700);
 
   border-radius: 50%;
 
@@ -198,45 +302,16 @@
 }
 
 /* =========================================================
-   MOBILE SIDEBAR OVERLAY
-   ========================================================= */
-
-.sidebar-overlay {
-  display: none;
-
-  position: fixed;
-
-  inset: var(--navbar-height) 0 0;
-
-  z-index: var(--z-overlay);
-
-  width: 100%;
-  height: calc(100vh - var(--navbar-height));
-
-  padding: 0;
-  margin: 0;
-
-  border: 0;
-
-  background: rgba(15, 23, 42, 0.42);
-
-  cursor: pointer;
-
-  animation:
-    stockly-overlay-in
-    var(--duration-normal)
-    var(--ease-standard)
-    both;
-
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-/* =========================================================
    TABLET
    ========================================================= */
 
 @media (max-width: 1024px) {
+
+  .main-layout {
+    --expanded-sidebar-width: 192px;
+
+    --collapsed-sidebar-width: 72px;
+  }
 
   .page-content {
     padding: var(--space-5);
@@ -249,29 +324,66 @@
 
 @media (max-width: 767px) {
 
-  .layout-body {
-    min-height: calc(100vh - var(--navbar-height));
+  /*
+   * On mobile the desktop grid disappears.
+   *
+   * Sidebar becomes an off-canvas drawer through
+   * sidebar.component.scss.
+   */
+
+  .main-layout,
+  .main-layout.sidebar-closed,
+  .main-layout.sidebar-open {
+    display: block;
+
+    min-height: 100vh;
+  }
+
+  .navigation-column {
+    position: static;
+
+    width: 0;
+    min-width: 0;
+
+    min-height: 0;
+
+    background: transparent;
+
+    z-index: auto;
+  }
+
+  .navigation-column app-sidebar {
+    width: auto;
+  }
+
+  .application-column {
+    width: 100%;
+
+    min-height: 100vh;
   }
 
   .main-content {
     width: 100%;
 
-    min-height: calc(100vh - var(--navbar-height));
+    min-height:
+      calc(100vh - var(--navbar-height));
   }
 
   .page-content {
     padding: var(--space-4);
   }
 
+  /* -------------------------------------------------------
+     MOBILE OVERLAY
+     ------------------------------------------------------- */
+
   .sidebar-open .sidebar-overlay {
     display: block;
   }
 
-  .sidebar-open .main-content {
-    position: relative;
-
-    z-index: 1;
-  }
+  /* -------------------------------------------------------
+     NAVIGATION LOADER
+     ------------------------------------------------------- */
 
   .navigation-loader {
     padding: var(--space-4);
@@ -321,6 +433,10 @@
 
 @media (prefers-reduced-motion: reduce) {
 
+  .main-layout {
+    transition: none;
+  }
+
   .page-transition-active,
   .navigation-loader,
   .navigation-loader-card,
@@ -330,9 +446,5 @@
 
   .navigation-spinner {
     animation: none;
-  }
-
-  .main-content {
-    transition: none;
   }
 }

@@ -2,35 +2,27 @@
     [class.is-navigating]="isNavigating">
 
     <!-- =====================================================
-       NAVBAR
+       SIDEBAR
        ===================================================== -->
 
-    <app-navbar (menuToggle)="toggleSidebar()" />
+    <aside class="navigation-column">
+
+        <app-sidebar [isOpen]="isSidebarOpen" (toggleSidebar)="toggleSidebar()" />
+
+    </aside>
 
 
     <!-- =====================================================
-       LAYOUT BODY
+       APPLICATION AREA
        ===================================================== -->
 
-    <div class="layout-body">
+    <section class="application-column">
 
         <!-- ===================================================
-         SIDEBAR
+         NAVBAR
          =================================================== -->
 
-        <app-sidebar [isOpen]="isSidebarOpen" />
-
-
-        <!-- ===================================================
-         MOBILE SIDEBAR OVERLAY
-         =================================================== -->
-
-        @if (isSidebarOpen) {
-
-        <button type="button" class="sidebar-overlay" aria-label="Close navigation menu"
-            (click)="closeSidebarOnMobile()"></button>
-
-        }
+        <app-navbar (menuToggle)="toggleSidebar()" />
 
 
         <!-- ===================================================
@@ -46,7 +38,7 @@
                 <app-breadcrumb />
 
 
-                <!-- Page Content -->
+                <!-- Routed Page -->
 
                 <div class="page-content" [class.page-transition-active]="!isNavigating">
 
@@ -58,11 +50,23 @@
 
         </main>
 
-    </div>
+    </section>
 
 
     <!-- =====================================================
-       NAVIGATION LOADING OVERLAY
+       MOBILE SIDEBAR OVERLAY
+       ===================================================== -->
+
+    @if (isSidebarOpen) {
+
+    <button type="button" class="sidebar-overlay" aria-label="Close navigation menu"
+        (click)="closeSidebarOnMobile()"></button>
+
+    }
+
+
+    <!-- =====================================================
+       NAVIGATION LOADER
        ===================================================== -->
 
     @if (isNavigating) {

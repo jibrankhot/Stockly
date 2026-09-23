@@ -1,5 +1,6 @@
 :host {
   display: block;
+
   flex-shrink: 0;
 }
 
@@ -8,21 +9,36 @@
    ========================================================= */
 
 .sidebar {
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
+  /*
+   * Reference design uses a compact application sidebar.
+   */
+  width: 192px;
+  min-width: 192px;
 
+  /*
+   * Keep the navigation visible while the main dashboard
+   * scrolls vertically.
+   */
+  position: sticky;
+
+  top: var(--navbar-height);
+
+  height: calc(100vh - var(--navbar-height));
   min-height: calc(100vh - var(--navbar-height));
 
   box-sizing: border-box;
 
-  background: var(--color-surface);
+  background: var(--sidebar-background);
 
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid var(--sidebar-border);
+
+  color: var(--sidebar-text);
 
   overflow-x: hidden;
   overflow-y: auto;
 
   scrollbar-width: thin;
+  scrollbar-color: #454545 transparent;
 
   transition:
     width var(--duration-normal) var(--ease-emphasized),
@@ -46,12 +62,13 @@
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
+  background: #454545;
+
   border-radius: 999px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: #626262;
 }
 
 /* =========================================================
@@ -64,11 +81,13 @@
   display: flex;
   align-items: center;
 
-  padding: 0 var(--space-5);
+  padding: 0 14px;
 
   box-sizing: border-box;
 
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--sidebar-border);
+
+  background: var(--sidebar-background);
 
   overflow: hidden;
 }
@@ -81,11 +100,11 @@
   display: flex;
   align-items: center;
 
-  gap: var(--space-3);
+  gap: 10px;
 
   min-width: 0;
 
-  color: inherit;
+  color: var(--sidebar-text);
 
   text-decoration: none;
 
@@ -104,39 +123,42 @@
    ========================================================= */
 
 .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
 
-  min-width: 34px;
+  min-width: 32px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: var(--radius-md);
+  border-radius: 8px;
 
-  background: var(--color-primary-700);
+  background: var(--sidebar-active-background);
 
   color: #ffffff;
 
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
 
   line-height: 1;
 
   box-shadow:
-    0 4px 10px rgba(15, 118, 110, 0.18);
+    0 4px 10px rgba(72, 147, 39, 0.22);
 
   transition:
     transform var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .brand:hover .brand-mark {
+  background: var(--sidebar-active-hover);
+
   transform: translateY(-1px);
 
   box-shadow:
-    0 6px 14px rgba(15, 118, 110, 0.22);
+    0 6px 14px rgba(72, 147, 39, 0.28);
 }
 
 /* =========================================================
@@ -144,9 +166,9 @@
    ========================================================= */
 
 .brand-name {
-  color: var(--color-text-primary);
+  color: #ffffff;
 
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 750;
 
   letter-spacing: -0.02em;
@@ -170,7 +192,7 @@
 
   gap: 3px;
 
-  padding: var(--space-4) var(--space-3);
+  padding: 16px 10px;
 
   overflow: visible;
 }
@@ -181,6 +203,7 @@
 
 .nav-group {
   width: 100%;
+
   margin: 0;
 
   overflow: visible;
@@ -194,26 +217,28 @@
   position: relative;
 
   width: 100%;
-  min-height: 42px;
+  min-height: 38px;
 
   display: flex;
   align-items: center;
 
-  gap: var(--space-3);
+  gap: 10px;
 
   box-sizing: border-box;
 
-  padding: 9px 11px;
+  padding: 8px 9px;
 
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+
+  border-radius: 7px;
 
   background: transparent;
 
-  color: var(--color-text-secondary);
+  color: var(--sidebar-text);
 
   font: inherit;
-  font-size: 14px;
+
+  font-size: 12px;
   font-weight: 500;
 
   line-height: 1.2;
@@ -237,11 +262,11 @@
    ========================================================= */
 
 .nav-item:hover {
-  background: var(--color-surface-hover);
+  background: rgba(255, 255, 255, 0.055);
 
-  color: var(--color-text-primary);
+  color: var(--sidebar-text-hover);
 
-  border-color: var(--color-border);
+  border-color: rgba(255, 255, 255, 0.04);
 }
 
 /* =========================================================
@@ -249,20 +274,22 @@
    ========================================================= */
 
 .nav-item.active {
-  background: var(--color-primary-700);
+  background: var(--sidebar-active-background);
 
   color: #ffffff;
 
-  border-color: var(--color-primary-700);
+  border-color: var(--sidebar-active-background);
 
   box-shadow:
-    0 4px 10px rgba(15, 118, 110, 0.14);
+    0 4px 10px rgba(72, 147, 39, 0.18);
 }
 
 .nav-item.active:hover {
-  background: var(--color-primary-700);
+  background: var(--sidebar-active-hover);
 
   color: #ffffff;
+
+  border-color: var(--sidebar-active-hover);
 
   transform: translateY(-1px);
 }
@@ -277,14 +304,15 @@
   position: absolute;
 
   left: 0;
-  top: 8px;
-  bottom: 8px;
+
+  top: 6px;
+  bottom: 6px;
 
   width: 3px;
 
   border-radius: 0 4px 4px 0;
 
-  background: rgba(255, 255, 255, 0.9);
+  background: #ffffff;
 }
 
 /* =========================================================
@@ -298,13 +326,18 @@
   -webkit-appearance: none;
 }
 
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
 .nav-parent:focus-visible,
 .nav-item:focus-visible {
   outline: none;
 
-  border-color: var(--color-primary-500);
+  border-color: var(--sidebar-active-hover);
 
-  box-shadow: var(--shadow-focus);
+  box-shadow:
+    0 0 0 3px rgba(91, 168, 70, 0.22);
 }
 
 /* =========================================================
@@ -312,10 +345,10 @@
    ========================================================= */
 
 .nav-icon {
-  width: 22px;
-  min-width: 22px;
+  width: 20px;
+  min-width: 20px;
 
-  height: 22px;
+  height: 20px;
 
   display: inline-flex;
   align-items: center;
@@ -325,7 +358,7 @@
 
   color: currentColor;
 
-  font-size: 15px;
+  font-size: 13px;
 
   line-height: 1;
 
@@ -338,7 +371,7 @@
 }
 
 .submenu-item .nav-icon {
-  font-size: 10px;
+  font-size: 9px;
 }
 
 /* =========================================================
@@ -372,16 +405,16 @@
    ========================================================= */
 
 .nav-arrow {
-  width: 18px;
-  min-width: 18px;
+  width: 16px;
+  min-width: 16px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  color: var(--color-text-muted);
+  color: var(--sidebar-text-muted);
 
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 500;
 
   line-height: 1;
@@ -392,13 +425,13 @@
 }
 
 .nav-parent:hover .nav-arrow {
-  color: var(--color-text-primary);
+  color: var(--sidebar-text-hover);
 }
 
 .nav-parent.expanded .nav-arrow {
   transform: rotate(180deg);
 
-  color: var(--color-primary-600);
+  color: var(--sidebar-active-hover);
 }
 
 /* =========================================================
@@ -406,11 +439,11 @@
    ========================================================= */
 
 .submenu {
-  margin: 3px 0 5px 21px;
+  margin: 3px 0 5px 18px;
 
-  padding: 3px 0 3px 12px;
+  padding: 3px 0 3px 10px;
 
-  border-left: 1px solid var(--color-border);
+  border-left: 1px solid #3a3a3a;
 
   animation:
     stockly-slide-up
@@ -420,13 +453,35 @@
 }
 
 .submenu-item {
-  min-height: 36px;
+  min-height: 32px;
 
-  padding: 8px 10px;
+  padding: 6px 8px;
 
-  font-size: 13px;
+  color: #b8b8b8;
 
-  border-radius: var(--radius-sm);
+  font-size: 11px;
+
+  border-radius: 6px;
+}
+
+.submenu-item:hover {
+  color: #ffffff;
+
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.submenu-item.active {
+  background: rgba(72, 147, 39, 0.16);
+
+  color: #8bd273;
+
+  border-color: transparent;
+
+  box-shadow: none;
+}
+
+.submenu-item.active::before {
+  display: none;
 }
 
 /* =========================================================
@@ -438,10 +493,10 @@
 
   min-width: var(--sidebar-collapsed-width);
 
-  border-right-color: var(--color-border);
+  border-right-color: var(--sidebar-border);
 
   box-shadow:
-    2px 0 12px rgba(15, 23, 42, 0.04);
+    2px 0 12px rgba(0, 0, 0, 0.18);
 }
 
 /* =========================================================
@@ -450,6 +505,7 @@
 
 .sidebar.sidebar-closed .sidebar-header {
   justify-content: center;
+
   padding: 0;
 }
 
@@ -474,7 +530,7 @@
 .sidebar.sidebar-closed .sidebar-nav {
   align-items: center;
 
-  padding: var(--space-4) var(--space-2);
+  padding: 16px 8px;
 }
 
 .sidebar.sidebar-closed .nav-group {
@@ -494,18 +550,18 @@
 }
 
 .sidebar.sidebar-closed .nav-item:hover {
-  border-color: var(--color-border);
+  border-color: transparent;
 }
 
 .sidebar.sidebar-closed .nav-item.active {
-  border-color: var(--color-primary-700);
+  border-color: var(--sidebar-active-background);
 }
 
 .sidebar.sidebar-closed .nav-item.active::before {
   left: 0;
 
-  top: 9px;
-  bottom: 9px;
+  top: 8px;
+  bottom: 8px;
 }
 
 .sidebar.sidebar-closed .nav-icon {
@@ -528,22 +584,24 @@
 @media (min-width: 768px) and (max-width: 1024px) {
 
   .sidebar {
-    width: 230px;
-    min-width: 230px;
+    width: 200px;
+
+    min-width: 200px;
   }
 
   .sidebar.sidebar-closed {
     width: var(--sidebar-collapsed-width);
+
     min-width: var(--sidebar-collapsed-width);
   }
 
   .sidebar-header {
-    padding: 0 var(--space-4);
+    padding: 0 12px;
   }
 
   .sidebar-nav {
-    padding-left: var(--space-2);
-    padding-right: var(--space-2);
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
 
@@ -553,47 +611,188 @@
 
 @media (max-width: 767px) {
 
-  .sidebar {
+  /*
+   * The desktop sidebar remains a normal layout element.
+   * On mobile the host becomes the drawer container so the
+   * sidebar cannot stretch to the full viewport width.
+   */
+  :host {
     position: fixed;
 
     top: var(--navbar-height);
     left: 0;
     bottom: 0;
 
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
+    width: 280px !important;
+    max-width: calc(100vw - 48px);
+
+    min-width: 0 !important;
 
     height: calc(100vh - var(--navbar-height));
 
+    z-index: calc(var(--z-overlay) + 1);
+
+    flex: none;
+
+    pointer-events: none;
+  }
+
+  /*
+   * Actual drawer.
+   */
+  .sidebar {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 280px !important;
+    max-width: calc(100vw - 48px);
+
+    min-width: 0 !important;
+
+    height: 100%;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    background: var(--sidebar-background);
+
+    border-right: 1px solid var(--sidebar-border);
+
+    overflow-x: hidden;
     overflow-y: auto;
 
-    z-index: var(--z-sidebar, 800);
+    z-index: calc(var(--z-overlay) + 1);
 
     box-shadow:
-      8px 0 24px rgba(15, 23, 42, 0.10);
+      8px 0 24px rgba(0, 0, 0, 0.24);
 
     transform: translateX(0);
+
+    pointer-events: auto;
 
     transition:
       transform var(--duration-normal) var(--ease-emphasized),
       box-shadow var(--duration-normal) var(--ease-standard);
   }
 
+  /*
+   * Closed state:
+   * move the drawer completely outside the viewport.
+   */
   .sidebar.sidebar-closed {
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
+    width: 280px !important;
+    max-width: calc(100vw - 48px);
 
-    border-right-color: var(--color-border);
+    min-width: 0 !important;
 
-    transform: translateX(-100%);
+    transform: translateX(-105%);
 
     box-shadow: none;
+
+    pointer-events: none;
   }
+
+  /* ---------------------------------------------------------
+     MOBILE HEADER
+     --------------------------------------------------------- */
+
+  .sidebar-header {
+    height: 64px;
+
+    padding: 0 14px;
+
+    justify-content: flex-start;
+  }
+
+  /* ---------------------------------------------------------
+     MOBILE BRAND
+     --------------------------------------------------------- */
+
+  .brand {
+    justify-content: flex-start;
+
+    width: auto;
+  }
+
+  .brand-name {
+    width: auto;
+
+    opacity: 1;
+
+    transform: translateX(0);
+  }
+
+  /* ---------------------------------------------------------
+     MOBILE NAVIGATION
+     --------------------------------------------------------- */
+
+  .sidebar-nav {
+    align-items: stretch;
+
+    width: 100%;
+
+    padding: 16px 10px;
+  }
+
+  .nav-group {
+    width: 100%;
+  }
+
+  .nav-item {
+    width: 100%;
+
+    min-height: 40px;
+
+    justify-content: flex-start;
+
+    padding: 9px 10px;
+
+    gap: 10px;
+  }
+
+  .nav-icon {
+    width: 20px;
+    min-width: 20px;
+  }
+
+  .nav-label {
+    display: block;
+
+    width: auto;
+
+    opacity: 1;
+
+    transform: translateX(0);
+  }
+
+  .nav-arrow {
+    display: inline-flex;
+
+    margin-left: auto;
+  }
+
+  /* ---------------------------------------------------------
+     MOBILE SUBMENU
+     --------------------------------------------------------- */
+
+  .submenu {
+    display: block;
+
+    margin-left: 18px;
+  }
+
+  /* ---------------------------------------------------------
+     IMPORTANT:
+     Mobile is a drawer, NOT the desktop collapsed
+     icon-only sidebar.
+     --------------------------------------------------------- */
 
   .sidebar.sidebar-closed .sidebar-header {
     justify-content: flex-start;
 
-    padding: 0 var(--space-5);
+    padding: 0 14px;
   }
 
   .sidebar.sidebar-closed .brand {
@@ -611,7 +810,7 @@
   .sidebar.sidebar-closed .sidebar-nav {
     align-items: stretch;
 
-    padding: var(--space-4) var(--space-3);
+    padding: 16px 10px;
   }
 
   .sidebar.sidebar-closed .nav-item {
@@ -619,17 +818,14 @@
 
     width: 100%;
 
-    padding: 9px 11px;
+    padding: 9px 10px;
 
-    gap: var(--space-3);
-  }
-
-  .sidebar.sidebar-closed .nav-label,
-  .sidebar.sidebar-closed .nav-arrow {
-    display: block;
+    gap: 10px;
   }
 
   .sidebar.sidebar-closed .nav-label {
+    display: block;
+
     width: auto;
 
     opacity: 1;
@@ -652,23 +848,19 @@
 
 @media (max-width: 479px) {
 
-  .sidebar {
-    width: min(290px, 88vw);
-    min-width: min(290px, 88vw);
+  :host {
+    width: 270px !important;
+
+    max-width: calc(100vw - 40px);
   }
 
+  .sidebar,
   .sidebar.sidebar-closed {
-    width: min(290px, 88vw);
-    min-width: min(290px, 88vw);
-  }
+    width: 270px !important;
 
-  .sidebar-header {
-    padding: 0 var(--space-4);
-  }
+    max-width: calc(100vw - 40px);
 
-  .sidebar-nav {
-    padding-left: var(--space-2);
-    padding-right: var(--space-2);
+    min-width: 0 !important;
   }
 }
 
@@ -688,6 +880,7 @@
   .nav-arrow,
   .submenu {
     transition: none;
+
     animation: none;
   }
 }
