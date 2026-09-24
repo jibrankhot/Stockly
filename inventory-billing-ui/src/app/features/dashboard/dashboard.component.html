@@ -1,8 +1,8 @@
 <div class="dashboard animate-fade-in">
 
     <!-- =====================================================
-       PAGE HEADER
-       ===================================================== -->
+         PAGE HEADER
+         ===================================================== -->
 
     <section class="page-header">
 
@@ -17,7 +17,7 @@
             </h1>
 
             <p>
-                Monitor your sales, inventory and business activity.
+                Welcome back. Here's what's happening with your business today.
             </p>
 
         </div>
@@ -30,7 +30,7 @@
 
             <div>
                 <span class="date-label">
-                    Today
+                    As of
                 </span>
 
                 <strong>
@@ -44,35 +44,104 @@
 
 
     <!-- =====================================================
-       STATISTICS
-       ===================================================== -->
+         LOADING STATE
+         ===================================================== -->
 
-    <section class="stats-grid" aria-label="Business statistics">
+    @if (isLoading) {
+
+    <section class="dashboard-loading" aria-live="polite">
+
+        <div class="dashboard-loading-spinner"></div>
+
+        <div>
+            <strong>Loading dashboard</strong>
+
+            <span>
+                Fetching your latest business data...
+            </span>
+        </div>
+
+    </section>
+
+    }
+
+
+    <!-- =====================================================
+         ERROR STATE
+         ===================================================== -->
+
+    @if (hasError && !isLoading) {
+
+    <section class="dashboard-error" role="alert">
+
+        <div class="dashboard-error-icon">
+            !
+        </div>
+
+        <div class="dashboard-error-content">
+
+            <strong>
+                Unable to load dashboard
+            </strong>
+
+            <span>
+                We couldn't retrieve the latest dashboard data.
+            </span>
+
+        </div>
+
+        <button type="button" class="dashboard-retry-button" (click)="retry()">
+            Retry
+        </button>
+
+    </section>
+
+    }
+
+
+    @if (!isLoading && !hasError) {
+
+    <!-- =====================================================
+             KPI CARDS
+             ===================================================== -->
+
+    <section class="kpi-grid" aria-label="Business key performance indicators">
 
         @for (
-        stat of stats;
-        track stat.title;
+        kpi of kpis;
+        track kpi.title;
         let index = $index
         ) {
 
-        <article class="stat-card card-interactive" [style.animation-delay.ms]="index * 60">
+        <article class="kpi-card" [class.kpi-card-highlighted]="kpi.highlighted"
+            [style.animation-delay.ms]="index * 70">
 
-            <div class="stat-icon">
-                {{ stat.icon }}
+            <div class="kpi-top">
+
+                <div class="kpi-icon">
+                    {{ kpi.icon }}
+                </div>
+
             </div>
 
-            <div class="stat-content">
+            <div class="kpi-content">
 
-                <span class="stat-title">
-                    {{ stat.title }}
+                <span class="kpi-title">
+                    {{ kpi.title }}
                 </span>
 
-                <strong class="stat-value">
-                    {{ stat.value }}
+                <strong class="kpi-value">
+
+                    @if (kpi.prefix) {
+                    {{ kpi.prefix }}
+                    }
+
+                    {{ kpi.value | number:'1.0-0' }}
+
                 </strong>
 
-                <span class="stat-description">
-                    {{ stat.description }}
+                <span class="kpi-description">
+                    {{ kpi.description }}
                 </span>
 
             </div>
@@ -85,39 +154,230 @@
 
 
     <!-- =====================================================
-       MAIN DASHBOARD GRID
-       ===================================================== -->
+             BUSINESS ACTIVITY + STOCK STATUS
+             ===================================================== -->
 
-    <section class="dashboard-grid">
+    <section class="analytics-grid">
 
         <!-- ===================================================
-         RECENT INVOICES
-         =================================================== -->
+                 BUSINESS ACTIVITY
+                 =================================================== -->
 
-        <article class="dashboard-card invoices-card">
+        <article class="dashboard-card business-activity-card">
 
             <div class="card-header">
 
                 <div class="card-heading">
 
-                    <span class="section-icon">
-                        ▤
-                    </span>
-
                     <div>
+
                         <h2>
-                            Recent Invoices
+                            Business Activity
                         </h2>
 
                         <p>
-                            Latest sales invoices
+                            Items that may need your attention
                         </p>
+
                     </div>
 
                 </div>
 
-                <a routerLink="/invoices" class="view-all">
+            </div>
+
+
+            <div class="business-activity-list">
+
+                <!-- =================================================
+                         OUT OF STOCK
+                         ================================================= -->
+
+                @if (
+                stockStatuses.length > 0 &&
+                stockStatuses[2].value > 0
+                ) {
+
+                <a routerLink="/inventory/low-stock" class="business-activity-item danger">
+
+                    <span class="business-activity-icon" aria-hidden="true">
+                        !
+                    </span>
+
+                    <span class="business-activity-item-content">
+
+                        <span class="business-activity-title">
+                            {{ stockStatuses[2].value }}
+                            product{{ stockStatuses[2].value === 1 ? '' : 's' }}
+                            out of stock
+                        </span>
+
+                        <span class="business-activity-description">
+                            Inventory requires immediate attention
+                        </span>
+
+                    </span>
+
+                    <span class="business-activity-arrow" aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+                }
+
+
+                <!-- =================================================
+                         LOW STOCK
+                         ================================================= -->
+
+                @if (
+                stockStatuses.length > 0 &&
+                stockStatuses[1].value > 0
+                ) {
+
+                <a routerLink="/inventory/low-stock" class="business-activity-item alert">
+
+                    <span class="business-activity-icon" aria-hidden="true">
+                        !
+                    </span>
+
+                    <span class="business-activity-item-content">
+
+                        <span class="business-activity-title">
+                            {{ stockStatuses[1].value }}
+                            product{{ stockStatuses[1].value === 1 ? '' : 's' }}
+                            running low
+                        </span>
+
+                        <span class="business-activity-description">
+                            Review products below minimum stock
+                        </span>
+
+                    </span>
+
+                    <span class="business-activity-arrow" aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+                }
+
+
+                <!-- =================================================
+                         PENDING / PARTIALLY PAID INVOICES
+                         ================================================= -->
+
+                @if (recentSales.length > 0) {
+
+                @for (
+                sale of recentSales;
+                track sale.id
+                ) {
+
+                @if (
+                sale.status === 'Partially Paid' ||
+                sale.status === 'Issued'
+                ) {
+
+                <a [routerLink]="['/invoices', sale.id]" class="business-activity-item invoice">
+
+                    <span class="business-activity-icon" aria-hidden="true">
+                        ₹
+                    </span>
+
+                    <span class="business-activity-item-content">
+
+                        <span class="business-activity-title">
+                            {{ sale.invoiceNumber }} requires payment
+                        </span>
+
+                        <span class="business-activity-description">
+                            {{ sale.customerName }}
+                            ·
+                            ₹{{ sale.totalAmount | number:'1.0-0' }}
+                        </span>
+
+                    </span>
+
+                    <span class="business-activity-arrow" aria-hidden="true">
+                        →
+                    </span>
+
+                </a>
+
+                }
+
+                }
+
+                }
+
+
+                <!-- =================================================
+                         EVERYTHING OK
+                         ================================================= -->
+
+                @if (
+                (
+                stockStatuses.length === 0 ||
+                (
+                stockStatuses[1].value === 0 &&
+                stockStatuses[2].value === 0
+                )
+                ) &&
+                recentSales.length === 0
+                ) {
+
+                <div class="business-activity-empty">
+
+                    <span class="business-activity-empty-icon" aria-hidden="true">
+                        ✓
+                    </span>
+
+                    <strong>
+                        Everything looks good
+                    </strong>
+
+                    <span>
+                        No immediate business issues require attention.
+                    </span>
+
+                </div>
+
+                }
+
+            </div>
+
+        </article>
+
+
+        <!-- ===================================================
+                 STOCK STATUS
+                 =================================================== -->
+
+        <article class="dashboard-card stock-status-card">
+
+            <div class="card-header">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h2>
+                            Stock Status
+                        </h2>
+
+                        <p>
+                            Current inventory overview
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <a routerLink="/inventory/low-stock" class="view-all">
                     View all
+
                     <span aria-hidden="true">
                         →
                     </span>
@@ -126,53 +386,160 @@
             </div>
 
 
+            <div class="stock-status-content">
+
+                <div class="stock-donut-wrapper">
+
+                    <div class="stock-donut" [style.background]="stockDonutBackground"
+                        aria-label="Stock status distribution">
+
+                        <div class="stock-donut-center">
+
+                            <strong>
+                                {{ totalProducts | number }}
+                            </strong>
+
+                            <span>
+                                Total Products
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stock-status-list">
+
+                    @for (
+                    status of stockStatuses;
+                    track status.label
+                    ) {
+
+                    <div class="stock-status-row">
+
+                        <div class="stock-status-label">
+
+                            <span class="stock-status-dot" [class]="status.type"></span>
+
+                            <span>
+                                {{ status.label }}
+                            </span>
+
+                        </div>
+
+                        <strong>
+                            {{ status.value | number }}
+                        </strong>
+
+                    </div>
+
+                    }
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- =====================================================
+             RECENT SALES + LOW STOCK
+             ===================================================== -->
+
+    <section class="dashboard-grid">
+
+        <!-- ===================================================
+                 RECENT SALES
+                 =================================================== -->
+
+        <article class="dashboard-card recent-sales-card">
+
+            <div class="card-header">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h2>
+                            Recent Sales
+                        </h2>
+
+                        <p>
+                            Latest sales transactions
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <a routerLink="/invoices" class="view-all">
+                    View all
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+                </a>
+
+            </div>
+
+
+            @if (recentSales.length > 0) {
+
             <div class="table-wrapper">
 
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>Invoice</th>
                             <th>Customer</th>
+                            <th>Date</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th>Date</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
 
                         @for (
-                        invoice of recentInvoices;
-                        track invoice.invoiceNumber
+                        sale of recentSales;
+                        track sale.id
                         ) {
 
                         <tr>
 
                             <td class="invoice-number">
-                                {{ invoice.invoiceNumber }}
+                                {{ sale.invoiceNumber }}
                             </td>
 
                             <td>
-                                {{ invoice.customerName }}
+                                {{ sale.customerName }}
+                            </td>
+
+                            <td class="sale-date">
+                                {{ sale.invoiceDate | date:'dd MMM yyyy' }}
                             </td>
 
                             <td class="amount">
-                                ₹{{ invoice.amount | number:'1.0-0' }}
+                                ₹{{ sale.totalAmount | number:'1.0-0' }}
                             </td>
 
                             <td>
 
-                                <span class="status-badge" [class]="getStatusClass(invoice.status)">
+                                <span class="status-badge" [class]="getStatusClass(sale.status)">
+
                                     <span class="status-dot" aria-hidden="true"></span>
 
-                                    {{ invoice.status }}
+                                    {{ sale.status }}
+
                                 </span>
 
-                            </td>
-
-                            <td class="date">
-                                {{ invoice.date }}
                             </td>
 
                         </tr>
@@ -185,37 +552,52 @@
 
             </div>
 
+            } @else {
+
+            <div class="dashboard-empty-state">
+
+                <strong>
+                    No recent sales
+                </strong>
+
+                <span>
+                    Sales transactions will appear here once invoices are created.
+                </span>
+
+            </div>
+
+            }
+
         </article>
 
 
         <!-- ===================================================
-         LOW STOCK
-         =================================================== -->
+                 LOW STOCK ITEMS
+                 =================================================== -->
 
-        <article class="dashboard-card stock-card">
+        <article class="dashboard-card low-stock-card">
 
             <div class="card-header">
 
                 <div class="card-heading">
 
-                    <span class="section-icon warning-icon">
-                        !
-                    </span>
-
                     <div>
+
                         <h2>
-                            Low Stock
+                            Low Stock Items
                         </h2>
 
                         <p>
                             Products that need attention
                         </p>
+
                     </div>
 
                 </div>
 
                 <a routerLink="/inventory/low-stock" class="view-all">
                     View all
+
                     <span aria-hidden="true">
                         →
                     </span>
@@ -224,44 +606,36 @@
             </div>
 
 
-            <div class="stock-list">
+            @if (lowStockItems.length > 0) {
+
+            <div class="low-stock-list">
 
                 @for (
-                product of lowStockProducts;
-                track product.sku
+                item of lowStockItems;
+                track item.id
                 ) {
 
-                <div class="stock-item">
+                <div class="low-stock-row">
 
-                    <div class="stock-item-header">
+                    <div class="product-icon">
+                        {{ getLowStockIcon(item.status) }}
+                    </div>
 
-                        <div class="stock-product">
+                    <div class="low-stock-product">
 
-                            <strong>
-                                {{ product.name }}
-                            </strong>
+                        <strong>
+                            {{ item.name }}
+                        </strong>
 
-                            <span>
-                                SKU: {{ product.sku }}
-                            </span>
-
-                        </div>
-
-                        <span class="stock-count">
-                            {{ product.currentStock }}
-                            /
-                            {{ product.minimumStock }}
+                        <span class="stock-status" [class]="getStockStatusClass(item.status)">
+                            {{ getStockStatusLabel(item.status) }}
                         </span>
 
                     </div>
 
-                    <div class="stock-bar" role="progressbar" [attr.aria-valuenow]="product.currentStock"
-                        [attr.aria-valuemin]="0" [attr.aria-valuemax]="product.minimumStock"
-                        [attr.aria-label]="product.name + ' stock level'">
-
-                        <div class="stock-progress" [style.width.%]="getStockPercentage(product)"></div>
-
-                    </div>
+                    <strong class="stock-value" [class.out-of-stock]="item.currentStock === 0">
+                        {{ item.currentStock }}
+                    </strong>
 
                 </div>
 
@@ -269,14 +643,30 @@
 
             </div>
 
+            } @else {
+
+            <div class="dashboard-empty-state">
+
+                <strong>
+                    Inventory looks good
+                </strong>
+
+                <span>
+                    No products are currently at or below their minimum stock level.
+                </span>
+
+            </div>
+
+            }
+
         </article>
 
     </section>
 
 
     <!-- =====================================================
-       QUICK ACTIONS
-       ===================================================== -->
+             QUICK ACTIONS
+             ===================================================== -->
 
     <section class="quick-actions-card">
 
@@ -284,11 +674,8 @@
 
             <div class="card-heading">
 
-                <span class="section-icon">
-                    +
-                </span>
-
                 <div>
+
                     <h2>
                         Quick Actions
                     </h2>
@@ -296,6 +683,7 @@
                     <p>
                         Common tasks
                     </p>
+
                 </div>
 
             </div>
@@ -407,5 +795,7 @@
         </div>
 
     </section>
+
+    }
 
 </div>

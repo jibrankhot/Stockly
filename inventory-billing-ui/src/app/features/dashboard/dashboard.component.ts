@@ -1,148 +1,436 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {
+  DatePipe,
+  DecimalPipe
+} from '@angular/common';
 
-interface DashboardStat {
+import {
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
+
+import {
+  RouterLink
+} from '@angular/router';
+
+import {
+  DashboardService,
+  LowStockItem,
+  StockStatuses
+} from './dashboard.service';
+
+
+interface DashboardKpi {
   title: string;
-  value: string;
+  value: number;
+  prefix?: string;
   description: string;
   icon: string;
+  highlighted?: boolean;
 }
 
-interface RecentInvoice {
-  invoiceNumber: string;
-  customerName: string;
-  amount: number;
-  status: 'Paid' | 'Pending' | 'Overdue';
-  date: string;
+
+interface StockStatusView {
+  label: string;
+  value: number;
+  percentage: number;
+  type: 'in-stock' | 'low-stock' | 'out-of-stock';
 }
 
-interface LowStockProduct {
-  name: string;
-  sku: string;
-  currentStock: number;
-  minimumStock: number;
-}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+
   imports: [
+    DatePipe,
     DecimalPipe,
-    RouterLink,
-    DatePipe
+    RouterLink
   ],
+
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
+
+  private readonly dashboardService =
+    inject(DashboardService);
+
+
+  /* =======================================================
+     PAGE STATE
+     ======================================================= */
 
   readonly currentDate = new Date();
 
-  readonly stats: DashboardStat[] = [
-    {
-      title: 'Total Sales',
-      value: '₹245,500',
-      description: 'This month',
-      icon: '₹'
-    },
-    {
-      title: 'Total Purchases',
-      value: '₹128,300',
-      description: 'This month',
-      icon: '▱'
-    },
-    {
-      title: 'Products',
-      value: '1,248',
-      description: 'Active products',
-      icon: '▣'
-    },
-    {
-      title: 'Customers',
-      value: '386',
-      description: 'Active customers',
-      icon: '♙'
-    }
-  ];
+  isLoading = true;
 
-  readonly recentInvoices: RecentInvoice[] = [
-    {
-      invoiceNumber: 'INV-1001',
-      customerName: 'ABC Traders',
-      amount: 12500,
-      status: 'Paid',
-      date: '27 Aug 2026'
-    },
-    {
-      invoiceNumber: 'INV-1002',
-      customerName: 'City Mart',
-      amount: 8750,
-      status: 'Pending',
-      date: '27 Aug 2026'
-    },
-    {
-      invoiceNumber: 'INV-1003',
-      customerName: 'Fresh Foods',
-      amount: 15300,
-      status: 'Paid',
-      date: '26 Aug 2026'
-    },
-    {
-      invoiceNumber: 'INV-1004',
-      customerName: 'Global Stores',
-      amount: 6200,
-      status: 'Overdue',
-      date: '25 Aug 2026'
-    },
-    {
-      invoiceNumber: 'INV-1005',
-      customerName: 'Metro Wholesale',
-      amount: 19800,
-      status: 'Paid',
-      date: '24 Aug 2026'
-    }
-  ];
+  hasError = false;
 
-  readonly lowStockProducts: LowStockProduct[] = [
-    {
-      name: 'Wireless Keyboard',
-      sku: 'KB-001',
-      currentStock: 4,
-      minimumStock: 10
-    },
-    {
-      name: 'USB Type-C Cable',
-      sku: 'CB-014',
-      currentStock: 6,
-      minimumStock: 15
-    },
-    {
-      name: 'Bluetooth Mouse',
-      sku: 'MS-008',
-      currentStock: 3,
-      minimumStock: 10
-    },
-    {
-      name: 'HDMI Cable',
-      sku: 'HD-021',
-      currentStock: 7,
-      minimumStock: 12
-    }
-  ];
 
-  getStatusClass(status: RecentInvoice['status']): string {
-    return status.toLowerCase();
+  /* =======================================================
+     KPI DATA
+     ======================================================= */
+
+  kpis: DashboardKpi[] = [];
+
+
+  /* =======================================================
+     STOCK STATUS
+     ======================================================= */
+
+  stockStatuses: StockStatusView[] = [];
+
+  totalProducts = 0;
+
+  stockDonutBackground =
+    'conic-gradient(#4fc77d 0% 0%, #9de6bd 0% 0%, #ef4444 0% 100%)';
+
+
+  /* =======================================================
+     RECENT SALES
+     ======================================================= */
+
+  recentSales = [] as {
+    id: number;
+    invoiceNumber: string;
+    customerId: number;
+    customerName: string;
+    invoiceDate: string;
+    totalAmount: number;
+    status: string;
+  }[];
+
+
+  /* =======================================================
+     LOW STOCK
+     ======================================================= */
+
+  lowStockItems: LowStockItem[] = [];
+
+
+  /* =======================================================
+     LIFECYCLE
+     ======================================================= */
+
+  ngOnInit(): void {
+    this.loadDashboard();
   }
 
-  getStockPercentage(product: LowStockProduct): number {
-    if (product.minimumStock <= 0) {
-      return 100;
+
+  /* =======================================================
+     LOAD DASHBOARD
+     ======================================================= */
+
+  private loadDashboard(): void {
+
+    this.isLoading = true;
+
+    this.hasError = false;
+
+
+    this.dashboardService
+      .getDashboardSummary()
+      .subscribe({
+
+        next: response => {
+
+          this.recentSales =
+            response.recentSales;
+
+          this.lowStockItems =
+            response.lowStockItems;
+
+          this.totalProducts =
+            response.kpis.totalProducts;
+
+
+          this.buildKpis(
+            response.kpis
+          );
+
+          this.buildStockStatuses(
+            response.stockStatuses
+          );
+
+
+          this.isLoading = false;
+        },
+
+
+        error: error => {
+
+          console.error(
+            'Failed to load dashboard summary:',
+            error
+          );
+
+          this.hasError = true;
+
+          this.isLoading = false;
+        }
+
+      });
+  }
+
+
+  /* =======================================================
+     KPI MAPPING
+     ======================================================= */
+
+  private buildKpis(
+    kpis: {
+      totalSales: number;
+      totalPurchases: number;
+      totalProducts: number;
+      totalCustomers: number;
+    }
+  ): void {
+
+    this.kpis = [
+
+      {
+        title: 'Total Products',
+
+        value: kpis.totalProducts,
+
+        description:
+          'Active products in inventory',
+
+        icon: '▣',
+
+        highlighted: false
+      },
+
+
+      {
+        title: 'Total Sales',
+
+        value: kpis.totalSales,
+
+        prefix: '₹',
+
+        description:
+          'Total invoice sales',
+
+        icon: '₹',
+
+        highlighted: false
+      },
+
+
+      {
+        title: 'Total Purchases',
+
+        value: kpis.totalPurchases,
+
+        prefix: '₹',
+
+        description:
+          'Total purchase orders',
+
+        icon: '▱',
+
+        highlighted: false
+      },
+
+
+      {
+        title: 'Total Customers',
+
+        value: kpis.totalCustomers,
+
+        description:
+          'Active customers',
+
+        icon: '♙',
+
+        highlighted: true
+      }
+
+    ];
+  }
+
+
+  /* =======================================================
+     STOCK STATUS MAPPING
+     ======================================================= */
+
+  private buildStockStatuses(
+    stockStatuses: StockStatuses
+  ): void {
+
+    const total =
+      this.totalProducts;
+
+
+    this.stockStatuses = [
+
+      {
+        label: 'In Stock',
+
+        value:
+          stockStatuses.inStock,
+
+        percentage:
+          this.calculatePercentage(
+            stockStatuses.inStock,
+            total
+          ),
+
+        type: 'in-stock'
+      },
+
+
+      {
+        label: 'Low Stock',
+
+        value:
+          stockStatuses.lowStock,
+
+        percentage:
+          this.calculatePercentage(
+            stockStatuses.lowStock,
+            total
+          ),
+
+        type: 'low-stock'
+      },
+
+
+      {
+        label: 'Out of Stock',
+
+        value:
+          stockStatuses.outOfStock,
+
+        percentage:
+          this.calculatePercentage(
+            stockStatuses.outOfStock,
+            total
+          ),
+
+        type: 'out-of-stock'
+      }
+
+    ];
+
+
+    this.buildStockDonut(
+      stockStatuses
+    );
+  }
+
+
+  /* =======================================================
+     STOCK DONUT
+     ======================================================= */
+
+  private buildStockDonut(
+    stockStatuses: StockStatuses
+  ): void {
+
+    const total =
+      stockStatuses.inStock +
+      stockStatuses.lowStock +
+      stockStatuses.outOfStock;
+
+
+    if (total <= 0) {
+
+      this.stockDonutBackground =
+        'conic-gradient(#e2e8f0 0% 100%)';
+
+      return;
     }
 
-    const percentage =
-      (product.currentStock / product.minimumStock) * 100;
 
-    return Math.min(percentage, 100);
+    const inStockPercentage =
+      (stockStatuses.inStock / total) * 100;
+
+
+    const lowStockPercentage =
+      (stockStatuses.lowStock / total) * 100;
+
+
+    const lowStockEnd =
+      inStockPercentage +
+      lowStockPercentage;
+
+
+    this.stockDonutBackground = `
+      conic-gradient(
+        #4fc77d 0% ${inStockPercentage}%,
+        #9de6bd ${inStockPercentage}% ${lowStockEnd}%,
+        #ef4444 ${lowStockEnd}% 100%
+      )
+    `;
+  }
+
+
+  /* =======================================================
+     HELPERS
+     ======================================================= */
+
+  private calculatePercentage(
+    value: number,
+    total: number
+  ): number {
+
+    if (total <= 0) {
+      return 0;
+    }
+
+
+    return Math.round(
+      (value / total) * 100
+    );
+  }
+
+
+  getStatusClass(
+    status: string
+  ): string {
+
+    return status
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+  }
+
+
+  getStockStatusClass(
+    status: LowStockItem['status']
+  ): string {
+
+    return status;
+  }
+
+
+  getStockStatusLabel(
+    status: LowStockItem['status']
+  ): string {
+
+    return status === 'out-of-stock'
+      ? 'Out of Stock'
+      : 'Low Stock';
+  }
+
+
+  getLowStockIcon(
+    status: LowStockItem['status']
+  ): string {
+
+    return status === 'out-of-stock'
+      ? '▣'
+      : '●';
+  }
+
+
+  /* =======================================================
+     RETRY
+     ======================================================= */
+
+  retry(): void {
+    this.loadDashboard();
   }
 }

@@ -14,10 +14,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-
   gap: var(--space-6);
-
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .page-heading {
@@ -26,68 +24,47 @@
 
 .eyebrow {
   display: block;
-
-  margin-bottom: var(--space-1);
-
+  margin-bottom: 5px;
   color: var(--color-primary-700);
-
-  font-size: 11px;
-  font-weight: 700;
-
+  font-size: 10px;
+  font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .page-header h1 {
   margin: 0;
-
   color: var(--color-text-primary);
-
-  font-size: 28px;
+  font-size: 27px;
   font-weight: 750;
-
   line-height: 1.2;
-
   letter-spacing: -0.025em;
 }
 
 .page-header p {
-  margin: var(--space-2) 0 0;
-
-  color: var(--color-text-secondary);
-
-  font-size: 14px;
-
-  line-height: 1.5;
+  margin: 5px 0 0;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 /* =========================================================
-   DATE
+   DATE META
    ========================================================= */
 
 .header-date {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-
-  gap: var(--space-3);
+  gap: 9px;
 
   flex-shrink: 0;
 
-  padding: 10px 14px;
-
-  border: 1px solid #cbd5e1;
-
-  border-radius: var(--radius-md);
-
-  background: var(--color-surface);
-
-  box-shadow:
-    0 2px 6px rgba(15, 23, 42, 0.04);
+  padding: 5px 0;
 }
 
 .date-icon {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
 
   display: flex;
   align-items: center;
@@ -95,46 +72,47 @@
 
   flex-shrink: 0;
 
-  border: 1px solid var(--color-primary-100);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
 
-  border-radius: var(--radius-sm);
-
-  background: var(--color-primary-50);
-
+  background: #ffffff;
   color: var(--color-primary-700);
 
-  font-size: 17px;
+  font-size: 14px;
 }
 
 .header-date > div {
   display: flex;
   flex-direction: column;
-
-  gap: 2px;
+  gap: 1px;
 }
 
 .date-label {
-  color: var(--color-text-muted);
+  color: #334155;
 
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
 
+  line-height: 1.2;
+
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .header-date strong {
-  color: var(--color-text-primary);
+  color: #0f172a;
 
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
+
+  line-height: 1.25;
 }
 
 /* =========================================================
-   STATISTICS
+   KPI GRID
    ========================================================= */
 
-.stats-grid {
+.kpi-grid {
   display: grid;
 
   grid-template-columns:
@@ -142,31 +120,29 @@
 
   gap: var(--space-4);
 
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
-.stat-card {
+/* =========================================================
+   KPI CARD
+   ========================================================= */
+
+.kpi-card {
+  position: relative;
+
   min-width: 0;
+  overflow: hidden;
 
-  display: flex;
-  align-items: flex-start;
+  padding: var(--space-4);
 
-  gap: var(--space-4);
-
-  padding: var(--space-5);
-
-  /*
-   * Clearly visible boundary around every KPI card.
-   */
-  border: 1px solid #bcc9d6;
-
+  border: 1px solid #c7d3df;
   border-radius: var(--radius-lg);
 
   background: var(--color-surface);
 
   box-shadow:
-    0 2px 7px rgba(15, 23, 42, 0.05),
-    0 1px 2px rgba(15, 23, 42, 0.04);
+    0 2px 7px rgba(15, 23, 42, 0.045),
+    0 1px 2px rgba(15, 23, 42, 0.035);
 
   opacity: 0;
 
@@ -182,18 +158,80 @@
     transform var(--duration-fast) var(--ease-standard);
 }
 
-.stat-card:hover {
-  border-color: #aebdcb;
+.kpi-card:hover {
+  border-color: var(--color-primary-200);
 
   box-shadow:
-    0 5px 14px rgba(15, 23, 42, 0.08);
+    0 6px 16px rgba(15, 23, 42, 0.07);
 
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-.stat-icon {
-  width: 44px;
-  height: 44px;
+.kpi-card:nth-child(1) {
+  animation-delay: 40ms;
+}
+
+.kpi-card:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.kpi-card:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.kpi-card:nth-child(4) {
+  animation-delay: 160ms;
+}
+
+/* =========================================================
+   KPI HIGHLIGHT
+   ========================================================= */
+
+.kpi-card-highlighted {
+  border-color: #a9cdbf;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f3fbf6 100%
+    );
+
+  box-shadow:
+    0 3px 10px rgba(22, 163, 74, 0.08);
+}
+
+.kpi-card-highlighted::after {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: #4d9f3b;
+}
+
+/* =========================================================
+   KPI CONTENT
+   ========================================================= */
+
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--space-3);
+
+  margin-bottom: 10px;
+}
+
+.kpi-icon {
+  width: 36px;
+  height: 36px;
 
   display: flex;
   align-items: center;
@@ -201,47 +239,49 @@
 
   flex-shrink: 0;
 
-  border: 1px solid var(--color-primary-100);
+  border: 1px solid #d5ebd0;
+  border-radius: var(--radius-sm);
 
-  border-radius: var(--radius-md);
+  background: #f1f9ef;
+  color: #4d9f3b;
 
-  background: var(--color-primary-50);
-
-  color: var(--color-primary-700);
-
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 750;
-
-  transition:
-    transform var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.stat-card:hover .stat-icon {
-  transform: translateY(-2px);
+.kpi-trend {
+  display: inline-flex;
+  align-items: center;
 
-  box-shadow:
-    0 5px 12px rgba(15, 118, 110, 0.14);
+  padding: 3px 6px;
+
+  border-radius: 999px;
+
+  background: #eaf8ee;
+  color: #2f8f46;
+
+  font-size: 9px;
+  font-weight: 700;
 }
 
-.stat-content {
-  min-width: 0;
-
+.kpi-content {
   display: flex;
   flex-direction: column;
+
+  min-width: 0;
 }
 
-.stat-title {
-  color: var(--color-text-muted);
+.kpi-title {
+  color: #334155;
 
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 10px;
+  font-weight: 600;
 
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
-.stat-value {
-  margin-top: 4px;
+.kpi-value {
+  margin-top: 3px;
 
   overflow: hidden;
 
@@ -258,52 +298,59 @@
   white-space: nowrap;
 }
 
-.stat-description {
+.kpi-description {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
   margin-top: 4px;
 
-  color: var(--color-text-muted);
+  color: #334155;
+
+  font-size: 9px;
+}
+
+.trend-arrow {
+  color: #3b9448;
 
   font-size: 11px;
+  font-weight: 700;
 }
 
 /* =========================================================
-   MAIN DASHBOARD GRID
+   ANALYTICS GRID
    ========================================================= */
 
-.dashboard-grid {
+.analytics-grid {
   display: grid;
 
   grid-template-columns:
-    minmax(0, 1.7fr)
-    minmax(300px, 1fr);
+    minmax(0, 1.65fr)
+    minmax(300px, 0.85fr);
 
-  gap: var(--space-6);
+  gap: var(--space-5);
 
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 /* =========================================================
-   MAJOR SECTION CARDS
+   COMMON CARD
    ========================================================= */
 
 .dashboard-card,
 .quick-actions-card {
   min-width: 0;
-
   overflow: hidden;
 
-  /*
-   * Same visual weight as KPI cards.
-   */
-  border: 1px solid #bcc9d6;
-
+  border: 1px solid #c4cfdb;
   border-radius: var(--radius-lg);
 
   background: var(--color-surface);
 
   box-shadow:
-    0 2px 7px rgba(15, 23, 42, 0.05),
-    0 1px 2px rgba(15, 23, 42, 0.04);
+    0 2px 8px rgba(15, 23, 42, 0.055),
+    0 1px 2px rgba(15, 23, 42, 0.045);
 
   transition:
     border-color var(--duration-fast) var(--ease-standard),
@@ -312,10 +359,10 @@
 
 .dashboard-card:hover,
 .quick-actions-card:hover {
-  border-color: #aebdcb;
+  border-color: #b4c4d1;
 
   box-shadow:
-    0 4px 12px rgba(15, 23, 42, 0.07);
+    0 5px 14px rgba(15, 23, 42, 0.065);
 }
 
 /* =========================================================
@@ -329,9 +376,11 @@
 
   gap: var(--space-4);
 
-  padding: var(--space-5);
+  min-height: 62px;
 
-  border-bottom: 1px solid #cbd5df;
+  padding: 13px 16px;
+
+  border-bottom: 1px solid #d4dde7;
 
   background: #f8fafc;
 }
@@ -342,10 +391,166 @@
   display: flex;
   align-items: center;
 
-  gap: var(--space-3);
+  gap: 10px;
 }
 
-.section-icon {
+.card-heading h2 {
+  margin: 0;
+
+  color: var(--color-text-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  line-height: 1.3;
+}
+
+.card-heading p {
+  margin: 3px 0 0;
+
+  color: #334155;
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   VIEW ALL
+   ========================================================= */
+
+.view-all {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 4px;
+
+  min-height: 30px;
+
+  flex-shrink: 0;
+
+  padding: 5px 7px;
+
+  border-radius: 6px;
+
+  color: #3d963f;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    gap var(--duration-fast) var(--ease-standard);
+}
+
+.view-all:hover {
+  color: var(--color-primary-800);
+
+  background: var(--color-primary-50);
+
+  gap: 7px;
+}
+
+
+/* =========================================================
+   BUSINESS ACTIVITY
+   ========================================================= */
+
+.business-activity-card {
+  min-height: 300px;
+}
+
+/* =========================================================
+   ACTIVITY LIST
+   ========================================================= */
+
+.business-activity-list {
+  display: flex;
+  flex-direction: column;
+
+  padding: 6px 16px 10px;
+}
+
+/* =========================================================
+   ACTIVITY ROW
+   ========================================================= */
+
+.business-activity-item {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+
+  gap: 12px;
+
+  margin: 2px 0;
+  padding: 11px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: inherit;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  outline: none !important;
+  box-shadow: none !important;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+/* =========================================================
+   ACTIVITY HOVER
+   ========================================================= */
+
+.business-activity-item:hover {
+  background: #f0fdf4;
+
+  border-color: #86efac;
+
+  box-shadow:
+    0 3px 8px rgba(22, 163, 74, 0.10);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   FOCUS / CLICK STATE
+   ========================================================= */
+
+.business-activity-item:focus,
+.business-activity-item:focus-visible,
+.business-activity-item:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.business-activity-item,
+.business-activity-item:hover,
+.business-activity-item:focus,
+.business-activity-item:focus-visible,
+.business-activity-item:active {
+  outline-offset: 0 !important;
+}
+
+/* =========================================================
+   ACTIVITY ICON
+   ========================================================= */
+
+.business-activity-icon {
   width: 34px;
   height: 34px;
 
@@ -355,119 +560,480 @@
 
   flex-shrink: 0;
 
-  border: 1px solid var(--color-primary-100);
+  border: 1px solid #d5dee7;
+  border-radius: 8px;
 
-  border-radius: var(--radius-sm);
+  background: #f8fafc;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+/* =========================================================
+   OUT OF STOCK
+   ========================================================= */
+
+.business-activity-item.danger .business-activity-icon {
+  border-color: #fecaca;
+
+  background: #fff1f2;
+
+  color: #dc2626;
+}
+
+.business-activity-item.danger:hover {
+  background: #fff7f7;
+  border-color: #fca5a5;
+}
+
+.business-activity-item.danger:hover .business-activity-icon {
+  border-color: #fca5a5;
+  background: #fee2e2;
+}
+
+/* =========================================================
+   LOW STOCK
+   ========================================================= */
+
+.business-activity-item.alert .business-activity-icon {
+  border-color: #fde2b5;
+
+  background: #fff8eb;
+
+  color: #d97706;
+}
+
+.business-activity-item.alert:hover {
+  background: #fffdf5;
+  border-color: #f6c76d;
+}
+
+.business-activity-item.alert:hover .business-activity-icon {
+  border-color: #f6c76d;
+  background: #ffedd5;
+}
+
+/* =========================================================
+   INVOICE / PAYMENT
+   ========================================================= */
+
+.business-activity-item.invoice .business-activity-icon {
+  border-color: #c7e8df;
+
+  background: #f0fdfa;
+
+  color: var(--color-primary-700);
+}
+
+.business-activity-item.invoice:hover {
+  background: #f0fdfa;
+  border-color: #7dd3c7;
+}
+
+.business-activity-item.invoice:hover .business-activity-icon {
+  border-color: #5eead4;
+  background: #ccfbf1;
+}
+
+/* =========================================================
+   ACTIVITY CONTENT
+   ========================================================= */
+
+.business-activity-item-content {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 3px;
+}
+
+.business-activity-title {
+  overflow: hidden;
+
+  color: var(--color-text-primary);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.business-activity-description {
+  overflow: hidden;
+
+  color: #334155;
+
+  font-size: 9px;
+
+  line-height: 1.4;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   ACTIVITY ARROW
+   ========================================================= */
+
+.business-activity-arrow {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 5px;
+
+  color: #475569;
+
+  font-size: 13px;
+
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.business-activity-item:hover .business-activity-arrow {
+  color: var(--color-primary-700);
 
   background: var(--color-primary-50);
+
+  transform: translateX(3px);
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.business-activity-empty {
+  min-height: 220px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 24px;
+
+  text-align: center;
+}
+
+.business-activity-empty-icon {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 3px;
+
+  border: 1px solid #c7e8dc;
+  border-radius: 50%;
+
+  background: #f0fdfa;
 
   color: var(--color-primary-700);
 
   font-size: 14px;
-  font-weight: 750;
 }
 
-.warning-icon {
-  border-color: #fde68a;
-
-  background: var(--color-warning-light);
-
-  color: var(--color-warning);
-}
-
-.card-heading h2 {
-  margin: 0;
-
+.business-activity-empty strong {
   color: var(--color-text-primary);
 
-  font-size: 15px;
-  font-weight: 700;
-
-  line-height: 1.3;
-}
-
-.card-heading p {
-  margin: 3px 0 0;
-
-  color: var(--color-text-muted);
-
   font-size: 11px;
-
-  line-height: 1.4;
+  font-weight: 700;
 }
 
-.view-all {
-  display: inline-flex;
-  align-items: center;
+.business-activity-empty span {
+  max-width: 280px;
 
-  gap: 5px;
+  color: #334155;
 
-  flex-shrink: 0;
+  font-size: 9px;
 
-  color: var(--color-primary-700);
-
-  font-size: 12px;
-  font-weight: 650;
-
-  text-decoration: none;
-
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    gap var(--duration-fast) var(--ease-standard);
-}
-
-.view-all:hover {
-  color: var(--color-primary-800);
-
-  gap: 7px;
+  line-height: 1.5;
 }
 
 /* =========================================================
-   INVOICE TABLE
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .business-activity-list {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .business-activity-item {
+    gap: 10px;
+
+    padding: 11px 10px;
+  }
+
+  .business-activity-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 479px) {
+  .business-activity-list {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .business-activity-item {
+    gap: 9px;
+
+    padding: 10px 9px;
+  }
+
+  .business-activity-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .business-activity-title {
+    font-size: 10px;
+  }
+
+  .business-activity-description {
+    font-size: 8px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .business-activity-item,
+  .business-activity-icon,
+  .business-activity-arrow {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   STOCK STATUS
+   ========================================================= */
+
+.stock-status-content {
+  min-height: 238px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 24px;
+
+  padding: 18px;
+}
+
+.stock-donut-wrapper {
+  flex-shrink: 0;
+}
+
+.stock-donut {
+  position: relative;
+
+  width: 132px;
+  height: 132px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  animation:
+    stockly-scale-in
+    500ms
+    var(--ease-emphasized)
+    both;
+}
+
+.stock-donut::before {
+  content: '';
+
+  position: absolute;
+
+  width: 98px;
+  height: 98px;
+
+  border-radius: 50%;
+
+  background: var(--color-surface);
+}
+
+.stock-donut-center {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+}
+
+.stock-donut-center strong {
+  color: var(--color-text-primary);
+
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.stock-donut-center span {
+  margin-top: 2px;
+
+  color: #334155;
+
+  font-size: 8px;
+}
+
+.stock-status-list {
+  flex: 1;
+  min-width: 120px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+.stock-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.stock-status-label {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #334155;
+
+  font-size: 10px;
+}
+
+.stock-status-row strong {
+  color: var(--color-text-primary);
+
+  font-size: 10px;
+}
+
+.stock-status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.stock-status-dot.in-stock {
+  background: #45bd70;
+}
+
+.stock-status-dot.low-stock {
+  background: #8be1ad;
+}
+
+.stock-status-dot.out-of-stock {
+  background: #ef4444;
+}
+
+/* =========================================================
+   RECENT SALES / LOW STOCK
+   ========================================================= */
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(300px, 0.85fr);
+
+  gap: var(--space-5);
+
+  margin-bottom: var(--space-5);
+}
+
+/* =========================================================
+   TABLE
    ========================================================= */
 
 .table-wrapper {
   width: 100%;
-
   overflow-x: auto;
 }
 
 table {
   width: 100%;
+  min-width: 560px;
 
   border-collapse: collapse;
 
-  font-size: 13px;
+  font-size: 11px;
 }
 
 thead {
-  background: #eef2f6;
+  background: #eef2f5;
 
-  border-bottom: 1px solid #cbd5df;
+  border-bottom: 1px solid #d4dde7;
 }
 
 th {
-  padding: 11px var(--space-4);
+  padding: 9px 12px;
 
-  color: var(--color-text-muted);
+  color: #334155;
 
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 700;
 
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 
   text-align: left;
+  text-transform: uppercase;
 
   white-space: nowrap;
 }
 
 td {
-  padding: 13px var(--space-4);
+  padding: 11px 12px;
 
-  border-top: 1px solid #e1e7ed;
+  border-top: 1px solid #dbe3eb;
 
-  color: var(--color-text-secondary);
+  color: #334155;
 
   white-space: nowrap;
 }
@@ -478,27 +1044,25 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: var(--color-surface-muted);
+  background: #f8fafc;
 }
 
 .invoice-number {
-  color: var(--color-primary-700);
-
-  font-weight: 650;
+  color: #4d9f3b;
+  font-weight: 700;
 }
 
 .amount {
   color: var(--color-text-primary);
-
   font-weight: 650;
 }
 
-.date {
-  color: var(--color-text-muted);
+.sale-date {
+  color: #334155;
 }
 
 /* =========================================================
-   STATUS
+   STATUS BADGES
    ========================================================= */
 
 .status-badge {
@@ -507,12 +1071,12 @@ tbody tr:hover {
 
   gap: 5px;
 
-  padding: 4px 8px;
+  padding: 4px 7px;
 
   border-radius: 999px;
 
-  font-size: 10px;
-  font-weight: 650;
+  font-size: 8px;
+  font-weight: 700;
 
   line-height: 1.2;
 }
@@ -527,51 +1091,64 @@ tbody tr:hover {
 }
 
 .status-badge.paid {
-  background: var(--color-success-light);
-
-  color: var(--color-success);
+  background: #eaf8ee;
+  color: #24964a;
 }
 
 .status-badge.pending {
-  background: var(--color-warning-light);
-
-  color: var(--color-warning);
+  background: #fff7df;
+  color: #db8a00;
 }
 
-.status-badge.overdue {
-  background: var(--color-danger-light);
-
-  color: var(--color-danger);
+.status-badge.cancelled {
+  background: #ffecef;
+  color: #dc3545;
 }
 
 /* =========================================================
    LOW STOCK
    ========================================================= */
 
-.stock-list {
-  padding: 4px var(--space-5) var(--space-3);
+.low-stock-list {
+  padding: 4px 16px 8px;
 }
 
-.stock-item {
-  padding: 14px 0;
-
-  border-bottom: 1px solid #e1e7ed;
-}
-
-.stock-item:last-child {
-  border-bottom: 0;
-}
-
-.stock-item-header {
+.low-stock-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
-  gap: var(--space-3);
+  gap: 10px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #dbe3eb;
 }
 
-.stock-product {
+.low-stock-row:last-child {
+  border-bottom-color: transparent;
+}
+
+.product-icon {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 7px;
+
+  background: #f1f3f4;
+  color: #334155;
+
+  font-size: 10px;
+}
+
+.low-stock-product {
   min-width: 0;
+  flex: 1;
 
   display: flex;
   flex-direction: column;
@@ -579,63 +1156,44 @@ tbody tr:hover {
   gap: 3px;
 }
 
-.stock-product strong {
+.low-stock-product strong {
   overflow: hidden;
 
   color: var(--color-text-primary);
 
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 650;
-
-  line-height: 1.4;
 
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.stock-product span {
-  color: var(--color-text-muted);
+.stock-status {
+  width: fit-content;
 
-  font-size: 10px;
-}
-
-.stock-count {
-  flex-shrink: 0;
-
-  color: var(--color-danger);
-
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.stock-bar {
-  height: 6px;
-
-  margin-top: 9px;
-
-  overflow: hidden;
+  padding: 2px 6px;
 
   border-radius: 999px;
 
-  background: var(--color-surface-muted);
+  font-size: 7px;
+  font-weight: 700;
 }
 
-.stock-progress {
-  height: 100%;
+.stock-status.low-stock {
+  background: #fff2d9;
+  color: #d98a00;
+}
 
-  min-width: 5px;
+.stock-status.out-of-stock {
+  background: #ffe8eb;
+  color: #dc3545;
+}
 
-  border-radius: inherit;
+.stock-value {
+  color: #ef4444;
 
-  background:
-    linear-gradient(
-      90deg,
-      var(--color-danger),
-      #ef4444
-    );
-
-  transition:
-    width 500ms var(--ease-emphasized);
+  font-size: 12px;
+  font-weight: 750;
 }
 
 /* =========================================================
@@ -643,7 +1201,7 @@ tbody tr:hover {
    ========================================================= */
 
 .quick-actions-card {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .quick-actions {
@@ -652,34 +1210,33 @@ tbody tr:hover {
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
 
-  gap: var(--space-3);
+  gap: 12px;
 
-  padding: var(--space-5);
+  padding: 14px 16px;
 }
 
 .quick-action {
-  position: relative;
-
   display: flex;
   align-items: center;
 
-  gap: var(--space-3);
+  gap: 10px;
 
   min-width: 0;
+  min-height: 66px;
 
-  padding: 14px;
+  padding: 13px 14px;
 
-  border: 1px solid #d1dae3;
-
+  border: 1px solid #cbd5e1;
   border-radius: var(--radius-md);
 
-  background: var(--color-surface);
+  background: #ffffff;
 
   color: var(--color-text-primary);
 
   text-decoration: none;
 
-  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.025);
 
   transition:
     background var(--duration-fast) var(--ease-standard),
@@ -689,11 +1246,13 @@ tbody tr:hover {
 }
 
 .quick-action:hover {
-  border-color: var(--color-primary-200);
+  border-color: var(--color-primary-300);
 
-  background: var(--color-primary-50);
+  background: #f8fffd;
 
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.08),
+    0 1px 3px rgba(15, 23, 42, 0.05);
 
   transform: translateY(-2px);
 }
@@ -702,17 +1261,9 @@ tbody tr:hover {
   transform: translateY(0);
 }
 
-.quick-action:focus-visible {
-  outline: none;
-
-  border-color: var(--color-primary-500);
-
-  box-shadow: var(--shadow-focus);
-}
-
 .quick-action-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
 
   display: flex;
   align-items: center;
@@ -720,14 +1271,16 @@ tbody tr:hover {
 
   flex-shrink: 0;
 
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-primary-600);
+  border-radius: 9px;
 
   background: var(--color-primary-700);
-
   color: #ffffff;
 
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 17px;
+
+  box-shadow:
+    0 2px 5px rgba(15, 118, 110, 0.12);
 
   transition:
     transform var(--duration-fast) var(--ease-standard),
@@ -735,7 +1288,7 @@ tbody tr:hover {
 }
 
 .quick-action:hover .quick-action-icon {
-  transform: scale(1.05);
+  transform: scale(1.06);
 
   box-shadow:
     0 5px 12px rgba(15, 118, 110, 0.18);
@@ -743,13 +1296,12 @@ tbody tr:hover {
 
 .quick-action-content {
   min-width: 0;
-
   flex: 1;
 
   display: flex;
   flex-direction: column;
 
-  gap: 3px;
+  gap: 2px;
 }
 
 .quick-action strong {
@@ -757,7 +1309,7 @@ tbody tr:hover {
 
   color: var(--color-text-primary);
 
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 650;
 
   text-overflow: ellipsis;
@@ -767,81 +1319,229 @@ tbody tr:hover {
 .quick-action small {
   overflow: hidden;
 
-  color: var(--color-text-muted);
+  color: #334155;
 
-  font-size: 10px;
+  font-size: 8px;
 
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .quick-action-arrow {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   flex-shrink: 0;
 
-  color: var(--color-text-muted);
+  border-radius: 6px;
 
-  font-size: 15px;
+  color: #334155;
 
   transition:
     color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard);
 }
 
 .quick-action:hover .quick-action-arrow {
   color: var(--color-primary-700);
 
-  transform: translateX(2px);
+  background: var(--color-primary-50);
+
+  transform: translateX(3px);
 }
 
 /* =========================================================
-   TABLET / SMALL LAPTOP
+   LOADING / ERROR / EMPTY
    ========================================================= */
 
-@media (max-width: 1100px) {
+.dashboard-loading,
+.dashboard-error,
+.dashboard-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .stats-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
+.dashboard-loading {
+  min-height: 180px;
 
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+  gap: 14px;
 
-  .quick-actions {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
+  padding: 24px;
+
+  border: 1px solid #c7d3df;
+  border-radius: var(--radius-lg);
+
+  background: var(--color-surface);
+
+  box-shadow:
+    0 2px 7px rgba(15, 23, 42, 0.045),
+    0 1px 2px rgba(15, 23, 42, 0.035);
+}
+
+.dashboard-loading > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dashboard-loading strong {
+  color: var(--color-text-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dashboard-loading span {
+  color: #334155;
+  font-size: 10px;
+}
+
+.dashboard-loading-spinner {
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  border: 3px solid var(--color-primary-100);
+  border-top-color: var(--color-primary-700);
+
+  border-radius: 50%;
+
+  animation: stockly-spin 700ms linear infinite;
+}
+
+.dashboard-error {
+  min-height: 110px;
+
+  gap: 14px;
+
+  padding: 20px;
+
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-lg);
+
+  background: #fffafa;
+}
+
+.dashboard-error-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #fee2e2;
+  color: #dc2626;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.dashboard-error-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.dashboard-error-content strong {
+  color: var(--color-text-primary);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-error-content span {
+  color: #334155;
+  font-size: 10px;
+}
+
+.dashboard-retry-button {
+  flex-shrink: 0;
+
+  padding: 7px 12px;
+
+  border: 1px solid var(--color-primary-600);
+  border-radius: var(--radius-sm);
+
+  background: var(--color-primary-600);
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.dashboard-retry-button:hover {
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+
+  transform: translateY(-1px);
+}
+
+.dashboard-empty-state {
+  min-height: 130px;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+.dashboard-empty-state strong {
+  color: var(--color-text-primary);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dashboard-empty-state span {
+  max-width: 320px;
+
+  color: #334155;
+
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 /* =========================================================
    TABLET
    ========================================================= */
 
-@media (max-width: 767px) {
-
-  .page-header {
-    align-items: flex-start;
-
-    flex-direction: column;
+@media (max-width: 1100px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .header-date {
-    display: none;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-
-    gap: var(--space-3);
-  }
-
+  .analytics-grid,
   .dashboard-grid {
-    gap: var(--space-4);
+    grid-template-columns: 1fr;
   }
 
   .quick-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -849,54 +1549,146 @@ tbody tr:hover {
    MOBILE
    ========================================================= */
 
-@media (max-width: 479px) {
+@media (max-width: 767px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: var(--space-4);
+  }
 
   .page-header h1 {
-    font-size: 23px;
+    font-size: 24px;
   }
 
   .page-header p {
-    font-size: 13px;
+    font-size: 12px;
   }
 
-  .stat-card {
-    padding: var(--space-4);
+  .header-date {
+    display: none;
   }
 
-  .stat-value {
-    font-size: 19px;
+  .kpi-grid {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+    margin-bottom: var(--space-4);
   }
 
-  .card-header {
-    padding: var(--space-4);
+  .kpi-card {
+    padding: 14px;
   }
 
-  .card-heading {
-    gap: var(--space-2);
+  .analytics-grid,
+  .dashboard-grid {
+    gap: var(--space-4);
+
+    margin-bottom: var(--space-4);
   }
 
-  .section-icon {
+  .business-activity-list {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .business-activity-item {
+    gap: 10px;
+    padding: 12px 0;
+  }
+
+  .business-activity-icon {
     width: 32px;
     height: 32px;
   }
 
-  .view-all {
-    font-size: 11px;
+  .stock-status-content {
+    min-height: 190px;
+
+    padding: 16px;
+
+    gap: 18px;
   }
 
-  .stock-list {
-    padding-left: var(--space-4);
-    padding-right: var(--space-4);
+  .stock-donut {
+    width: 112px;
+    height: 112px;
   }
 
-  th,
-  td {
+  .stock-donut::before {
+    width: 82px;
+    height: 82px;
+  }
+
+  .stock-status-list {
+    gap: 11px;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+
+    padding: 12px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 479px) {
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .kpi-value {
+    font-size: 19px;
+  }
+
+  .card-header {
+    padding: 12px;
+  }
+
+  .business-activity-list {
     padding-left: 12px;
     padding-right: 12px;
   }
 
-  .quick-actions {
-    padding: var(--space-4);
+  .business-activity-item {
+    gap: 9px;
+  }
+
+  .business-activity-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .business-activity-title {
+    font-size: 10px;
+  }
+
+  .business-activity-description {
+    font-size: 8px;
+  }
+
+  .stock-status-content {
+    flex-direction: column;
+  }
+
+  .stock-status-list {
+    width: 100%;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
@@ -905,22 +1697,416 @@ tbody tr:hover {
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
-  .stat-card {
+  .kpi-card,
+  .stock-donut {
     opacity: 1;
-
     animation: none;
   }
 
-  .stat-card,
+  .kpi-card,
   .dashboard-card,
   .quick-actions-card,
-  .stat-icon,
-  .view-all,
-  .stock-progress,
   .quick-action,
   .quick-action-icon,
-  .quick-action-arrow {
+  .quick-action-arrow,
+  .business-activity-item,
+  .business-activity-arrow,
+  .view-all {
     transition: none;
+  }
+
+  .dashboard-loading-spinner {
+    animation: none;
+  }
+} 
+
+/* =========================================================
+   STOCKLY DASHBOARD
+   DESKTOP TYPOGRAPHY + CONTRAST OVERRIDE
+   Paste this at the VERY BOTTOM of dashboard.component.scss
+   ========================================================= */
+
+@media (min-width: 768px) {
+
+  /* =======================================================
+     GLOBAL DASHBOARD SECONDARY TEXT
+     ======================================================= */
+
+  .dashboard .page-header p {
+    color: #334155;
+    font-size: 14px;
+  }
+
+  .dashboard .date-label {
+    color: #334155;
+    font-size: 11px;
+  }
+
+  .dashboard .header-date strong {
+    color: #0f172a;
+    font-size: 13px;
+  }
+
+
+  /* =======================================================
+     KPI CARDS
+     ======================================================= */
+
+  .dashboard .kpi-title {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dashboard .kpi-description {
+    color: #334155;
+    font-size: 11px;
+  }
+
+  .dashboard .kpi-value {
+    font-size: 22px;
+  }
+
+
+  /* =======================================================
+     CARD HEADERS
+     ======================================================= */
+
+  .dashboard .card-heading h2 {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .dashboard .card-heading p {
+    color: #334155;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .dashboard .view-all {
+    color: #2f8f35;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+
+  /* =======================================================
+     BUSINESS ACTIVITY
+     ======================================================= */
+
+  .dashboard .business-activity-icon {
+    color: #334155;
+    font-size: 13px;
+  }
+
+  .dashboard .business-activity-title {
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .dashboard .business-activity-description {
+    color: #334155;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .dashboard .business-activity-arrow {
+    color: #334155;
+    font-size: 15px;
+  }
+
+  .dashboard .business-activity-empty strong {
+    color: #0f172a;
+    font-size: 13px;
+  }
+
+  .dashboard .business-activity-empty span {
+    color: #334155;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+
+  /* =======================================================
+     STOCK STATUS
+     ======================================================= */
+
+  .dashboard .stock-donut-center strong {
+    color: #0f172a;
+    font-size: 20px;
+  }
+
+  .dashboard .stock-donut-center span {
+    color: #334155;
+    font-size: 10px;
+  }
+
+  .dashboard .stock-status-label {
+    color: #334155;
+    font-size: 12px;
+  }
+
+  .dashboard .stock-status-row strong {
+    color: #0f172a;
+    font-size: 12px;
+  }
+
+
+  /* =======================================================
+     RECENT SALES TABLE
+     ======================================================= */
+
+  .dashboard table {
+    font-size: 12px;
+  }
+
+  .dashboard th {
+    color: #334155;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .dashboard td {
+    color: #334155;
+    font-size: 12px;
+  }
+
+  .dashboard .invoice-number {
+    color: #3f9638;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .dashboard .amount {
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .dashboard .sale-date {
+    color: #334155;
+    font-size: 12px;
+  }
+
+  .dashboard .status-badge {
+    font-size: 9px;
+  }
+
+
+  /* =======================================================
+     LOW STOCK ITEMS
+     ======================================================= */
+
+  .dashboard .product-icon {
+    color: #334155;
+    font-size: 11px;
+  }
+
+  .dashboard .low-stock-product strong {
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .dashboard .stock-status {
+    font-size: 8px;
+  }
+
+  .dashboard .stock-value {
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+
+  /* =======================================================
+     QUICK ACTIONS
+     ======================================================= */
+
+  .dashboard .quick-action strong {
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .dashboard .quick-action small {
+    color: #334155;
+    font-size: 10px;
+  }
+
+  .dashboard .quick-action-arrow {
+    color: #334155;
+    font-size: 15px;
+  }
+
+
+  /* =======================================================
+     LOADING STATE
+     ======================================================= */
+
+  .dashboard .dashboard-loading strong {
+    color: #0f172a;
+    font-size: 14px;
+  }
+
+  .dashboard .dashboard-loading span {
+    color: #334155;
+    font-size: 11px;
+  }
+
+
+  /* =======================================================
+     ERROR STATE
+     ======================================================= */
+
+  .dashboard .dashboard-error-content strong {
+    color: #0f172a;
+    font-size: 13px;
+  }
+
+  .dashboard .dashboard-error-content span {
+    color: #334155;
+    font-size: 11px;
+  }
+
+  .dashboard .dashboard-retry-button {
+    font-size: 11px;
+  }
+
+
+  /* =======================================================
+     EMPTY STATES
+     ======================================================= */
+
+  .dashboard .dashboard-empty-state strong {
+    color: #0f172a;
+    font-size: 12px;
+  }
+
+  .dashboard .dashboard-empty-state span {
+    color: #334155;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+
+  /* =======================================================
+     GENERAL DASHBOARD SECONDARY TEXT
+     ======================================================= */
+
+  .dashboard .text-muted,
+  .dashboard .text-secondary {
+    color: #334155 !important;
+  }
+}
+
+
+/* =========================================================
+   EXTRA LARGE DESKTOP
+   Give the dashboard a little more breathing room
+   on large laptop / desktop screens.
+   ========================================================= */
+
+@media (min-width: 1200px) {
+
+  .dashboard .page-header p {
+    font-size: 14px;
+  }
+
+  .dashboard .kpi-title {
+    font-size: 12px;
+  }
+
+  .dashboard .kpi-description {
+    font-size: 11px;
+  }
+
+  .dashboard .card-heading h2 {
+    font-size: 15px;
+  }
+
+  .dashboard .card-heading p {
+    font-size: 11px;
+  }
+
+  .dashboard .business-activity-title {
+    font-size: 13px;
+  }
+
+  .dashboard .business-activity-description {
+    font-size: 11px;
+  }
+
+  .dashboard .stock-status-label {
+    font-size: 12px;
+  }
+
+  .dashboard table {
+    font-size: 12px;
+  }
+
+  .dashboard th {
+    font-size: 10px;
+  }
+
+  .dashboard td {
+    font-size: 12px;
+  }
+
+  .dashboard .low-stock-product strong {
+    font-size: 12px;
+  }
+
+  .dashboard .quick-action strong {
+    font-size: 12px;
+  }
+
+  .dashboard .quick-action small {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   VERY LARGE DESKTOP
+   ========================================================= */
+
+@media (min-width: 1440px) {
+
+  .dashboard .page-header h1 {
+    font-size: 29px;
+  }
+
+  .dashboard .page-header p {
+    font-size: 14px;
+  }
+
+  .dashboard .kpi-value {
+    font-size: 23px;
+  }
+
+  .dashboard .card-heading h2 {
+    font-size: 15px;
+  }
+
+  .dashboard .business-activity-title {
+    font-size: 13px;
+  }
+
+  .dashboard .business-activity-description {
+    font-size: 11px;
+  }
+
+  .dashboard .stock-status-label {
+    font-size: 12px;
+  }
+
+  .dashboard .quick-action strong {
+    font-size: 12px;
+  }
+
+  .dashboard .quick-action small {
+    font-size: 10px;
   }
 }
