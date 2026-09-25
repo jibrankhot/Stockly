@@ -2110,3 +2110,168 @@ tbody tr:hover {
     font-size: 10px;
   }
 }
+/* =========================================================
+   RESPONSIVE MOBILE FINISHING LAYER
+   Keeps the existing desktop design and typography intact.
+   ========================================================= */
+
+/* Mobile-only recent sales cards stay hidden on desktop/tablet. */
+.dashboard .recent-sale-mobile-list {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Two KPI cards per row on mobile. */
+  .dashboard .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard .kpi-card {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .dashboard .kpi-value {
+    overflow-wrap: anywhere;
+    font-size: clamp(17px, 4.8vw, 21px);
+  }
+
+  /* Stack dashboard content without changing desktop layout. */
+  .dashboard .analytics-grid,
+  .dashboard .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Use compact two-column quick actions on phones. */
+  .dashboard .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  /* Swap the wide recent-sales table for touch-friendly cards. */
+  .dashboard .recent-sales-table {
+    display: none;
+  }
+
+  .dashboard .recent-sale-mobile-list {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .dashboard .recent-sale-mobile-item {
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .dashboard .recent-sale-mobile-top,
+  .dashboard .recent-sale-mobile-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .dashboard .recent-sale-mobile-top {
+    min-width: 0;
+  }
+
+  .dashboard .recent-sale-mobile-icon {
+    display: flex;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #ecfdf5;
+    color: #16803d;
+  }
+
+  .dashboard .recent-sale-mobile-info {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .dashboard .recent-sale-mobile-info strong {
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard .recent-sale-mobile-info span {
+    color: #475569;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .dashboard .recent-sale-mobile-arrow {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+  }
+
+  .dashboard .recent-sale-mobile-bottom {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .dashboard .recent-sale-mobile-date {
+    color: #64748b;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 479px) {
+  .dashboard .page-header h1 {
+    font-size: 22px;
+  }
+
+  .dashboard .kpi-grid {
+    gap: 8px;
+  }
+
+  .dashboard .kpi-card {
+    padding: 10px;
+  }
+
+  .dashboard .quick-actions {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .dashboard .recent-sale-mobile-list {
+    padding: 10px;
+  }
+
+  .dashboard .recent-sale-mobile-item {
+    padding: 11px;
+  }
+}
+
+@media (max-width: 359px) {
+  .dashboard .kpi-value {
+    font-size: 16px;
+  }
+
+  .dashboard .kpi-title {
+    font-size: 10px;
+  }
+
+  .dashboard .quick-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

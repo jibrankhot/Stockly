@@ -1,210 +1,100 @@
 <div class="dashboard animate-fade-in">
 
-    <!-- =====================================================
-         PAGE HEADER
-         ===================================================== -->
-
+    <!-- Page Header -->
     <section class="page-header">
-
         <div class="page-heading">
-
-            <span class="eyebrow">
-                Business Overview
-            </span>
-
-            <h1>
-                Dashboard
-            </h1>
-
-            <p>
-                Welcome back. Here's what's happening with your business today.
-            </p>
-
+            <span class="eyebrow">Business Overview</span>
+            <h1>Dashboard</h1>
+            <p>Welcome back. Here's what's happening with your business today.</p>
         </div>
 
         <div class="header-date">
-
-            <span class="date-icon" aria-hidden="true">
-                ◷
-            </span>
-
+            <span class="date-icon" aria-hidden="true">◷</span>
             <div>
-                <span class="date-label">
-                    As of
-                </span>
-
-                <strong>
-                    {{ currentDate | date:'dd MMM yyyy' }}
-                </strong>
+                <span class="date-label">As of</span>
+                <strong>{{ currentDate | date:'dd MMM yyyy' }}</strong>
             </div>
-
         </div>
-
     </section>
 
-
-    <!-- =====================================================
-         LOADING STATE
-         ===================================================== -->
-
+    <!-- Loading State -->
     @if (isLoading) {
-
     <section class="dashboard-loading" aria-live="polite">
-
         <div class="dashboard-loading-spinner"></div>
-
         <div>
             <strong>Loading dashboard</strong>
-
-            <span>
-                Fetching your latest business data...
-            </span>
+            <span>Fetching your latest business data...</span>
         </div>
-
     </section>
-
     }
 
-
-    <!-- =====================================================
-         ERROR STATE
-         ===================================================== -->
-
+    <!-- Error State -->
     @if (hasError && !isLoading) {
-
     <section class="dashboard-error" role="alert">
-
-        <div class="dashboard-error-icon">
-            !
-        </div>
+        <div class="dashboard-error-icon">!</div>
 
         <div class="dashboard-error-content">
-
-            <strong>
-                Unable to load dashboard
-            </strong>
-
-            <span>
-                We couldn't retrieve the latest dashboard data.
-            </span>
-
+            <strong>Unable to load dashboard</strong>
+            <span>We couldn't retrieve the latest dashboard data.</span>
         </div>
 
         <button type="button" class="dashboard-retry-button" (click)="retry()">
             Retry
         </button>
-
     </section>
-
     }
-
 
     @if (!isLoading && !hasError) {
 
-    <!-- =====================================================
-             KPI CARDS
-             ===================================================== -->
-
+    <!-- KPI Cards -->
     <section class="kpi-grid" aria-label="Business key performance indicators">
-
-        @for (
-        kpi of kpis;
-        track kpi.title;
-        let index = $index
-        ) {
-
+        @for (kpi of kpis; track kpi.title; let index = $index) {
         <article class="kpi-card" [class.kpi-card-highlighted]="kpi.highlighted"
             [style.animation-delay.ms]="index * 70">
-
             <div class="kpi-top">
-
-                <div class="kpi-icon">
-                    {{ kpi.icon }}
-                </div>
-
+                <div class="kpi-icon">{{ kpi.icon }}</div>
             </div>
 
             <div class="kpi-content">
-
-                <span class="kpi-title">
-                    {{ kpi.title }}
-                </span>
+                <span class="kpi-title">{{ kpi.title }}</span>
 
                 <strong class="kpi-value">
-
                     @if (kpi.prefix) {
                     {{ kpi.prefix }}
                     }
-
                     {{ kpi.value | number:'1.0-0' }}
-
                 </strong>
 
                 <span class="kpi-description">
                     {{ kpi.description }}
                 </span>
-
             </div>
-
         </article>
-
         }
-
     </section>
 
-
-    <!-- =====================================================
-             BUSINESS ACTIVITY + STOCK STATUS
-             ===================================================== -->
-
+    <!-- Business Activity + Stock Status -->
     <section class="analytics-grid">
 
-        <!-- ===================================================
-                 BUSINESS ACTIVITY
-                 =================================================== -->
-
+        <!-- Business Activity -->
         <article class="dashboard-card business-activity-card">
-
             <div class="card-header">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h2>
-                            Business Activity
-                        </h2>
-
-                        <p>
-                            Items that may need your attention
-                        </p>
-
+                        <h2>Business Activity</h2>
+                        <p>Items that may need your attention</p>
                     </div>
-
                 </div>
-
             </div>
-
 
             <div class="business-activity-list">
 
-                <!-- =================================================
-                         OUT OF STOCK
-                         ================================================= -->
-
-                @if (
-                stockStatuses.length > 0 &&
-                stockStatuses[2].value > 0
-                ) {
-
+                <!-- Out of Stock -->
+                @if (stockStatuses.length > 0 && stockStatuses[2].value > 0) {
                 <a routerLink="/inventory/low-stock" class="business-activity-item danger">
-
-                    <span class="business-activity-icon" aria-hidden="true">
-                        !
-                    </span>
+                    <span class="business-activity-icon" aria-hidden="true">!</span>
 
                     <span class="business-activity-item-content">
-
                         <span class="business-activity-title">
                             {{ stockStatuses[2].value }}
                             product{{ stockStatuses[2].value === 1 ? '' : 's' }}
@@ -214,35 +104,18 @@
                         <span class="business-activity-description">
                             Inventory requires immediate attention
                         </span>
-
                     </span>
 
-                    <span class="business-activity-arrow" aria-hidden="true">
-                        →
-                    </span>
-
+                    <span class="business-activity-arrow" aria-hidden="true">→</span>
                 </a>
-
                 }
 
-
-                <!-- =================================================
-                         LOW STOCK
-                         ================================================= -->
-
-                @if (
-                stockStatuses.length > 0 &&
-                stockStatuses[1].value > 0
-                ) {
-
+                <!-- Low Stock -->
+                @if (stockStatuses.length > 0 && stockStatuses[1].value > 0) {
                 <a routerLink="/inventory/low-stock" class="business-activity-item alert">
-
-                    <span class="business-activity-icon" aria-hidden="true">
-                        !
-                    </span>
+                    <span class="business-activity-icon" aria-hidden="true">!</span>
 
                     <span class="business-activity-item-content">
-
                         <span class="business-activity-title">
                             {{ stockStatuses[1].value }}
                             product{{ stockStatuses[1].value === 1 ? '' : 's' }}
@@ -252,249 +125,117 @@
                         <span class="business-activity-description">
                             Review products below minimum stock
                         </span>
-
                     </span>
 
-                    <span class="business-activity-arrow" aria-hidden="true">
-                        →
-                    </span>
-
+                    <span class="business-activity-arrow" aria-hidden="true">→</span>
                 </a>
-
                 }
 
-
-                <!-- =================================================
-                         PENDING / PARTIALLY PAID INVOICES
-                         ================================================= -->
-
-                @if (recentSales.length > 0) {
-
-                @for (
-                sale of recentSales;
-                track sale.id
-                ) {
-
-                @if (
-                sale.status === 'Partially Paid' ||
-                sale.status === 'Issued'
-                ) {
-
+                <!-- Pending / Partially Paid Invoices -->
+                @for (sale of recentSales; track sale.id) {
+                @if (sale.status === 'Partially Paid' || sale.status === 'Issued') {
                 <a [routerLink]="['/invoices', sale.id]" class="business-activity-item invoice">
-
-                    <span class="business-activity-icon" aria-hidden="true">
-                        ₹
-                    </span>
+                    <span class="business-activity-icon" aria-hidden="true">₹</span>
 
                     <span class="business-activity-item-content">
-
                         <span class="business-activity-title">
                             {{ sale.invoiceNumber }} requires payment
                         </span>
 
                         <span class="business-activity-description">
-                            {{ sale.customerName }}
-                            ·
+                            {{ sale.customerName }} ·
                             ₹{{ sale.totalAmount | number:'1.0-0' }}
                         </span>
-
                     </span>
 
-                    <span class="business-activity-arrow" aria-hidden="true">
-                        →
-                    </span>
-
+                    <span class="business-activity-arrow" aria-hidden="true">→</span>
                 </a>
-
+                }
                 }
 
-                }
-
-                }
-
-
-                <!-- =================================================
-                         EVERYTHING OK
-                         ================================================= -->
-
+                <!-- Empty State -->
                 @if (
-                (
-                stockStatuses.length === 0 ||
-                (
-                stockStatuses[1].value === 0 &&
-                stockStatuses[2].value === 0
-                )
-                ) &&
+                (stockStatuses.length === 0 ||
+                (stockStatuses[1].value === 0 && stockStatuses[2].value === 0)) &&
                 recentSales.length === 0
                 ) {
-
                 <div class="business-activity-empty">
-
-                    <span class="business-activity-empty-icon" aria-hidden="true">
-                        ✓
-                    </span>
-
-                    <strong>
-                        Everything looks good
-                    </strong>
-
-                    <span>
-                        No immediate business issues require attention.
-                    </span>
-
+                    <span class="business-activity-empty-icon" aria-hidden="true">✓</span>
+                    <strong>Everything looks good</strong>
+                    <span>No immediate business issues require attention.</span>
                 </div>
-
                 }
 
             </div>
-
         </article>
 
-
-        <!-- ===================================================
-                 STOCK STATUS
-                 =================================================== -->
-
+        <!-- Stock Status -->
         <article class="dashboard-card stock-status-card">
-
             <div class="card-header">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h2>
-                            Stock Status
-                        </h2>
-
-                        <p>
-                            Current inventory overview
-                        </p>
-
+                        <h2>Stock Status</h2>
+                        <p>Current inventory overview</p>
                     </div>
-
                 </div>
 
                 <a routerLink="/inventory/low-stock" class="view-all">
-                    View all
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
+                    View all <span aria-hidden="true">→</span>
                 </a>
-
             </div>
-
 
             <div class="stock-status-content">
-
                 <div class="stock-donut-wrapper">
-
-                    <div class="stock-donut" [style.background]="stockDonutBackground"
+                    <div class="stock-donut" [style.background]="stockDonutBackground" role="img"
                         aria-label="Stock status distribution">
-
                         <div class="stock-donut-center">
-
-                            <strong>
-                                {{ totalProducts | number }}
-                            </strong>
-
-                            <span>
-                                Total Products
-                            </span>
-
+                            <strong>{{ totalProducts | number }}</strong>
+                            <span>Total Products</span>
                         </div>
-
                     </div>
-
                 </div>
-
 
                 <div class="stock-status-list">
-
-                    @for (
-                    status of stockStatuses;
-                    track status.label
-                    ) {
-
+                    @for (status of stockStatuses; track status.label) {
                     <div class="stock-status-row">
-
                         <div class="stock-status-label">
-
                             <span class="stock-status-dot" [class]="status.type"></span>
-
-                            <span>
-                                {{ status.label }}
-                            </span>
-
+                            <span>{{ status.label }}</span>
                         </div>
 
-                        <strong>
-                            {{ status.value | number }}
-                        </strong>
-
+                        <strong>{{ status.value | number }}</strong>
                     </div>
-
                     }
-
                 </div>
-
             </div>
-
         </article>
 
     </section>
 
-
-    <!-- =====================================================
-             RECENT SALES + LOW STOCK
-             ===================================================== -->
-
+    <!-- Recent Sales + Low Stock -->
     <section class="dashboard-grid">
 
-        <!-- ===================================================
-                 RECENT SALES
-                 =================================================== -->
-
+        <!-- Recent Sales -->
         <article class="dashboard-card recent-sales-card">
-
             <div class="card-header">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h2>
-                            Recent Sales
-                        </h2>
-
-                        <p>
-                            Latest sales transactions
-                        </p>
-
+                        <h2>Recent Sales</h2>
+                        <p>Latest sales transactions</p>
                     </div>
-
                 </div>
 
                 <a routerLink="/invoices" class="view-all">
-                    View all
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
+                    View all <span aria-hidden="true">→</span>
                 </a>
-
             </div>
-
 
             @if (recentSales.length > 0) {
 
-            <div class="table-wrapper">
-
+            <!-- Desktop Table -->
+            <div class="table-wrapper recent-sales-table">
                 <table>
-
                     <thead>
-
                         <tr>
                             <th>Invoice</th>
                             <th>Customer</th>
@@ -502,298 +243,177 @@
                             <th>Amount</th>
                             <th>Status</th>
                         </tr>
-
                     </thead>
 
                     <tbody>
-
-                        @for (
-                        sale of recentSales;
-                        track sale.id
-                        ) {
-
+                        @for (sale of recentSales; track sale.id) {
                         <tr>
-
-                            <td class="invoice-number">
-                                {{ sale.invoiceNumber }}
-                            </td>
-
-                            <td>
-                                {{ sale.customerName }}
-                            </td>
-
+                            <td class="invoice-number">{{ sale.invoiceNumber }}</td>
+                            <td>{{ sale.customerName }}</td>
                             <td class="sale-date">
                                 {{ sale.invoiceDate | date:'dd MMM yyyy' }}
                             </td>
-
                             <td class="amount">
                                 ₹{{ sale.totalAmount | number:'1.0-0' }}
                             </td>
-
                             <td>
-
                                 <span class="status-badge" [class]="getStatusClass(sale.status)">
-
                                     <span class="status-dot" aria-hidden="true"></span>
-
                                     {{ sale.status }}
-
                                 </span>
-
                             </td>
-
                         </tr>
-
                         }
-
                     </tbody>
-
                 </table>
+            </div>
 
+            <!-- Mobile Sales Cards -->
+            <div class="recent-sale-mobile-list">
+                @for (sale of recentSales; track sale.id) {
+                <a [routerLink]="['/invoices', sale.id]" class="recent-sale-mobile-item">
+                    <div class="recent-sale-mobile-top">
+                        <span class="recent-sale-mobile-icon" aria-hidden="true">
+                            ▤
+                        </span>
+
+                        <div class="recent-sale-mobile-info">
+                            <strong>{{ sale.invoiceNumber }}</strong>
+                            <span>{{ sale.customerName }}</span>
+                        </div>
+
+                        <span class="recent-sale-mobile-arrow" aria-hidden="true">
+                            →
+                        </span>
+                    </div>
+
+                    <div class="recent-sale-mobile-bottom">
+                        <strong class="amount">
+                            ₹{{ sale.totalAmount | number:'1.0-0' }}
+                        </strong>
+
+                        <span class="status-badge" [class]="getStatusClass(sale.status)">
+                            <span class="status-dot" aria-hidden="true"></span>
+                            {{ sale.status }}
+                        </span>
+                    </div>
+
+                    <div class="recent-sale-mobile-date">
+                        {{ sale.invoiceDate | date:'dd MMM yyyy' }}
+                    </div>
+                </a>
+                }
             </div>
 
             } @else {
-
             <div class="dashboard-empty-state">
-
-                <strong>
-                    No recent sales
-                </strong>
-
+                <strong>No recent sales</strong>
                 <span>
                     Sales transactions will appear here once invoices are created.
                 </span>
-
             </div>
-
             }
-
         </article>
 
-
-        <!-- ===================================================
-                 LOW STOCK ITEMS
-                 =================================================== -->
-
+        <!-- Low Stock Items -->
         <article class="dashboard-card low-stock-card">
-
             <div class="card-header">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h2>
-                            Low Stock Items
-                        </h2>
-
-                        <p>
-                            Products that need attention
-                        </p>
-
+                        <h2>Low Stock Items</h2>
+                        <p>Products that need attention</p>
                     </div>
-
                 </div>
 
                 <a routerLink="/inventory/low-stock" class="view-all">
-                    View all
-
-                    <span aria-hidden="true">
-                        →
-                    </span>
+                    View all <span aria-hidden="true">→</span>
                 </a>
-
             </div>
 
-
             @if (lowStockItems.length > 0) {
-
             <div class="low-stock-list">
-
-                @for (
-                item of lowStockItems;
-                track item.id
-                ) {
-
+                @for (item of lowStockItems; track item.id) {
                 <div class="low-stock-row">
-
                     <div class="product-icon">
                         {{ getLowStockIcon(item.status) }}
                     </div>
 
                     <div class="low-stock-product">
-
-                        <strong>
-                            {{ item.name }}
-                        </strong>
+                        <strong>{{ item.name }}</strong>
 
                         <span class="stock-status" [class]="getStockStatusClass(item.status)">
                             {{ getStockStatusLabel(item.status) }}
                         </span>
-
                     </div>
 
                     <strong class="stock-value" [class.out-of-stock]="item.currentStock === 0">
                         {{ item.currentStock }}
                     </strong>
-
                 </div>
-
                 }
-
             </div>
-
             } @else {
-
             <div class="dashboard-empty-state">
-
-                <strong>
-                    Inventory looks good
-                </strong>
-
+                <strong>Inventory looks good</strong>
                 <span>
                     No products are currently at or below their minimum stock level.
                 </span>
-
             </div>
-
             }
-
         </article>
 
     </section>
 
-
-    <!-- =====================================================
-             QUICK ACTIONS
-             ===================================================== -->
-
+    <!-- Quick Actions -->
     <section class="quick-actions-card">
-
         <div class="card-header">
-
             <div class="card-heading">
-
                 <div>
-
-                    <h2>
-                        Quick Actions
-                    </h2>
-
-                    <p>
-                        Common tasks
-                    </p>
-
+                    <h2>Quick Actions</h2>
+                    <p>Common tasks</p>
                 </div>
-
             </div>
-
         </div>
-
 
         <div class="quick-actions">
 
             <a routerLink="/invoices/create" class="quick-action">
-
-                <span class="quick-action-icon" aria-hidden="true">
-                    +
-                </span>
-
+                <span class="quick-action-icon" aria-hidden="true">+</span>
                 <span class="quick-action-content">
-
-                    <strong>
-                        Create Invoice
-                    </strong>
-
-                    <small>
-                        Create a new sales invoice
-                    </small>
-
+                    <strong>Create Invoice</strong>
+                    <small>Create a new sales invoice</small>
                 </span>
-
-                <span class="quick-action-arrow" aria-hidden="true">
-                    →
-                </span>
-
+                <span class="quick-action-arrow" aria-hidden="true">→</span>
             </a>
-
 
             <a routerLink="/products/create" class="quick-action">
-
-                <span class="quick-action-icon" aria-hidden="true">
-                    +
-                </span>
-
+                <span class="quick-action-icon" aria-hidden="true">+</span>
                 <span class="quick-action-content">
-
-                    <strong>
-                        Add Product
-                    </strong>
-
-                    <small>
-                        Add a product to inventory
-                    </small>
-
+                    <strong>Add Product</strong>
+                    <small>Add a product to inventory</small>
                 </span>
-
-                <span class="quick-action-arrow" aria-hidden="true">
-                    →
-                </span>
-
+                <span class="quick-action-arrow" aria-hidden="true">→</span>
             </a>
-
 
             <a routerLink="/customers/create" class="quick-action">
-
-                <span class="quick-action-icon" aria-hidden="true">
-                    +
-                </span>
-
+                <span class="quick-action-icon" aria-hidden="true">+</span>
                 <span class="quick-action-content">
-
-                    <strong>
-                        Add Customer
-                    </strong>
-
-                    <small>
-                        Create a new customer
-                    </small>
-
+                    <strong>Add Customer</strong>
+                    <small>Create a new customer</small>
                 </span>
-
-                <span class="quick-action-arrow" aria-hidden="true">
-                    →
-                </span>
-
+                <span class="quick-action-arrow" aria-hidden="true">→</span>
             </a>
 
-
             <a routerLink="/purchases/create" class="quick-action">
-
-                <span class="quick-action-icon" aria-hidden="true">
-                    +
-                </span>
-
+                <span class="quick-action-icon" aria-hidden="true">+</span>
                 <span class="quick-action-content">
-
-                    <strong>
-                        Purchase Order
-                    </strong>
-
-                    <small>
-                        Create a purchase order
-                    </small>
-
+                    <strong>Purchase Order</strong>
+                    <small>Create a purchase order</small>
                 </span>
-
-                <span class="quick-action-arrow" aria-hidden="true">
-                    →
-                </span>
-
+                <span class="quick-action-arrow" aria-hidden="true">→</span>
             </a>
 
         </div>
-
     </section>
 
     }
