@@ -1,9 +1,11 @@
-import { AuthUser } from './auth-user';
 
 export interface LoginResponse {
     success: boolean;
     message: string;
-    data: { token: string; user: BackendAuthUser; };
+    data: {
+        token: string;
+        user: BackendAuthUser;
+    };
 }
 
 export interface BackendAuthUser {

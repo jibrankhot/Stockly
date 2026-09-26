@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -6,32 +7,50 @@ import { Injectable } from '@angular/core';
 export class StorageService {
 
   setItem<T>(key: string, value: T): void {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Failed to store data for key "${key}".`, error);
+    }
   }
 
   getItem<T>(key: string): T | null {
-    const value = localStorage.getItem(key);
-
-    if (!value) {
-      return null;
-    }
-
     try {
+      const value = localStorage.getItem(key);
+
+      if (value === null) {
+        return null;
+      }
+
       return JSON.parse(value) as T;
-    } catch {
+    } catch (error) {
+      console.error(`Failed to retrieve data for key "${key}".`, error);
       return null;
     }
   }
 
   removeItem(key: string): void {
-    localStorage.removeItem(key);
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(`Failed to remove data for key "${key}".`, error);
+    }
   }
 
   clear(): void {
-    localStorage.clear();
+    try {
+      localStorage.clear();
+    } catch (error) {
+      console.error('Failed to clear local storage.', error);
+    }
   }
 
   hasItem(key: string): boolean {
-    return localStorage.getItem(key) !== null;
+    try {
+      return localStorage.getItem(key) !== null;
+    } catch (error) {
+      console.error(`Failed to check storage key "${key}".`, error);
+      return false;
+    }
   }
 }

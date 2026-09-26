@@ -1,18 +1,23 @@
-import { Injectable } from '@angular/core';
 
+import { Injectable } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenService {
-
   private readonly tokenKey = 'stockly_access_token';
   private readonly refreshTokenKey = 'stockly_refresh_token';
 
-  constructor(private readonly storageService: StorageService) { }
+  constructor(
+    private readonly storageService: StorageService
+  ) { }
 
   setAccessToken(token: string): void {
+    if (!token || !token.trim()) {
+      throw new Error('Access token cannot be empty.');
+    }
+
     this.storageService.setItem(this.tokenKey, token);
   }
 
@@ -25,6 +30,10 @@ export class TokenService {
   }
 
   setRefreshToken(token: string): void {
+    if (!token || !token.trim()) {
+      throw new Error('Refresh token cannot be empty.');
+    }
+
     this.storageService.setItem(this.refreshTokenKey, token);
   }
 
@@ -37,7 +46,9 @@ export class TokenService {
   }
 
   hasAccessToken(): boolean {
-    return this.getAccessToken() !== null;
+    const token = this.getAccessToken();
+
+    return typeof token === 'string' && token.trim().length > 0;
   }
 
   clearTokens(): void {

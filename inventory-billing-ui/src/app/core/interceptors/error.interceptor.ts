@@ -1,27 +1,54 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+
+import {
+  HttpErrorResponse,
+  HttpInterceptorFn
+} from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, tap, throwError } from 'rxjs';
 
 import { NotificationService } from '../services/notification.service';
 import { TokenService } from '../auth/services/token.service';
+
+let isHandlingUnauthorized = false;
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);
   const tokenService = inject(TokenService);
 
+  const isLoginRequest = req.url.includes('/auth/login');
+
   return next(req).pipe(
+    tap(() => {
+      // Reset the session handler after a successful login.
+      if (isLoginRequest) {
+        isHandlingUnauthorized = false;
+      }
+    }),
+
     catchError((error: HttpErrorResponse) => {
       switch (error.status) {
         case 401:
+          // Let the login page handle invalid credentials.
+          if (isLoginRequest) {
+            break;
+          }
+
           tokenService.clearTokens();
 
-          notificationService.error(
-            'Your session has expired. Please login again.'
-          );
+          // Avoid duplicate notifications and redirects.
+          if (!isHandlingUnauthorized) {
+            isHandlingUnauthorized = true;
 
-          router.navigate(['/auth/login']);
+            notificationService.error(
+              'Your session has expired or is no longer valid. Please log in again.'
+            );
+
+            if (!router.url.startsWith('/auth/login')) {
+              router.navigate(['/auth/login']);
+            }
+          }
           break;
 
         case 403:

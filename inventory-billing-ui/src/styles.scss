@@ -169,10 +169,12 @@ html {
   min-height: 100%;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+  min-width: 320px;
   margin: 0;
   background: var(--color-background);
   color: var(--color-text-primary);
@@ -189,6 +191,14 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button,
+input,
+textarea,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
@@ -769,6 +779,27 @@ p {
 }
 
 /* =========================================================
+   GLOBAL OVERFLOW / CONTENT SAFETY
+   ========================================================= */
+
+.page-container,
+.page-header-content,
+.card,
+.card-body,
+.form-group,
+.stat-card {
+  min-width: 0;
+}
+
+.page-title,
+.page-subtitle,
+.card-title,
+.empty-state-description,
+.error-state-description {
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
    10. TOOLBAR
    ========================================================= */
 
@@ -1316,8 +1347,8 @@ p {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
   }
 
   .card-header {
@@ -1434,7 +1465,9 @@ p {
     font-size: var(--font-size-2xl);
   }
 
-  .btn {
+  .page-actions .btn,
+  .card-footer .btn,
+  .modal-footer .btn {
     width: 100%;
   }
 
@@ -1471,6 +1504,10 @@ p {
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
   *,
   *::before,
   *::after {
