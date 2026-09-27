@@ -1,9 +1,11 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 import { Invoice, InvoiceStatus } from '../../../../../shared/models/invoice';
 import { InvoiceService } from '../../services/invoice.service';
+import { ModalService } from '../../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-invoice-list',
@@ -30,7 +32,8 @@ export class InvoiceListComponent implements OnInit {
 
   constructor(
     private readonly invoiceService: InvoiceService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -118,39 +121,44 @@ export class InvoiceListComponent implements OnInit {
   }
 
   deleteInvoice(invoice: Invoice): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${invoice.invoiceNumber}?`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.invoiceService
-      .deleteInvoice(invoice.id)
-      .subscribe({
-        next: deleted => {
-
-          if (!deleted) {
-            return;
-          }
-
-          this.invoices =
-            this.invoices.filter(
-              item => item.id !== invoice.id
-            );
-
-          this.applyFilters();
-        },
-        error: error => {
-          console.error(
-            'Error deleting invoice:',
-            error
-          );
-
-          this.errorMessage =
-            'Unable to delete the invoice. Please try again.';
+    this.modalService
+      .open(
+        'Delete Invoice?',
+        `Are you sure you want to delete invoice "${invoice.invoiceNumber}"? This action cannot be undone.`,
+        'Delete Invoice',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
+        if (!confirmed) {
+          return;
         }
+
+        this.invoiceService
+          .deleteInvoice(invoice.id)
+          .subscribe({
+            next: deleted => {
+              if (!deleted) {
+                return;
+              }
+
+              this.invoices =
+                this.invoices.filter(
+                  item => item.id !== invoice.id
+                );
+
+              this.applyFilters();
+            },
+            error: error => {
+              console.error(
+                'Error deleting invoice:',
+                error
+              );
+
+              this.errorMessage =
+                'Unable to delete the invoice. Please try again.';
+            }
+          });
       });
   }
 

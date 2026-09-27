@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,6 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { Product } from '../../../../shared/models/product';
 import { ProductService } from '../../services/product.service';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-product-list',
@@ -31,7 +33,8 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private readonly productService: ProductService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -97,33 +100,39 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteProduct(product: Product): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${product.name}"?`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.productService.deleteProduct(product.id).subscribe({
-      next: deleted => {
-        if (!deleted) {
-          console.error('Product could not be deleted.');
+    this.modalService
+      .open(
+        'Delete Product?',
+        `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+        'Delete Product',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
+        if (!confirmed) {
           return;
         }
 
-        this.products = this.products.filter(
-          item => item.id !== product.id
-        );
-      },
+        this.productService.deleteProduct(product.id).subscribe({
+          next: deleted => {
+            if (!deleted) {
+              console.error('Product could not be deleted.');
+              return;
+            }
 
-      error: error => {
-        console.error(
-          'Failed to delete product:',
-          error
-        );
-      }
-    });
+            this.products = this.products.filter(
+              item => item.id !== product.id
+            );
+          },
+
+          error: error => {
+            console.error(
+              'Failed to delete product:',
+              error
+            );
+          }
+        });
+      });
   }
 
   isLowStock(product: Product): boolean {

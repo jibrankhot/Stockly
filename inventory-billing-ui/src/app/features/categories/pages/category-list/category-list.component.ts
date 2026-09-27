@@ -5,6 +5,8 @@ import { Router, RouterLink } from '@angular/router';
 
 import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-category-list',
@@ -20,16 +22,15 @@ import { CategoryService } from '../../services/category.service';
 export class CategoryListComponent implements OnInit {
 
   categories: Category[] = [];
-
   searchTerm = '';
-
   selectedStatus = 'all';
-
   isLoading = false;
 
   constructor(
     private readonly categoryService: CategoryService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -37,12 +38,9 @@ export class CategoryListComponent implements OnInit {
   }
 
   get filteredCategories(): Category[] {
-    const search = this.searchTerm
-      .trim()
-      .toLowerCase();
+    const search = this.searchTerm.trim().toLowerCase();
 
     return this.categories.filter(category => {
-
       const matchesSearch =
         !search ||
         category.name.toLowerCase().includes(search) ||
@@ -53,10 +51,7 @@ export class CategoryListComponent implements OnInit {
         (this.selectedStatus === 'active' && category.isActive) ||
         (this.selectedStatus === 'inactive' && !category.isActive);
 
-      return (
-        matchesSearch &&
-        matchesStatus
-      );
+      return matchesSearch && matchesStatus;
     });
   }
 
@@ -68,11 +63,12 @@ export class CategoryListComponent implements OnInit {
         this.categories = categories;
         this.isLoading = false;
       },
-
       error: error => {
-        console.error(
-          'Failed to load categories:',
-          error
+        console.error('Failed to load categories:', error);
+
+        this.notificationService.error(
+          'Failed to load categories. Please try again.',
+          10000
         );
 
         this.isLoading = false;
@@ -81,10 +77,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   viewCategory(category: Category): void {
-    this.router.navigate([
-      '/categories',
-      category.id
-    ]);
+    this.router.navigate(['/categories', category.id]);
   }
 
   editCategory(category: Category): void {
@@ -96,38 +89,47 @@ export class CategoryListComponent implements OnInit {
   }
 
   deleteCategory(category: Category): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${category.name}"?`
-    );
+    this.modalService
+      .open(
+        'Delete Category?',
+        `Are you sure you want to delete "${category.name}"? This action cannot be undone.`,
+        'Delete Category',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
+        if (!confirmed) {
+          return;
+        }
 
-    if (!confirmed) {
-      return;
-    }
+        this.categoryService.deleteCategory(category.id).subscribe({
+          next: deleted => {
+            if (!deleted) {
+              this.notificationService.error(
+                'Category could not be deleted.',
+                10000
+              );
+              return;
+            }
 
-    this.categoryService
-      .deleteCategory(category.id)
-      .subscribe({
-        next: deleted => {
-
-          if (!deleted) {
-            console.error(
-              'Category could not be deleted.'
+            this.categories = this.categories.filter(
+              item => item.id !== category.id
             );
 
-            return;
+            this.notificationService.success(
+              `Category "${category.name}" deleted successfully.`,
+              10000
+            );
+          },
+          error: error => {
+            console.error('Failed to delete category:', error);
+
+            this.notificationService.error(
+              'Failed to delete category. Please try again.',
+              10000
+            );
           }
-
-          this.categories = this.categories.filter(
-            item => item.id !== category.id
-          );
-        },
-
-        error: error => {
-          console.error(
-            'Failed to delete category:',
-            error
-          );
-        }
+        });
       });
   }
 

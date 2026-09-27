@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export type NotificationType = 'success' | 'error' | 'warning' | 'info';
+export type NotificationType =
+  | 'success'
+  | 'error'
+  | 'warning'
+  | 'info';
 
 export interface NotificationMessage {
   id: number;
@@ -17,29 +21,33 @@ export class NotificationService {
 
   private nextId = 1;
 
+  private readonly timers = new Map<number, ReturnType<typeof setTimeout>>();
+
   private readonly notificationSubject =
     new BehaviorSubject<NotificationMessage[]>([]);
 
   readonly notifications$ =
     this.notificationSubject.asObservable();
 
-  success(message: string, duration = 10000): void {
+  success(message: string, duration = 5000): void {
     this.show('success', message, duration);
   }
 
-  error(message: string, duration = 10000): void {
+  error(message: string, duration = 5000): void {
     this.show('error', message, duration);
   }
 
-  warning(message: string, duration = 10000): void {
+  warning(message: string, duration = 5000): void {
     this.show('warning', message, duration);
   }
 
-  info(message: string, duration = 10000): void {
+  info(message: string, duration = 5000): void {
     this.show('info', message, duration);
   }
 
   remove(id: number): void {
+    this.clearTimer(id);
+
     const notifications = this.notificationSubject.value.filter(
       notification => notification.id !== id
     );
@@ -48,6 +56,9 @@ export class NotificationService {
   }
 
   clear(): void {
+    this.timers.forEach(timer => clearTimeout(timer));
+    this.timers.clear();
+
     this.notificationSubject.next([]);
   }
 
@@ -69,9 +80,20 @@ export class NotificationService {
     ]);
 
     if (duration > 0) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         this.remove(notification.id);
       }, duration);
+
+      this.timers.set(notification.id, timer);
+    }
+  }
+
+  private clearTimer(id: number): void {
+    const timer = this.timers.get(id);
+
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      this.timers.delete(id);
     }
   }
 }

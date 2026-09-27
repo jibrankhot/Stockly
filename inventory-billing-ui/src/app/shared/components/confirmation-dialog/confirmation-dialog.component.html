@@ -1,1 +1,38 @@
-<p>confirmation-dialog works!</p>
+@if (modalService.modal$ | async; as modal) {
+@if (modal.isOpen) {
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <section class="confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title"
+        aria-describedby="dialog-message">
+        <div class="dialog-header">
+            <div class="dialog-icon" [class.dialog-icon-danger]="modal.variant === 'danger'" aria-hidden="true">
+                @if (modal.variant === 'danger') {
+                <span>!</span>
+                } @else {
+                <span>?</span>
+                }
+            </div>
+
+            <div class="dialog-heading">
+                <h2 id="dialog-title">{{ modal.title }}</h2>
+                <p class="dialog-subtitle">Please confirm your action</p>
+            </div>
+        </div>
+
+        <p id="dialog-message" class="dialog-message">
+            {{ modal.message }}
+        </p>
+
+        <div class="dialog-actions">
+            <button type="button" class="dialog-button button-secondary" (click)="cancel()">
+                {{ modal.cancelText }}
+            </button>
+
+            <button type="button" class="dialog-button" [class.button-danger]="modal.variant === 'danger'"
+                [class.button-primary]="modal.variant !== 'danger'" (click)="confirm()">
+                {{ modal.confirmText }}
+            </button>
+        </div>
+    </section>
+</div>
+}
+}

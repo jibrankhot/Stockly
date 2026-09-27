@@ -1,9 +1,11 @@
+
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../../../shared/models/customer';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -26,9 +28,10 @@ export class CustomerDetailsComponent implements OnInit {
   customerId = 0;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private customerService: CustomerService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly customerService: CustomerService,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -52,7 +55,7 @@ export class CustomerDetailsComponent implements OnInit {
     this.customerService
       .getCustomerById(this.customerId)
       .subscribe({
-        next: (customer) => {
+        next: customer => {
           if (!customer) {
             this.errorMessage = 'Customer not found.';
             this.isLoading = false;
@@ -64,8 +67,7 @@ export class CustomerDetailsComponent implements OnInit {
         },
 
         error: () => {
-          this.errorMessage =
-            'Unable to load customer.';
+          this.errorMessage = 'Unable to load customer.';
           this.isLoading = false;
         }
       });
@@ -76,25 +78,30 @@ export class CustomerDetailsComponent implements OnInit {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${this.customer.name}"?`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.customerService
-      .deleteCustomer(this.customer.id)
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/customers']);
-        },
-
-        error: () => {
-          this.errorMessage =
-            'Unable to delete customer.';
+    this.modalService
+      .open(
+        'Delete Customer?',
+        `Are you sure you want to delete "${this.customer.name}"? This action cannot be undone.`,
+        'Delete Customer',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
+        if (!confirmed || !this.customer) {
+          return;
         }
+
+        this.customerService
+          .deleteCustomer(this.customer.id)
+          .subscribe({
+            next: () => {
+              this.router.navigate(['/customers']);
+            },
+
+            error: () => {
+              this.errorMessage = 'Unable to delete customer.';
+            }
+          });
       });
   }
 }

@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +10,7 @@ import {
 } from '../../../../shared/models/purchase-order';
 
 import { PurchaseOrderService } from '../../services/purchase-order.service';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
     selector: 'app-purchase-order-list',
@@ -34,7 +36,8 @@ export class PurchaseOrderListComponent implements OnInit {
 
     constructor(
         private readonly purchaseOrderService: PurchaseOrderService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly modalService: ModalService
     ) { }
 
     ngOnInit(): void {
@@ -102,39 +105,44 @@ export class PurchaseOrderListComponent implements OnInit {
     }
 
     deletePurchaseOrder(order: PurchaseOrder): void {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete "${order.orderNumber}"?`
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        this.purchaseOrderService
-            .deletePurchaseOrder(order.id)
-            .subscribe({
-                next: deleted => {
-
-                    if (!deleted) {
-                        console.error(
-                            'Purchase order could not be deleted.'
-                        );
-
-                        return;
-                    }
-
-                    this.purchaseOrders =
-                        this.purchaseOrders.filter(
-                            item => item.id !== order.id
-                        );
-                },
-
-                error: error => {
-                    console.error(
-                        'Failed to delete purchase order:',
-                        error
-                    );
+        this.modalService
+            .open(
+                'Delete Purchase Order?',
+                `Are you sure you want to delete "${order.orderNumber}"? This action cannot be undone.`,
+                'Delete Purchase Order',
+                'Cancel',
+                'danger'
+            )
+            .subscribe(confirmed => {
+                if (!confirmed) {
+                    return;
                 }
+
+                this.purchaseOrderService
+                    .deletePurchaseOrder(order.id)
+                    .subscribe({
+                        next: deleted => {
+                            if (!deleted) {
+                                console.error(
+                                    'Purchase order could not be deleted.'
+                                );
+
+                                return;
+                            }
+
+                            this.purchaseOrders =
+                                this.purchaseOrders.filter(
+                                    item => item.id !== order.id
+                                );
+                        },
+
+                        error: error => {
+                            console.error(
+                                'Failed to delete purchase order:',
+                                error
+                            );
+                        }
+                    });
             });
     }
 

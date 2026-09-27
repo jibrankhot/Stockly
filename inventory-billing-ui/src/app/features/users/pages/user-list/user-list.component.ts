@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { User } from '../../../../shared/models/user';
 import { UserService } from '../../services/user.service';
-import { FormsModule } from '@angular/forms';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-user-list',
@@ -29,7 +30,8 @@ export class UserListComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private userService: UserService
+    private readonly userService: UserService,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -99,35 +101,43 @@ export class UserListComponent implements OnInit {
 
   deleteUser(user: User): void {
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${user.fullName}"?`
-    );
+    this.modalService
+      .open(
+        'Delete User?',
+        `Are you sure you want to delete "${user.fullName}"?`,
+        'Delete User',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
 
-    if (!confirmed) {
-      return;
-    }
-
-    this.userService.deleteUser(user.id).subscribe({
-
-      next: (success) => {
-
-        if (success) {
-          this.loadUsers();
-        } else {
-          this.errorMessage =
-            'Unable to delete user.';
+        if (!confirmed) {
+          return;
         }
 
-      },
+        this.userService.deleteUser(user.id).subscribe({
 
-      error: () => {
+          next: (success) => {
 
-        this.errorMessage =
-          'Unable to delete user.';
+            if (success) {
+              this.loadUsers();
+            } else {
+              this.errorMessage =
+                'Unable to delete user.';
+            }
 
-      }
+          },
 
-    });
+          error: () => {
+
+            this.errorMessage =
+              'Unable to delete user.';
+
+          }
+
+        });
+
+      });
   }
 
   get activeUsers(): number {

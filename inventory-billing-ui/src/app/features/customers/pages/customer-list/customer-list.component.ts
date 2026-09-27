@@ -1,10 +1,12 @@
+
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../../../shared/models/customer';
-import { FormsModule } from '@angular/forms';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-customer-list',
@@ -30,7 +32,8 @@ export class CustomerListComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -42,7 +45,7 @@ export class CustomerListComponent implements OnInit {
     this.errorMessage = '';
 
     this.customerService.getCustomers().subscribe({
-      next: (customers) => {
+      next: customers => {
         this.customers = customers;
         this.applyFilters();
         this.isLoading = false;
@@ -61,7 +64,6 @@ export class CustomerListComponent implements OnInit {
 
     this.filteredCustomers = this.customers.filter(
       customer => {
-
         const matchesSearch =
           !search ||
           customer.code.toLowerCase().includes(search) ||
@@ -87,24 +89,30 @@ export class CustomerListComponent implements OnInit {
   }
 
   deleteCustomer(customer: Customer): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${customer.name}"?`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.customerService
-      .deleteCustomer(customer.id)
-      .subscribe({
-        next: () => {
-          this.loadCustomers();
-        },
-        error: () => {
-          this.errorMessage =
-            'Unable to delete customer.';
+    this.modalService
+      .open(
+        'Delete Customer?',
+        `Are you sure you want to delete "${customer.name}"? This action cannot be undone.`,
+        'Delete Customer',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
+        if (!confirmed) {
+          return;
         }
+
+        this.customerService
+          .deleteCustomer(customer.id)
+          .subscribe({
+            next: () => {
+              this.loadCustomers();
+            },
+            error: () => {
+              this.errorMessage =
+                'Unable to delete customer.';
+            }
+          });
       });
   }
 

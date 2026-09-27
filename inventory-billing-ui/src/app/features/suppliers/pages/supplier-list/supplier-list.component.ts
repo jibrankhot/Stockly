@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { Supplier } from '../../../../shared/models/supplier';
 import { SupplierService } from '../../services/supplier.service';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-supplier-list',
@@ -29,7 +30,8 @@ export class SupplierListComponent implements OnInit {
 
   constructor(
     private readonly supplierService: SupplierService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
@@ -98,38 +100,45 @@ export class SupplierListComponent implements OnInit {
   }
 
   deleteSupplier(supplier: Supplier): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${supplier.name}"?`
-    );
+    this.modalService
+      .open(
+        'Delete Supplier?',
+        `Are you sure you want to delete "${supplier.name}"?`,
+        'Delete Supplier',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
 
-    if (!confirmed) {
-      return;
-    }
-
-    this.supplierService
-      .deleteSupplier(supplier.id)
-      .subscribe({
-        next: deleted => {
-
-          if (!deleted) {
-            console.error(
-              'Supplier could not be deleted.'
-            );
-
-            return;
-          }
-
-          this.suppliers = this.suppliers.filter(
-            item => item.id !== supplier.id
-          );
-        },
-
-        error: error => {
-          console.error(
-            'Failed to delete supplier:',
-            error
-          );
+        if (!confirmed) {
+          return;
         }
+
+        this.supplierService
+          .deleteSupplier(supplier.id)
+          .subscribe({
+            next: deleted => {
+
+              if (!deleted) {
+                console.error(
+                  'Supplier could not be deleted.'
+                );
+
+                return;
+              }
+
+              this.suppliers = this.suppliers.filter(
+                item => item.id !== supplier.id
+              );
+            },
+
+            error: error => {
+              console.error(
+                'Failed to delete supplier:',
+                error
+              );
+            }
+          });
       });
   }
 

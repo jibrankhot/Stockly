@@ -1,0 +1,206 @@
+
+:host {
+  position: relative;
+  z-index: 10000;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+
+  animation: backdrop-enter 180ms ease-out;
+}
+
+.confirmation-dialog {
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.2);
+
+  animation: dialog-enter 200ms ease-out;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+
+  width: 48px;
+  height: 48px;
+
+  border-radius: 14px;
+  background: #eef6e9;
+  color: #489327;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.dialog-icon-danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.dialog-heading {
+  min-width: 0;
+}
+
+.dialog-heading h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.dialog-subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.dialog-message {
+  margin: 24px 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dialog-button {
+  min-width: 100px;
+  min-height: 42px;
+  padding: 0 18px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.button-secondary {
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.button-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.button-primary {
+  background: #489327;
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  background: #3b7c20;
+}
+
+.button-danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.button-danger:hover {
+  background: #b91c1c;
+}
+
+.dialog-button:focus-visible {
+  outline: 3px solid rgba(72, 147, 39, 0.3);
+  outline-offset: 2px;
+}
+
+.dialog-button:active {
+  transform: scale(0.98);
+}
+
+@keyframes backdrop-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 16px;
+  }
+
+  .confirmation-dialog {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .dialog-heading h2 {
+    font-size: 17px;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .dialog-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .confirmation-dialog {
+    animation: none;
+  }
+}

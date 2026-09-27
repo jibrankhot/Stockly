@@ -3,7 +3,8 @@
     @for (notification of notifications; track notification.id) {
     <div class="toast" [class.toast-success]="notification.type === 'success'"
         [class.toast-error]="notification.type === 'error'" [class.toast-warning]="notification.type === 'warning'"
-        [class.toast-info]="notification.type === 'info'" role="alert">
+        [class.toast-info]="notification.type === 'info'"
+        [attr.role]="notification.type === 'error' ? 'alert' : 'status'">
         <div class="toast-icon" aria-hidden="true">
             @switch (notification.type) {
             @case ('success') {
@@ -31,7 +32,9 @@
                 }
             </div>
 
-            <p class="toast-message">{{ notification.message }}</p>
+            <p class="toast-message">
+                {{ notification.message }}
+            </p>
         </div>
 
         <button type="button" class="toast-close" aria-label="Dismiss notification" (click)="dismiss(notification.id)">
