@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -44,7 +45,7 @@ export class CategoryListComponent implements OnInit {
       const matchesSearch =
         !search ||
         category.name.toLowerCase().includes(search) ||
-        category.description.toLowerCase().includes(search);
+        (category.description ?? '').toLowerCase().includes(search);
 
       const matchesStatus =
         this.selectedStatus === 'all' ||
@@ -65,13 +66,8 @@ export class CategoryListComponent implements OnInit {
       },
       error: error => {
         console.error('Failed to load categories:', error);
-
-        this.notificationService.error(
-          'Failed to load categories. Please try again.',
-          10000
-        );
-
         this.isLoading = false;
+        // The HTTP error interceptor handles the error notification.
       }
     });
   }
@@ -106,8 +102,7 @@ export class CategoryListComponent implements OnInit {
           next: deleted => {
             if (!deleted) {
               this.notificationService.error(
-                'Category could not be deleted.',
-                10000
+                'Category could not be deleted.'
               );
               return;
             }
@@ -117,17 +112,12 @@ export class CategoryListComponent implements OnInit {
             );
 
             this.notificationService.success(
-              `Category "${category.name}" deleted successfully.`,
-              10000
+              `Category "${category.name}" deleted successfully.`
             );
           },
           error: error => {
             console.error('Failed to delete category:', error);
-
-            this.notificationService.error(
-              'Failed to delete category. Please try again.',
-              10000
-            );
+            // The HTTP error interceptor handles the error notification.
           }
         });
       });

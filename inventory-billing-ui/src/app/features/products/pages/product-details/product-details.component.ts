@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +21,7 @@ export class ProductDetailsComponent implements OnInit {
   product: Product | null = null;
 
   isLoading = false;
+  hasLoadError = false;
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
@@ -32,21 +34,27 @@ export class ProductDetailsComponent implements OnInit {
       this.activatedRoute.snapshot.paramMap.get('id')
     );
 
+    if (!Number.isInteger(productId) || productId <= 0) {
+      this.hasLoadError = true;
+      return;
+    }
+
     this.loadProduct(productId);
   }
 
   loadProduct(id: number): void {
     this.isLoading = true;
+    this.hasLoadError = false;
+    this.product = null;
 
     this.productService.getProductById(id).subscribe({
       next: product => {
         this.product = product;
         this.isLoading = false;
       },
-
       error: error => {
         console.error('Failed to load product:', error);
-        this.product = null;
+        this.hasLoadError = true;
         this.isLoading = false;
       }
     });
@@ -77,8 +85,12 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   getStockPercentage(): number {
-    if (!this.product || this.product.minimumStock === 0) {
-      return 100;
+    if (!this.product) {
+      return 0;
+    }
+
+    if (this.product.minimumStock <= 0) {
+      return this.product.currentStock > 0 ? 100 : 0;
     }
 
     const percentage =

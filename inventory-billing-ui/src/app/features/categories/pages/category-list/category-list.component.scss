@@ -1,9 +1,11 @@
+
 :host {
   display: block;
 }
 
 .category-list-page {
   width: 100%;
+  min-width: 0;
 }
 
 /* Page Header */
@@ -46,6 +48,12 @@
   text-decoration: none;
   cursor: pointer;
   box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+  }
 }
 
 .btn-primary {
@@ -114,10 +122,16 @@
   color: #111827;
   font: inherit;
   font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:focus {
     border-color: #6b7280;
     box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
   }
 }
 
@@ -134,8 +148,9 @@
   font-size: 13px;
   cursor: pointer;
 
-  &:focus {
-    border-color: #6b7280;
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
   }
 }
 
@@ -143,15 +158,22 @@
   height: 40px;
   padding: 0 12px;
   border: 0;
+  border-radius: 6px;
   background: transparent;
   color: #6b7280;
   font: inherit;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: color 0.15s ease;
 
   &:hover {
     color: #111827;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
   }
 }
 
@@ -187,6 +209,7 @@
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -217,7 +240,7 @@ td {
 }
 
 tbody tr {
-  transition: background 0.15s ease;
+  transition: background-color 0.15s ease;
 
   &:hover {
     background: #f9fafb;
@@ -316,11 +339,17 @@ tbody tr {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
   &:hover {
     border-color: #d1d5db;
     background: #f9fafb;
     color: #111827;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
   }
 }
 
@@ -412,5 +441,9 @@ tbody tr {
 
   .clear-button {
     align-self: flex-start;
+  }
+
+  .table-header {
+    padding: 16px;
   }
 }

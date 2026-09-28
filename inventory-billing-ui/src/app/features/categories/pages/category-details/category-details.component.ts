@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
@@ -14,11 +16,12 @@ import { CategoryService } from '../../services/category.service';
     templateUrl: './category-details.component.html',
     styleUrl: './category-details.component.scss'
 })
-export class CategoryDetailsComponent implements OnInit {
+export class CategoryDetailsComponent implements OnInit, OnDestroy {
 
     category: Category | null = null;
-
     isLoading = false;
+
+    private readonly destroy$ = new Subject<void>();
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
@@ -27,32 +30,39 @@ export class CategoryDetailsComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        const categoryId = Number(
-            this.activatedRoute.snapshot.paramMap.get('id')
-        );
+        this.activatedRoute.paramMap
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(params => {
+                const categoryId = Number(params.get('id'));
 
-        this.loadCategory(categoryId);
+                if (!Number.isInteger(categoryId) || categoryId <= 0) {
+                    this.category = null;
+                    this.isLoading = false;
+                    this.goBack();
+                    return;
+                }
+
+                this.loadCategory(categoryId);
+            });
     }
 
     loadCategory(id: number): void {
         this.isLoading = true;
+        this.category = null;
 
         this.categoryService
             .getCategoryById(id)
+            .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: category => {
                     this.category = category;
                     this.isLoading = false;
                 },
-
                 error: error => {
-                    console.error(
-                        'Failed to load category:',
-                        error
-                    );
-
+                    console.error('Failed to load category:', error);
                     this.category = null;
                     this.isLoading = false;
+                    // The HTTP error interceptor handles the error notification.
                 }
             });
     }
@@ -71,5 +81,10 @@ export class CategoryDetailsComponent implements OnInit {
 
     goBack(): void {
         this.router.navigate(['/categories']);
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }

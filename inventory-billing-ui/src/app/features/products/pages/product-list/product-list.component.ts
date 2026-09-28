@@ -5,7 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { Product } from '../../../../shared/models/product';
+import { Category } from '../../../../shared/models/category';
+
 import { ProductService } from '../../services/product.service';
+import { CategoryService } from '../../../categories/services/category.service';
 import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
@@ -22,23 +25,26 @@ import { ModalService } from '../../../../core/services/modal.service';
 export class ProductListComponent implements OnInit {
 
   products: Product[] = [];
+  categories: Category[] = [];
 
   searchTerm = '';
-
   selectedCategory = '';
-
   selectedStatus = 'all';
 
   isLoading = false;
+  isLoadingCategories = false;
+  hasLoadError = false;
 
   constructor(
     private readonly productService: ProductService,
+    private readonly categoryService: CategoryService,
     private readonly router: Router,
     private readonly modalService: ModalService
   ) { }
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCategories();
   }
 
   get filteredProducts(): Product[] {
@@ -70,16 +76,32 @@ export class ProductListComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading = true;
+    this.hasLoadError = false;
 
     this.productService.getProducts().subscribe({
       next: products => {
         this.products = products;
         this.isLoading = false;
       },
-
       error: error => {
         console.error('Failed to load products:', error);
+        this.hasLoadError = true;
         this.isLoading = false;
+      }
+    });
+  }
+
+  loadCategories(): void {
+    this.isLoadingCategories = true;
+
+    this.categoryService.getCategories().subscribe({
+      next: categories => {
+        this.categories = categories.filter(category => category.isActive);
+        this.isLoadingCategories = false;
+      },
+      error: error => {
+        console.error('Failed to load categories:', error);
+        this.isLoadingCategories = false;
       }
     });
   }
@@ -124,12 +146,8 @@ export class ProductListComponent implements OnInit {
               item => item.id !== product.id
             );
           },
-
           error: error => {
-            console.error(
-              'Failed to delete product:',
-              error
-            );
+            console.error('Failed to delete product:', error);
           }
         });
       });

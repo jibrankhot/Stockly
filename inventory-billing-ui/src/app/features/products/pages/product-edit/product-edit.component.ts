@@ -1,11 +1,11 @@
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Product } from '../../../../shared/models/product';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { ProductService } from '../../services/product.service';
 import { ProductFormComponent } from '../../components/product-form/product-form.component';
-import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-product-edit',
@@ -42,17 +42,22 @@ export class ProductEditComponent implements OnInit {
   loadProduct(id: number): void {
     this.isLoading = true;
 
-    this.productService.getProductById(id).subscribe({
-      next: product => {
-        this.product = product;
-        this.isLoading = false;
-      },
-      error: error => {
-        console.error('Failed to load product:', error);
-        this.product = null;
-        this.isLoading = false;
-      }
-    });
+    this.productService
+      .getProductById(id)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: product => {
+          this.product = product;
+        },
+        error: error => {
+          console.error('Failed to load product:', error);
+          this.product = null;
+        }
+      });
   }
 
   onSubmit(productData: Partial<Product>): void {
@@ -64,39 +69,37 @@ export class ProductEditComponent implements OnInit {
 
     this.productService
       .updateProduct(this.product.id, productData)
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+        })
+      )
       .subscribe({
         next: updatedProduct => {
-          this.isSubmitting = false;
-
           if (!updatedProduct) {
             this.notificationService.error(
-              'Product could not be updated.',
-              10000
+              'Product could not be updated.'
             );
             return;
           }
 
           this.notificationService.success(
-            'Product updated successfully.',
-            10000
+            'Product updated successfully.'
           );
 
           this.router.navigate(['/products']);
         },
         error: error => {
           console.error('Failed to update product:', error);
-
-          this.isSubmitting = false;
-
-          this.notificationService.error(
-            'Failed to update product. Please try again.',
-            10000
-          );
         }
       });
   }
 
   onCancel(): void {
+    if (this.isSubmitting) {
+      return;
+    }
+
     if (!this.product) {
       this.router.navigate(['/products']);
       return;

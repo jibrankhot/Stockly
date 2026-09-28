@@ -22,9 +22,16 @@
   font: inherit;
   font-size: 12px;
   cursor: pointer;
+  transition: color 0.2s ease;
 
   &:hover {
     color: #111827;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 4px;
+    border-radius: 2px;
   }
 }
 
@@ -38,6 +45,16 @@
 
 .page-header p {
   margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
   color: #6b7280;
   font-size: 14px;
 }
@@ -63,6 +80,11 @@
 
   &:hover {
     background: #f9fafb;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
   }
 }
 
@@ -103,5 +125,11 @@
 @media (max-width: 768px) {
   .page-header h1 {
     font-size: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-button {
+    transition: none;
   }
 }

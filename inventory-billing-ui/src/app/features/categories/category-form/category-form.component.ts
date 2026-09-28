@@ -1,8 +1,11 @@
+
 import {
   Component,
   EventEmitter,
   Input,
-  Output
+  Output,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 
 import {
@@ -23,7 +26,7 @@ import { Category } from '../../../shared/models/category';
   templateUrl: './category-form.component.html',
   styleUrl: './category-form.component.scss'
 })
-export class CategoryFormComponent {
+export class CategoryFormComponent implements OnChanges {
 
   @Input()
   category: Category | null = null;
@@ -62,8 +65,8 @@ export class CategoryFormComponent {
     });
   }
 
-  ngOnInit(): void {
-    if (this.category) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['category'] && this.category) {
       this.categoryForm.patchValue({
         name: this.category.name,
         description: this.category.description,
@@ -73,11 +76,13 @@ export class CategoryFormComponent {
   }
 
   submit(): void {
+    if (this.isSubmitting) {
+      return;
+    }
+
     if (this.categoryForm.invalid) {
       this.categoryForm.markAllAsTouched();
-
       this.focusFirstInvalidField();
-
       return;
     }
 
@@ -87,6 +92,10 @@ export class CategoryFormComponent {
   }
 
   onCancel(): void {
+    if (this.isSubmitting) {
+      return;
+    }
+
     this.cancel.emit();
   }
 

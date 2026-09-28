@@ -1,23 +1,29 @@
 <div class="category-details-page">
 
-    @if (category) {
+    @if (isLoading) {
 
+    <!-- Loading State -->
+    <div class="not-found loading-state" role="status" aria-live="polite">
+        <div class="loading-indicator"></div>
+
+        <h2>Loading category...</h2>
+
+        <p>Please wait while category details are being loaded.</p>
+    </div>
+
+    } @else if (category) {
+
+    <!-- Page Header -->
     <div class="page-header">
 
         <div>
-
             <button type="button" class="back-button" (click)="goBack()">
                 ← Back to Categories
             </button>
 
-            <h1>
-                Category Details
-            </h1>
+            <h1>Category Details</h1>
 
-            <p>
-                View information about this category.
-            </p>
-
+            <p>View information about this category.</p>
         </div>
 
         <button type="button" class="btn btn-primary" (click)="editCategory()">
@@ -26,20 +32,19 @@
 
     </div>
 
-
+    <!-- Category Details Card -->
     <section class="details-card">
 
+        <!-- Category Heading -->
         <div class="category-heading">
 
             <div class="category-avatar">
                 {{ category.name.charAt(0).toUpperCase() }}
             </div>
 
-            <div>
+            <div class="category-heading-info">
 
-                <h2>
-                    {{ category.name }}
-                </h2>
+                <h2>{{ category.name }}</h2>
 
                 <span class="status-badge" [class.active]="category.isActive" [class.inactive]="!category.isActive">
                     {{ category.isActive ? 'Active' : 'Inactive' }}
@@ -49,9 +54,10 @@
 
         </div>
 
-
+        <!-- Category Information -->
         <div class="details-grid">
 
+            <!-- Category Name -->
             <div class="detail-item">
 
                 <span class="detail-label">
@@ -64,7 +70,7 @@
 
             </div>
 
-
+            <!-- Product Count -->
             <div class="detail-item">
 
                 <span class="detail-label">
@@ -77,7 +83,7 @@
 
             </div>
 
-
+            <!-- Description -->
             <div class="detail-item full-width">
 
                 <span class="detail-label">
@@ -90,7 +96,7 @@
 
             </div>
 
-
+            <!-- Created Date -->
             <div class="detail-item">
 
                 <span class="detail-label">
@@ -103,7 +109,7 @@
 
             </div>
 
-
+            <!-- Updated Date -->
             <div class="detail-item">
 
                 <span class="detail-label">
@@ -122,15 +128,12 @@
 
     } @else {
 
+    <!-- Not Found State -->
     <div class="not-found">
 
-        <div class="not-found-icon">
-            ?
-        </div>
+        <div class="not-found-icon">?</div>
 
-        <h2>
-            Category Not Found
-        </h2>
+        <h2>Category Not Found</h2>
 
         <p>
             The category you're looking for doesn't exist.

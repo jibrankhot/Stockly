@@ -1,9 +1,12 @@
 <div class="product-edit-page">
 
-    @if (product) {
+    @if (isLoading) {
+    <div class="loading-state">
+        <p>Loading product...</p>
+    </div>
+    } @else if (product) {
 
     <div class="page-header">
-
         <div>
             <button type="button" class="back-button" (click)="onCancel()">
                 ← Back to Product
@@ -15,7 +18,6 @@
                 Update the information for {{ product.name }}.
             </p>
         </div>
-
     </div>
 
     <app-product-form [product]="product" [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
@@ -24,10 +26,7 @@
     } @else {
 
     <div class="not-found">
-
-        <div class="not-found-icon">
-            ?
-        </div>
+        <div class="not-found-icon">?</div>
 
         <h2>Product Not Found</h2>
 
@@ -38,7 +37,6 @@
         <button type="button" class="btn btn-secondary" (click)="goBack()">
             Back to Products
         </button>
-
     </div>
 
     }

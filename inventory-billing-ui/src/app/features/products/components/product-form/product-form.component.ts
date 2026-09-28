@@ -1,3 +1,4 @@
+
 import {
   Component,
   EventEmitter,
@@ -16,6 +17,7 @@ import {
 import { Product } from '../../../../shared/models/product';
 import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../../categories/services/category.service';
+import { ModalService } from '../../../../core/services/modal.service';
 
 @Component({
   selector: 'app-product-form',
@@ -48,7 +50,8 @@ export class ProductFormComponent implements OnInit {
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly categoryService: CategoryService
+    private readonly categoryService: CategoryService,
+    private readonly modalService: ModalService
   ) {
     this.productForm = this.formBuilder.group({
       sku: [
@@ -176,6 +179,10 @@ export class ProductFormComponent implements OnInit {
   }
 
   submit(): void {
+    if (this.isSubmitting) {
+      return;
+    }
+
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
 
@@ -219,7 +226,26 @@ export class ProductFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.cancel.emit();
+    if (this.isSubmitting) {
+      return;
+    }
+
+    if (this.productForm.pristine) {
+      this.cancel.emit();
+      return;
+    }
+
+    this.modalService.open(
+      'Discard Changes?',
+      'You have unsaved changes. Are you sure you want to leave without saving?',
+      'Discard',
+      'Keep Editing',
+      'danger'
+    ).subscribe(confirmed => {
+      if (confirmed) {
+        this.cancel.emit();
+      }
+    });
   }
 
   isFieldInvalid(fieldName: string): boolean {

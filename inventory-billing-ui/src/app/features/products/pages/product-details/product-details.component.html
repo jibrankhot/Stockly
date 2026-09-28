@@ -1,9 +1,33 @@
 <div class="product-details-page">
 
-    @if (product) {
+    @if (isLoading) {
+
+    <div class="not-found">
+        <h2>Loading product...</h2>
+        <p>Please wait while the product details are being loaded.</p>
+    </div>
+
+    } @else if (hasLoadError) {
+
+    <div class="not-found">
+        <div class="not-found-icon">!</div>
+
+        <h2>Unable to Load Product</h2>
+
+        <p>
+            Something went wrong while loading this product.
+        </p>
+
+        <div class="bottom-actions">
+            <button type="button" class="btn btn-secondary" (click)="goBack()">
+                Back to Products
+            </button>
+        </div>
+    </div>
+
+    } @else if (product) {
 
     <!-- Page Header -->
-
     <div class="page-header">
 
         <div class="page-header-left">
@@ -19,12 +43,9 @@
                 </div>
 
                 <div>
-
                     <div class="title-with-status">
 
-                        <h1>
-                            {{ product.name }}
-                        </h1>
+                        <h1>{{ product.name }}</h1>
 
                         <span class="status-badge" [class.active]="product.isActive"
                             [class.inactive]="!product.isActive">
@@ -33,10 +54,7 @@
 
                     </div>
 
-                    <p>
-                        SKU: {{ product.sku }}
-                    </p>
-
+                    <p>SKU: {{ product.sku }}</p>
                 </div>
 
             </div>
@@ -49,178 +67,105 @@
 
     </div>
 
-
     <!-- Product Information -->
-
     <div class="details-grid">
 
         <!-- Basic Information -->
-
         <section class="details-card">
 
             <div class="card-header">
-
                 <div>
                     <h2>Basic Information</h2>
                     <p>Product identification and classification.</p>
                 </div>
-
             </div>
 
             <div class="details-content">
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Product Name
-                    </span>
-
-                    <strong>
-                        {{ product.name }}
-                    </strong>
-
+                    <span class="detail-label">Product Name</span>
+                    <strong>{{ product.name }}</strong>
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        SKU
-                    </span>
-
-                    <strong class="sku">
-                        {{ product.sku }}
-                    </strong>
-
+                    <span class="detail-label">SKU</span>
+                    <strong class="sku">{{ product.sku }}</strong>
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Category
-                    </span>
-
-                    <strong>
-                        {{ product.categoryName }}
-                    </strong>
-
+                    <span class="detail-label">Category</span>
+                    <strong>{{ product.categoryName }}</strong>
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Unit
-                    </span>
-
-                    <strong>
-                        {{ product.unit }}
-                    </strong>
-
+                    <span class="detail-label">Unit</span>
+                    <strong>{{ product.unit }}</strong>
                 </div>
 
                 <div class="detail-item full-width">
-
-                    <span class="detail-label">
-                        Description
-                    </span>
+                    <span class="detail-label">Description</span>
 
                     <p class="description">
                         {{ product.description || 'No description available.' }}
                     </p>
-
                 </div>
 
             </div>
-
         </section>
 
-
         <!-- Pricing -->
-
         <section class="details-card">
 
             <div class="card-header">
-
                 <div>
                     <h2>Pricing & Tax</h2>
                     <p>Product pricing information.</p>
                 </div>
-
             </div>
 
             <div class="details-content">
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Purchase Price
-                    </span>
-
+                    <span class="detail-label">Purchase Price</span>
                     <strong class="price">
                         ₹{{ product.purchasePrice | number:'1.2-2' }}
                     </strong>
-
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Selling Price
-                    </span>
-
+                    <span class="detail-label">Selling Price</span>
                     <strong class="price">
                         ₹{{ product.sellingPrice | number:'1.2-2' }}
                     </strong>
-
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Tax Rate
-                    </span>
-
-                    <strong>
-                        {{ product.taxRate }}%
-                    </strong>
-
+                    <span class="detail-label">Tax Rate</span>
+                    <strong>{{ product.taxRate }}%</strong>
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Profit per Unit
-                    </span>
-
+                    <span class="detail-label">Profit per Unit</span>
                     <strong class="profit">
                         ₹{{ product.sellingPrice - product.purchasePrice | number:'1.2-2' }}
                     </strong>
-
                 </div>
 
             </div>
-
         </section>
 
-
         <!-- Inventory -->
-
         <section class="details-card inventory-card">
 
             <div class="card-header">
-
                 <div>
                     <h2>Inventory</h2>
                     <p>Current stock information.</p>
                 </div>
 
                 @if (isLowStock()) {
-
-                <span class="low-stock-badge">
-                    Low Stock
-                </span>
-
+                <span class="low-stock-badge">Low Stock</span>
                 }
-
             </div>
 
             <div class="details-content">
@@ -228,31 +173,16 @@
                 <div class="stock-overview">
 
                     <div>
-
-                        <span class="detail-label">
-                            Current Stock
-                        </span>
-
+                        <span class="detail-label">Current Stock</span>
                         <strong class="stock-value">
                             {{ product.currentStock }}
                         </strong>
-
-                        <span class="stock-unit">
-                            {{ product.unit }}
-                        </span>
-
+                        <span class="stock-unit">{{ product.unit }}</span>
                     </div>
 
                     <div>
-
-                        <span class="detail-label">
-                            Minimum Stock
-                        </span>
-
-                        <strong>
-                            {{ product.minimumStock }}
-                        </strong>
-
+                        <span class="detail-label">Minimum Stock</span>
+                        <strong>{{ product.minimumStock }}</strong>
                     </div>
 
                 </div>
@@ -260,103 +190,67 @@
                 <div class="stock-progress-wrapper">
 
                     <div class="stock-progress-header">
-
-                        <span>
-                            Stock Level
-                        </span>
+                        <span>Stock Level</span>
 
                         <span>
                             {{ getStockPercentage() | number:'1.0-0' }}%
                         </span>
-
                     </div>
 
                     <div class="stock-bar">
-
                         <div class="stock-progress" [class.low]="isLowStock()" [style.width.%]="getStockPercentage()">
                         </div>
-
                     </div>
 
                 </div>
 
             </div>
-
         </section>
 
-
         <!-- System Information -->
-
         <section class="details-card">
 
             <div class="card-header">
-
                 <div>
                     <h2>System Information</h2>
                     <p>Product record information.</p>
                 </div>
-
             </div>
 
             <div class="details-content">
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Product ID
-                    </span>
-
-                    <strong>
-                        #{{ product.id }}
-                    </strong>
-
+                    <span class="detail-label">Product ID</span>
+                    <strong>#{{ product.id }}</strong>
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Created
-                    </span>
-
+                    <span class="detail-label">Created</span>
                     <strong>
                         {{ product.createdAt | date:'dd MMM yyyy' }}
                     </strong>
-
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Last Updated
-                    </span>
-
+                    <span class="detail-label">Last Updated</span>
                     <strong>
                         {{ product.updatedAt | date:'dd MMM yyyy' }}
                     </strong>
-
                 </div>
 
                 <div class="detail-item">
-
-                    <span class="detail-label">
-                        Status
-                    </span>
-
+                    <span class="detail-label">Status</span>
                     <strong>
                         {{ product.isActive ? 'Active' : 'Inactive' }}
                     </strong>
-
                 </div>
 
             </div>
-
         </section>
 
     </div>
 
-
     <!-- Bottom Actions -->
-
     <div class="bottom-actions">
 
         <button type="button" class="btn btn-secondary" (click)="goBack()">
@@ -372,18 +266,13 @@
     } @else {
 
     <!-- Not Found -->
-
     <div class="not-found">
 
-        <div class="not-found-icon">
-            ?
-        </div>
+        <div class="not-found-icon">?</div>
 
         <h2>Product Not Found</h2>
 
-        <p>
-            The product you're looking for doesn't exist.
-        </p>
+        <p>The product you're looking for doesn't exist.</p>
 
         <button type="button" class="btn btn-secondary" (click)="goBack()">
             Back to Products
