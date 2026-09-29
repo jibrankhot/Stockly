@@ -2,7 +2,6 @@
 
     <!-- Header -->
     <div class="page-header">
-
         <div>
             <h1>Customers</h1>
             <p>Manage your customers and their information.</p>
@@ -11,85 +10,47 @@
         <a routerLink="/customers/create" class="btn btn-primary">
             + Add Customer
         </a>
-
     </div>
-
 
     <!-- Summary -->
     <div class="summary-grid">
 
         <div class="summary-card">
-            <span class="summary-label">
-                Total Customers
-            </span>
-
-            <strong>
-                {{ totalCustomerCount }}
-            </strong>
+            <span class="summary-label">Total Customers</span>
+            <strong>{{ totalCustomerCount }}</strong>
         </div>
 
         <div class="summary-card">
-            <span class="summary-label">
-                Active
-            </span>
-
-            <strong>
-                {{ activeCustomerCount }}
-            </strong>
+            <span class="summary-label">Active</span>
+            <strong>{{ activeCustomerCount }}</strong>
         </div>
 
         <div class="summary-card">
-            <span class="summary-label">
-                Inactive
-            </span>
-
-            <strong>
-                {{ inactiveCustomerCount }}
-            </strong>
+            <span class="summary-label">Inactive</span>
+            <strong>{{ inactiveCustomerCount }}</strong>
         </div>
 
     </div>
-
 
     <!-- Filters -->
     <section class="filter-card">
 
         <div class="filter-group search-group">
-
-            <label for="search">
-                Search
-            </label>
+            <label for="search">Search</label>
 
             <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
-                placeholder="Search by name, code, email or phone">
-
+                placeholder="Search by name, code, email or phone" />
         </div>
-
 
         <div class="filter-group">
-
-            <label for="status">
-                Status
-            </label>
+            <label for="status">Status</label>
 
             <select id="status" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
-
-                <option value="all">
-                    All
-                </option>
-
-                <option value="active">
-                    Active
-                </option>
-
-                <option value="inactive">
-                    Inactive
-                </option>
-
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
             </select>
-
         </div>
-
 
         <button type="button" class="btn btn-outline clear-btn" (click)="clearFilters()">
             Clear
@@ -97,28 +58,25 @@
 
     </section>
 
-
     <!-- Loading -->
     <div *ngIf="isLoading" class="state-card">
-
         <p>Loading customers...</p>
-
     </div>
-
 
     <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-message">
+    <div *ngIf="!isLoading && errorMessage" class="error-message" role="alert">
+        <p>{{ errorMessage }}</p>
 
-        {{ errorMessage }}
-
+        <button type="button" class="btn btn-outline" (click)="loadCustomers()"
+            [disabled]="isDeletingCustomerId !== null">
+            Retry
+        </button>
     </div>
 
-
-    <!-- Table -->
+    <!-- Customer Table -->
     <section *ngIf="!isLoading && !errorMessage" class="table-card">
 
         <div class="table-header">
-
             <div>
                 <h2>Customer List</h2>
 
@@ -127,16 +85,12 @@
                     {{ filteredCustomers.length === 1 ? 'customer' : 'customers' }}
                 </span>
             </div>
-
         </div>
-
 
         <div class="table-wrapper">
 
             <table>
-
                 <thead>
-
                     <tr>
                         <th>Code</th>
                         <th>Customer</th>
@@ -146,9 +100,7 @@
                         <th>Created</th>
                         <th class="actions-column">Actions</th>
                     </tr>
-
                 </thead>
-
 
                 <tbody>
 
@@ -160,9 +112,7 @@
                             </span>
                         </td>
 
-
                         <td>
-
                             <div class="customer-name">
                                 {{ customer.name }}
                             </div>
@@ -170,12 +120,9 @@
                             <div *ngIf="customer.taxNumber" class="tax-number">
                                 Tax No: {{ customer.taxNumber }}
                             </div>
-
                         </td>
 
-
                         <td>
-
                             <div class="contact-info">
                                 {{ customer.email }}
                             </div>
@@ -183,45 +130,32 @@
                             <div class="contact-info">
                                 {{ customer.phone }}
                             </div>
-
                         </td>
 
-
                         <td>
-
-                            <div>
-                                {{ customer.city }}
-                            </div>
+                            <div>{{ customer.city }}</div>
 
                             <div class="location-secondary">
                                 {{ customer.state }}
+
                                 <span *ngIf="customer.postalCode">
                                     - {{ customer.postalCode }}
                                 </span>
                             </div>
-
                         </td>
-
 
                         <td>
-
                             <span class="status-badge" [class.status-active]="customer.isActive"
                                 [class.status-inactive]="!customer.isActive">
-
                                 {{ customer.isActive ? 'Active' : 'Inactive' }}
-
                             </span>
-
                         </td>
-
 
                         <td>
                             {{ customer.createdAt | date:'dd MMM yyyy' }}
                         </td>
 
-
                         <td>
-
                             <div class="actions">
 
                                 <a [routerLink]="['/customers', customer.id]" class="action-link">
@@ -232,37 +166,46 @@
                                     Edit
                                 </a>
 
-                                <button type="button" class="action-link delete-link"
-                                    (click)="deleteCustomer(customer)">
-                                    Delete
+                                <button type="button" class="action-link delete-link" (click)="deleteCustomer(customer)"
+                                    [disabled]="isDeletingCustomerId !== null">
+                                    {{
+                                    isDeletingCustomerId === customer.id
+                                    ? 'Deleting...'
+                                    : 'Delete'
+                                    }}
                                 </button>
 
                             </div>
-
                         </td>
 
                     </tr>
 
-
-                    <!-- Empty -->
+                    <!-- Empty State -->
                     <tr *ngIf="filteredCustomers.length === 0">
 
                         <td colspan="7" class="empty-state">
-
                             <div>
-                                <strong>No customers found</strong>
+                                <strong>
+                                    {{
+                                    customers.length === 0
+                                    ? 'No customers yet'
+                                    : 'No customers found'
+                                    }}
+                                </strong>
 
                                 <p>
-                                    Try changing your search or filters.
+                                    {{
+                                    customers.length === 0
+                                    ? 'Add your first customer to get started.'
+                                    : 'Try changing your search or filters.'
+                                    }}
                                 </p>
                             </div>
-
                         </td>
 
                     </tr>
 
                 </tbody>
-
             </table>
 
         </div>

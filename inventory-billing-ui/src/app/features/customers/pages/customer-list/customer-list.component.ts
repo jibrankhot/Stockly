@@ -3,10 +3,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../../../shared/models/customer';
 import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-customer-list',
@@ -28,12 +30,14 @@ export class CustomerListComponent implements OnInit {
   searchTerm = '';
   statusFilter = 'all';
 
-  isLoading = true;
+  isLoading = false;
   errorMessage = '';
+  isDeletingCustomerId: number | null = null;
 
   constructor(
     private readonly customerService: CustomerService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -41,44 +45,53 @@ export class CustomerListComponent implements OnInit {
   }
 
   loadCustomers(): void {
+    if (this.isLoading) {
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.customerService.getCustomers().subscribe({
-      next: customers => {
-        this.customers = customers;
-        this.applyFilters();
-        this.isLoading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Unable to load customers.';
-        this.isLoading = false;
-      }
-    });
+    this.customerService
+      .getCustomers()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: customers => {
+          this.customers = customers ?? [];
+          this.applyFilters();
+        },
+        error: () => {
+          this.errorMessage = 'Unable to load customers.';
+
+          this.notificationService.error(
+            this.errorMessage
+          );
+        }
+      });
   }
 
   applyFilters(): void {
-    const search = this.searchTerm
-      .trim()
-      .toLowerCase();
+    const search = this.searchTerm.trim().toLowerCase();
 
-    this.filteredCustomers = this.customers.filter(
-      customer => {
-        const matchesSearch =
-          !search ||
-          customer.code.toLowerCase().includes(search) ||
-          customer.name.toLowerCase().includes(search) ||
-          customer.email.toLowerCase().includes(search) ||
-          customer.phone.toLowerCase().includes(search);
+    this.filteredCustomers = this.customers.filter(customer => {
+      const matchesSearch =
+        !search ||
+        customer.code.toLowerCase().includes(search) ||
+        customer.name.toLowerCase().includes(search) ||
+        customer.email.toLowerCase().includes(search) ||
+        customer.phone.toLowerCase().includes(search);
 
-        const matchesStatus =
-          this.statusFilter === 'all' ||
-          (this.statusFilter === 'active' && customer.isActive) ||
-          (this.statusFilter === 'inactive' && !customer.isActive);
+      const matchesStatus =
+        this.statusFilter === 'all' ||
+        (this.statusFilter === 'active' && customer.isActive) ||
+        (this.statusFilter === 'inactive' && !customer.isActive);
 
-        return matchesSearch && matchesStatus;
-      }
-    );
+      return matchesSearch && matchesStatus;
+    });
   }
 
   clearFilters(): void {
@@ -89,6 +102,10 @@ export class CustomerListComponent implements OnInit {
   }
 
   deleteCustomer(customer: Customer): void {
+    if (this.isDeletingCustomerId !== null) {
+      return;
+    }
+
     this.modalService
       .open(
         'Delete Customer?',
@@ -102,17 +119,55 @@ export class CustomerListComponent implements OnInit {
           return;
         }
 
-        this.customerService
-          .deleteCustomer(customer.id)
-          .subscribe({
-            next: () => {
-              this.loadCustomers();
-            },
-            error: () => {
-              this.errorMessage =
-                'Unable to delete customer.';
-            }
-          });
+        this.performDelete(customer);
+      });
+  }
+
+  private performDelete(customer: Customer): void {
+    if (this.isDeletingCustomerId !== null) {
+      return;
+    }
+
+    this.isDeletingCustomerId = customer.id;
+    this.errorMessage = '';
+
+    this.customerService
+      .deleteCustomer(customer.id)
+      .pipe(
+        finalize(() => {
+          this.isDeletingCustomerId = null;
+        })
+      )
+      .subscribe({
+        next: success => {
+          if (!success) {
+            this.errorMessage =
+              'Unable to delete customer.';
+
+            this.notificationService.error(
+              this.errorMessage
+            );
+            return;
+          }
+
+          this.customers = this.customers.filter(
+            item => item.id !== customer.id
+          );
+
+          this.applyFilters();
+
+          this.notificationService.success(
+            'Customer deleted successfully.'
+          );
+        },
+        error: () => {
+          this.errorMessage =
+            'Unable to delete customer.';
+
+          this.notificationService.error(
+            this.errorMessage
+          );
+        }
       });
   }
 

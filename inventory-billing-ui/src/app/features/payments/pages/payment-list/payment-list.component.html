@@ -11,9 +11,7 @@
       </p>
     </div>
 
-    <a
-      routerLink="/payments/create"
-      class="btn btn-primary">
+    <a routerLink="/payments/create" class="btn btn-primary">
       + Record Payment
     </a>
 
@@ -73,11 +71,7 @@
         Search
       </label>
 
-      <input
-        id="search"
-        type="text"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="applyFilters()"
+      <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
         placeholder="Payment, invoice, customer or reference">
 
     </div>
@@ -89,10 +83,7 @@
         Payment Method
       </label>
 
-      <select
-        id="method"
-        [(ngModel)]="methodFilter"
-        (ngModelChange)="applyFilters()">
+      <select id="method" [(ngModel)]="methodFilter" (ngModelChange)="applyFilters()">
 
         <option value="all">
           All Methods
@@ -123,10 +114,7 @@
     </div>
 
 
-    <button
-      type="button"
-      class="btn btn-outline"
-      (click)="clearFilters()">
+    <button type="button" class="btn btn-outline" (click)="clearFilters()">
 
       Clear
 
@@ -136,9 +124,7 @@
 
 
   <!-- Loading -->
-  <div
-    *ngIf="isLoading"
-    class="state-card">
+  <div *ngIf="isLoading" class="state-card">
 
     Loading payments...
 
@@ -146,9 +132,7 @@
 
 
   <!-- Error -->
-  <div
-    *ngIf="!isLoading && errorMessage"
-    class="error-message">
+  <div *ngIf="!isLoading && errorMessage" class="error-message">
 
     {{ errorMessage }}
 
@@ -156,9 +140,7 @@
 
 
   <!-- Table -->
-  <section
-    *ngIf="!isLoading && !errorMessage"
-    class="table-card">
+  <section *ngIf="!isLoading && !errorMessage" class="table-card">
 
     <div class="table-header">
 
@@ -171,8 +153,8 @@
         <span>
           {{ filteredPayments.length }}
           {{ filteredPayments.length === 1
-            ? 'payment'
-            : 'payments' }}
+          ? 'payment'
+          : 'payments' }}
         </span>
 
       </div>
@@ -193,9 +175,11 @@
             <th>Customer</th>
             <th>Method</th>
             <th>Reference</th>
+
             <th class="text-right">
               Amount
             </th>
+
             <th>Actions</th>
           </tr>
 
@@ -204,10 +188,7 @@
 
         <tbody>
 
-          <tr
-            *ngFor="
-              let payment of filteredPayments
-            ">
+          <tr *ngFor="let payment of filteredPayments">
 
             <td>
 
@@ -219,8 +200,7 @@
 
 
             <td>
-              {{ payment.paymentDate
-                | date:'dd MMM yyyy' }}
+              {{ payment.paymentDate | date:'dd MMM yyyy' }}
             </td>
 
 
@@ -244,19 +224,9 @@
 
             <td>
 
-              <span
-                class="method-badge"
-                [ngClass]="
-                  getMethodClass(
-                    payment.paymentMethod
-                  )
-                ">
+              <span class="method-badge" [ngClass]="getMethodClass(payment.paymentMethod)">
 
-                {{
-                  getMethodLabel(
-                    payment.paymentMethod
-                  )
-                }}
+                {{ getMethodLabel(payment.paymentMethod) }}
 
               </span>
 
@@ -264,17 +234,14 @@
 
 
             <td>
-
               {{ payment.referenceNumber || '—' }}
-
             </td>
 
 
             <td class="text-right">
 
               <span class="amount">
-                ₹{{ payment.amount
-                  | number:'1.2-2' }}
+                ₹{{ payment.amount | number:'1.2-2' }}
               </span>
 
             </td>
@@ -284,16 +251,17 @@
 
               <div class="actions">
 
-                <a
-                  [routerLink]="[
-                    '/payments',
-                    payment.id
-                  ]"
-                  class="action-link">
+                <a [routerLink]="['/payments', payment.id]" class="action-link">
 
                   View
 
                 </a>
+
+                <button type="button" class="action-link delete-action" (click)="deletePayment(payment)">
+
+                  Delete
+
+                </button>
 
               </div>
 
@@ -303,14 +271,9 @@
 
 
           <!-- Empty -->
-          <tr
-            *ngIf="
-              filteredPayments.length === 0
-            ">
+          <tr *ngIf="filteredPayments.length === 0">
 
-            <td
-              colspan="8"
-              class="empty-state">
+            <td colspan="8" class="empty-state">
 
               <strong>
                 No payments found

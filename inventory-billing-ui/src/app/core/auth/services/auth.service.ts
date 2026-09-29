@@ -1,19 +1,19 @@
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { ApiClientService } from '../../http/services/api-client.service';
 import { StorageService } from '../../services/storage.service';
-import { TokenService } from './token.service';
 
 import { AuthUser } from '../models/auth-user';
 import {
   BackendAuthUser,
-  LoginResponse
+  LoginResponse,
 } from '../models/login-response';
 
+import { TokenService } from './token.service';
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly currentUserKey = 'stockly_current_user';
@@ -26,7 +26,7 @@ export class AuthService {
   constructor(
     private readonly apiClient: ApiClientService,
     private readonly tokenService: TokenService,
-    private readonly storageService: StorageService
+    private readonly storageService: StorageService,
   ) {
     this.loadStoredUser();
   }
@@ -47,8 +47,9 @@ export class AuthService {
 
           if (!backendUser.is_active) {
             this.logout();
+
             throw new Error(
-              'Your account is inactive. Please contact your administrator.'
+              'Your account is inactive. Please contact your administrator.',
             );
           }
 
@@ -56,7 +57,7 @@ export class AuthService {
 
           this.tokenService.setAccessToken(response.data.token);
           this.setCurrentUser(user);
-        })
+        }),
       );
   }
 
@@ -129,7 +130,7 @@ export class AuthService {
       lastName,
       fullName: user.full_name,
       roles: user.roles ? [user.roles.name] : [],
-      permissions: []
+      permissions: [],
     };
   }
 }

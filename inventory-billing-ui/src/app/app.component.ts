@@ -1,6 +1,6 @@
-
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
 import { ConfirmationDialogComponent } from './shared/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -10,9 +10,9 @@ import { ConfirmationDialogComponent } from './shared/components/confirmation-di
   imports: [
     RouterOutlet,
     NotificationToastComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent { }

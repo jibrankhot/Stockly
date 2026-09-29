@@ -1,274 +1,263 @@
+
 :host {
-  display: block;
+    display: block;
 }
 
 .supplier-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* Sections */
-
 .form-section {
-  padding: 24px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
 }
 
 .section-header {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 
-  h2 {
-    margin: 0;
-    color: #111827;
-    font-size: 16px;
-    font-weight: 600;
-  }
+    h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 16px;
+        font-weight: 600;
+    }
 
-  p {
-    margin: 5px 0 0;
-    color: #9ca3af;
-    font-size: 12px;
-  }
+    p {
+        margin: 5px 0 0;
+        color: #9ca3af;
+        font-size: 12px;
+    }
 }
 
 /* Grid */
-
 .form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
 }
 
 .form-field {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
 }
 
 .full-width {
-  grid-column: 1 / -1;
+    grid-column: 1 / -1;
 }
 
 /* Labels */
-
 .form-field label:not(.toggle-field) {
-  color: #374151;
-  font-size: 13px;
-  font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .required {
-  color: #dc2626;
+    color: #dc2626;
 }
 
 /* Inputs */
-
 input,
 select,
 textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
-  font: inherit;
-  font-size: 13px;
-  outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    &:focus {
+        border-color: #6b7280;
+        box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+    }
 
-  &:focus {
-    border-color: #6b7280;
-    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
-  }
+    &.invalid {
+        border-color: #dc2626;
+    }
 
-  &.invalid {
-    border-color: #dc2626;
-  }
-
-  &:disabled {
-    background: #f9fafb;
-    color: #9ca3af;
-    cursor: not-allowed;
-  }
+    &:disabled {
+        background: #f9fafb;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
 }
 
 input,
 select {
-  height: 42px;
-  padding: 0 12px;
+    height: 42px;
+    padding: 0 12px;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af;
+    color: #9ca3af;
 }
 
 select {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 textarea {
-  min-height: 100px;
-  padding: 10px 12px;
-  resize: vertical;
+    min-height: 100px;
+    padding: 10px 12px;
+    resize: vertical;
 }
 
 /* Errors */
-
 .error-message {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  color: #dc2626;
-  font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    color: #dc2626;
+    font-size: 11px;
 }
 
 /* Toggle */
-
 .toggle-field {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
 }
 
 .toggle-field input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .toggle {
-  position: relative;
-  width: 42px;
-  height: 24px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  background: #d1d5db;
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: #d1d5db;
+    transition: background 0.15s ease;
 
-  transition: background 0.15s ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-
-    transition: transform 0.15s ease;
-  }
+    &::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        transition: transform 0.15s ease;
+    }
 }
 
 .toggle-field input:checked + .toggle {
-  background: #111827;
+    background: #111827;
 
-  &::after {
-    transform: translateX(18px);
-  }
+    &::after {
+        transform: translateX(18px);
+    }
 }
 
 .toggle-content {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 
-  strong {
-    color: #374151;
-    font-size: 13px;
-    font-weight: 600;
-  }
+    strong {
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+    }
 
-  small {
-    color: #9ca3af;
-    font-size: 11px;
-  }
+    small {
+        color: #9ca3af;
+        font-size: 11px;
+    }
 }
 
 /* Buttons */
-
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 4px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
 }
 
 .btn {
-  min-width: 110px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
+    min-width: 110px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
 
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 }
 
 .btn-primary {
-  border: 1px solid #111827;
-  background: #111827;
-  color: #ffffff;
+    border: 1px solid #111827;
+    background: #111827;
+    color: #ffffff;
 
-  &:hover:not(:disabled) {
-    background: #1f2937;
-  }
+    &:hover:not(:disabled) {
+        background: #1f2937;
+    }
 }
 
 .btn-secondary {
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
 
-  &:hover:not(:disabled) {
-    background: #f9fafb;
-  }
+    &:hover:not(:disabled) {
+        background: #f9fafb;
+    }
 }
 
 /* Responsive */
-
 @media (max-width: 768px) {
-  .form-section {
-    padding: 18px;
-  }
+    .form-section {
+        padding: 18px;
+    }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 
-  .full-width {
-    grid-column: auto;
-  }
+    .full-width {
+        grid-column: auto;
+    }
 }
 
 @media (max-width: 480px) {
-  .form-actions {
-    flex-direction: column-reverse;
-  }
+    .form-actions {
+        flex-direction: column-reverse;
+    }
 
-  .btn {
-    width: 100%;
-  }
+    .btn {
+        width: 100%;
+    }
 }

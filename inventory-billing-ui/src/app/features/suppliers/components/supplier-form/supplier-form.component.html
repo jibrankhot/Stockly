@@ -1,7 +1,6 @@
 <form class="supplier-form" [formGroup]="supplierForm" (ngSubmit)="submit()" novalidate>
 
     <!-- Basic Information -->
-
     <section class="form-section">
 
         <div class="section-header">
@@ -12,40 +11,23 @@
         <div class="form-grid">
 
             <!-- Supplier Code -->
-
             <div class="form-field">
-
-                <label for="code">
-                    Supplier Code
-                    <span class="required">*</span>
-                </label>
+                <label for="code">Supplier Code</label>
 
                 <input id="code" type="text" formControlName="code" placeholder="e.g. SUP-001"
                     [class.invalid]="isFieldInvalid('code')" />
 
                 @if (isFieldInvalid('code')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('code')?.hasError('required')) {
-                    <span>Supplier code is required.</span>
-                    }
-
                     @if (supplierForm.get('code')?.hasError('maxlength')) {
                     <span>Supplier code cannot exceed 30 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
-
             <!-- Supplier Name -->
-
             <div class="form-field">
-
                 <label for="name">
                     Supplier Name
                     <span class="required">*</span>
@@ -55,9 +37,7 @@
                     [class.invalid]="isFieldInvalid('name')" />
 
                 @if (isFieldInvalid('name')) {
-
                 <div class="error-message">
-
                     @if (supplierForm.get('name')?.hasError('required')) {
                     <span>Supplier name is required.</span>
                     }
@@ -65,51 +45,14 @@
                     @if (supplierForm.get('name')?.hasError('maxlength')) {
                     <span>Supplier name cannot exceed 150 characters.</span>
                     }
-
                 </div>
-
                 }
-
-            </div>
-
-
-            <!-- Contact Person -->
-
-            <div class="form-field">
-
-                <label for="contactPerson">
-                    Contact Person
-                    <span class="required">*</span>
-                </label>
-
-                <input id="contactPerson" type="text" formControlName="contactPerson" placeholder="Enter contact person"
-                    [class.invalid]="isFieldInvalid('contactPerson')" />
-
-                @if (isFieldInvalid('contactPerson')) {
-
-                <div class="error-message">
-
-                    @if (supplierForm.get('contactPerson')?.hasError('required')) {
-                    <span>Contact person is required.</span>
-                    }
-
-                    @if (supplierForm.get('contactPerson')?.hasError('maxlength')) {
-                    <span>Contact person cannot exceed 100 characters.</span>
-                    }
-
-                </div>
-
-                }
-
             </div>
 
         </div>
-
     </section>
 
-
     <!-- Contact Information -->
-
     <section class="form-section">
 
         <div class="section-header">
@@ -120,25 +63,14 @@
         <div class="form-grid">
 
             <!-- Email -->
-
             <div class="form-field">
-
-                <label for="email">
-                    Email
-                    <span class="required">*</span>
-                </label>
+                <label for="email">Email</label>
 
                 <input id="email" type="email" formControlName="email" placeholder="supplier@example.com"
                     [class.invalid]="isFieldInvalid('email')" />
 
                 @if (isFieldInvalid('email')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('email')?.hasError('required')) {
-                    <span>Email is required.</span>
-                    }
-
                     @if (supplierForm.get('email')?.hasError('email')) {
                     <span>Please enter a valid email address.</span>
                     }
@@ -146,51 +78,30 @@
                     @if (supplierForm.get('email')?.hasError('maxlength')) {
                     <span>Email cannot exceed 150 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
-
             <!-- Phone -->
-
             <div class="form-field">
-
-                <label for="phone">
-                    Phone
-                    <span class="required">*</span>
-                </label>
+                <label for="phone">Phone</label>
 
                 <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number"
                     [class.invalid]="isFieldInvalid('phone')" />
 
                 @if (isFieldInvalid('phone')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('phone')?.hasError('required')) {
-                    <span>Phone number is required.</span>
-                    }
-
                     @if (supplierForm.get('phone')?.hasError('maxlength')) {
                     <span>Phone number cannot exceed 20 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
         </div>
-
     </section>
 
-
     <!-- Address -->
-
     <section class="form-section">
 
         <div class="section-header">
@@ -201,219 +112,100 @@
         <div class="form-grid">
 
             <!-- Address -->
-
             <div class="form-field full-width">
-
-                <label for="address">
-                    Address
-                    <span class="required">*</span>
-                </label>
+                <label for="address">Address</label>
 
                 <textarea id="address" rows="3" formControlName="address" placeholder="Enter complete address"
                     [class.invalid]="isFieldInvalid('address')"></textarea>
 
                 @if (isFieldInvalid('address')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('address')?.hasError('required')) {
-                    <span>Address is required.</span>
-                    }
-
                     @if (supplierForm.get('address')?.hasError('maxlength')) {
                     <span>Address cannot exceed 250 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
-
             <!-- City -->
-
             <div class="form-field">
-
-                <label for="city">
-                    City
-                    <span class="required">*</span>
-                </label>
+                <label for="city">City</label>
 
                 <input id="city" type="text" formControlName="city" placeholder="Enter city"
                     [class.invalid]="isFieldInvalid('city')" />
 
                 @if (isFieldInvalid('city')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('city')?.hasError('required')) {
-                    <span>City is required.</span>
-                    }
-
                     @if (supplierForm.get('city')?.hasError('maxlength')) {
                     <span>City cannot exceed 100 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
-
             <!-- State -->
-
             <div class="form-field">
-
-                <label for="state">
-                    State
-                    <span class="required">*</span>
-                </label>
+                <label for="state">State</label>
 
                 <input id="state" type="text" formControlName="state" placeholder="Enter state"
                     [class.invalid]="isFieldInvalid('state')" />
 
                 @if (isFieldInvalid('state')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('state')?.hasError('required')) {
-                    <span>State is required.</span>
-                    }
-
                     @if (supplierForm.get('state')?.hasError('maxlength')) {
                     <span>State cannot exceed 100 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
-
             <!-- Postal Code -->
-
             <div class="form-field">
-
-                <label for="postalCode">
-                    Postal Code
-                    <span class="required">*</span>
-                </label>
+                <label for="postalCode">Postal Code</label>
 
                 <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code"
                     [class.invalid]="isFieldInvalid('postalCode')" />
 
                 @if (isFieldInvalid('postalCode')) {
-
                 <div class="error-message">
-
-                    @if (supplierForm.get('postalCode')?.hasError('required')) {
-                    <span>Postal code is required.</span>
-                    }
-
                     @if (supplierForm.get('postalCode')?.hasError('maxlength')) {
                     <span>Postal code cannot exceed 20 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
 
         </div>
-
     </section>
 
-
     <!-- Business Information -->
-
     <section class="form-section">
 
         <div class="section-header">
             <h2>Business Information</h2>
-            <p>Configure tax and payment information.</p>
+            <p>Configure tax and supplier status information.</p>
         </div>
 
         <div class="form-grid">
 
             <!-- Tax Number -->
-
             <div class="form-field">
-
-                <label for="taxNumber">
-                    Tax Number
-                </label>
+                <label for="taxNumber">Tax Number</label>
 
                 <input id="taxNumber" type="text" formControlName="taxNumber" placeholder="Enter tax number"
                     [class.invalid]="isFieldInvalid('taxNumber')" />
 
                 @if (isFieldInvalid('taxNumber')) {
-
                 <div class="error-message">
-
                     @if (supplierForm.get('taxNumber')?.hasError('maxlength')) {
                     <span>Tax number cannot exceed 30 characters.</span>
                     }
-
                 </div>
-
                 }
-
             </div>
-
-
-            <!-- Payment Terms -->
-
-            <div class="form-field">
-
-                <label for="paymentTerms">
-                    Payment Terms
-                    <span class="required">*</span>
-                </label>
-
-                <select id="paymentTerms" formControlName="paymentTerms"
-                    [class.invalid]="isFieldInvalid('paymentTerms')">
-
-                    <option value="15 Days">
-                        15 Days
-                    </option>
-
-                    <option value="30 Days">
-                        30 Days
-                    </option>
-
-                    <option value="45 Days">
-                        45 Days
-                    </option>
-
-                    <option value="60 Days">
-                        60 Days
-                    </option>
-
-                </select>
-
-                @if (isFieldInvalid('paymentTerms')) {
-
-                <div class="error-message">
-
-                    @if (supplierForm.get('paymentTerms')?.hasError('required')) {
-                    <span>Payment terms are required.</span>
-                    }
-
-                </div>
-
-                }
-
-            </div>
-
 
             <!-- Status -->
-
             <div class="form-field full-width">
-
                 <label class="toggle-field">
 
                     <input type="checkbox" formControlName="isActive" />
@@ -421,28 +213,19 @@
                     <span class="toggle"></span>
 
                     <span class="toggle-content">
-
-                        <strong>
-                            Active Supplier
-                        </strong>
-
+                        <strong>Active Supplier</strong>
                         <small>
                             Active suppliers can be used for purchase orders.
                         </small>
-
                     </span>
 
                 </label>
-
             </div>
 
         </div>
-
     </section>
 
-
     <!-- Actions -->
-
     <div class="form-actions">
 
         <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="onCancel()">
@@ -450,13 +233,11 @@
         </button>
 
         <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
-
             @if (isSubmitting) {
             Saving...
             } @else {
             Save Supplier
             }
-
         </button>
 
     </div>

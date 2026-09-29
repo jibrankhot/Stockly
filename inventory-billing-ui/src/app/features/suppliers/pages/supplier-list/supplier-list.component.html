@@ -5,13 +5,11 @@
     <div class="page-header">
 
         <div>
-
             <h1>Suppliers</h1>
 
             <p>
                 Manage your suppliers and supplier information.
             </p>
-
         </div>
 
         <a routerLink="/suppliers/create" class="btn btn-primary">
@@ -37,19 +35,9 @@
         </div>
 
         <select [(ngModel)]="selectedStatus" aria-label="Filter by status">
-
-            <option value="all">
-                All Status
-            </option>
-
-            <option value="active">
-                Active
-            </option>
-
-            <option value="inactive">
-                Inactive
-            </option>
-
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
         </select>
 
         <button type="button" class="clear-button" (click)="clearFilters()">
@@ -66,60 +54,39 @@
         <div class="table-header">
 
             <div>
-
-                <h2>
-                    Supplier List
-                </h2>
+                <h2>Supplier List</h2>
 
                 <span>
                     {{ filteredSuppliers.length }} supplier(s)
                 </span>
-
             </div>
 
         </div>
 
 
-        @if (filteredSuppliers.length > 0) {
+        <!-- Loading State -->
+
+        @if (isLoading) {
+
+        <div class="empty-state">
+            <p>Loading suppliers...</p>
+        </div>
+
+        } @else if (filteredSuppliers.length > 0) {
 
         <div class="table-wrapper">
 
             <table>
 
                 <thead>
-
                     <tr>
-
-                        <th>
-                            Supplier
-                        </th>
-
-                        <th>
-                            Contact
-                        </th>
-
-                        <th>
-                            Location
-                        </th>
-
-                        <th>
-                            Payment Terms
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Created
-                        </th>
-
-                        <th class="actions-column">
-                            Actions
-                        </th>
-
+                        <th>Supplier</th>
+                        <th>Contact</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th class="actions-column">Actions</th>
                     </tr>
-
                 </thead>
 
 
@@ -166,15 +133,11 @@
                             <div class="contact-info">
 
                                 <strong>
-                                    {{ supplier.contactPerson }}
+                                    {{ supplier.phone || '—' }}
                                 </strong>
 
                                 <span>
-                                    {{ supplier.phone }}
-                                </span>
-
-                                <span>
-                                    {{ supplier.email }}
+                                    {{ supplier.email || '—' }}
                                 </span>
 
                             </div>
@@ -189,25 +152,14 @@
                             <div class="location-info">
 
                                 <strong>
-                                    {{ supplier.city }}
+                                    {{ supplier.city || '—' }}
                                 </strong>
 
                                 <span>
-                                    {{ supplier.state }}
+                                    {{ supplier.state || '—' }}
                                 </span>
 
                             </div>
-
-                        </td>
-
-
-                        <!-- Payment Terms -->
-
-                        <td>
-
-                            <span class="payment-terms">
-                                {{ supplier.paymentTerms }}
-                            </span>
 
                         </td>
 

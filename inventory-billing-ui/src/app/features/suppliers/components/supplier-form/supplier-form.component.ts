@@ -1,3 +1,4 @@
+
 import {
   Component,
   EventEmitter,
@@ -48,7 +49,6 @@ export class SupplierFormComponent implements OnInit {
       code: [
         '',
         [
-          Validators.required,
           Validators.maxLength(30)
         ]
       ],
@@ -61,18 +61,9 @@ export class SupplierFormComponent implements OnInit {
         ]
       ],
 
-      contactPerson: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(100)
-        ]
-      ],
-
       email: [
         '',
         [
-          Validators.required,
           Validators.email,
           Validators.maxLength(150)
         ]
@@ -81,7 +72,6 @@ export class SupplierFormComponent implements OnInit {
       phone: [
         '',
         [
-          Validators.required,
           Validators.maxLength(20)
         ]
       ],
@@ -89,7 +79,6 @@ export class SupplierFormComponent implements OnInit {
       address: [
         '',
         [
-          Validators.required,
           Validators.maxLength(250)
         ]
       ],
@@ -97,7 +86,6 @@ export class SupplierFormComponent implements OnInit {
       city: [
         '',
         [
-          Validators.required,
           Validators.maxLength(100)
         ]
       ],
@@ -105,7 +93,6 @@ export class SupplierFormComponent implements OnInit {
       state: [
         '',
         [
-          Validators.required,
           Validators.maxLength(100)
         ]
       ],
@@ -113,7 +100,6 @@ export class SupplierFormComponent implements OnInit {
       postalCode: [
         '',
         [
-          Validators.required,
           Validators.maxLength(20)
         ]
       ],
@@ -125,11 +111,6 @@ export class SupplierFormComponent implements OnInit {
         ]
       ],
 
-      paymentTerms: [
-        '30 Days',
-        Validators.required
-      ],
-
       isActive: [
         true
       ]
@@ -138,14 +119,10 @@ export class SupplierFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     if (this.supplier) {
-
       this.supplierForm.patchValue({
-
         code: this.supplier.code,
         name: this.supplier.name,
-        contactPerson: this.supplier.contactPerson,
         email: this.supplier.email,
         phone: this.supplier.phone,
         address: this.supplier.address,
@@ -153,30 +130,21 @@ export class SupplierFormComponent implements OnInit {
         state: this.supplier.state,
         postalCode: this.supplier.postalCode,
         taxNumber: this.supplier.taxNumber,
-        paymentTerms: this.supplier.paymentTerms,
         isActive: this.supplier.isActive
-
       });
-
     }
-
   }
 
   submit(): void {
-
     if (this.supplierForm.invalid) {
-
       this.supplierForm.markAllAsTouched();
-
       this.focusFirstInvalidField();
-
       return;
     }
 
     this.formSubmit.emit(
       this.supplierForm.getRawValue()
     );
-
   }
 
   onCancel(): void {
@@ -184,7 +152,6 @@ export class SupplierFormComponent implements OnInit {
   }
 
   isFieldInvalid(fieldName: string): boolean {
-
     const field = this.supplierForm.get(fieldName);
 
     return !!(
@@ -192,11 +159,9 @@ export class SupplierFormComponent implements OnInit {
       field.invalid &&
       (field.dirty || field.touched)
     );
-
   }
 
   private focusFirstInvalidField(): void {
-
     const firstInvalidControl =
       Object.keys(this.supplierForm.controls).find(
         fieldName =>
@@ -223,6 +188,5 @@ export class SupplierFormComponent implements OnInit {
     setTimeout(() => {
       element.focus();
     }, 300);
-
   }
 }

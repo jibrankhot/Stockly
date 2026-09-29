@@ -1,3 +1,4 @@
+
 import {
   CommonModule,
   DatePipe,
@@ -20,6 +21,7 @@ import {
 } from '../../../../shared/models/payment';
 
 import { PaymentService } from '../../services/payment.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-payment-details',
@@ -33,8 +35,7 @@ import { PaymentService } from '../../services/payment.service';
   templateUrl: './payment-details.component.html',
   styleUrl: './payment-details.component.scss'
 })
-export class PaymentDetailsComponent
-  implements OnInit {
+export class PaymentDetailsComponent implements OnInit {
 
   payment: Payment | undefined;
 
@@ -43,7 +44,8 @@ export class PaymentDetailsComponent
 
   constructor(
     private route: ActivatedRoute,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -54,46 +56,53 @@ export class PaymentDetailsComponent
     this.isLoading = true;
     this.errorMessage = '';
 
-    const idParam =
-      this.route.snapshot.paramMap.get('id');
-
+    const idParam = this.route.snapshot.paramMap.get('id');
     const id = Number(idParam);
 
-    if (!idParam || Number.isNaN(id)) {
-      this.errorMessage =
-        'Invalid payment ID.';
+    if (!idParam || Number.isNaN(id) || id <= 0) {
+      this.errorMessage = 'Invalid payment ID.';
       this.isLoading = false;
+
+      this.notificationService.error(
+        'Invalid payment ID.'
+      );
+
       return;
     }
 
     this.paymentService
       .getPaymentById(id)
       .subscribe({
-        next: (payment) => {
+        next: payment => {
           this.payment = payment;
 
           if (!payment) {
-            this.errorMessage =
-              'Payment not found.';
+            this.errorMessage = 'Payment not found.';
+
+            this.notificationService.error(
+              'Payment not found.'
+            );
           }
 
           this.isLoading = false;
         },
 
-        error: () => {
-          this.errorMessage =
-            'Unable to load payment.';
+        error: error => {
+          this.errorMessage = 'Unable to load payment.';
           this.isLoading = false;
+
+          console.error('Failed to load payment:', error);
+
+          this.notificationService.error(
+            error?.error?.message ||
+            'Unable to load payment. Please try again.'
+          );
         }
       });
   }
 
-  getMethodLabel(
-    method: PaymentMethod
-  ): string {
-
+  getMethodLabel(method: PaymentMethod): string {
     switch (method) {
-
       case 'cash':
         return 'Cash';
 
@@ -114,9 +123,7 @@ export class PaymentDetailsComponent
     }
   }
 
-  getMethodClass(
-    method: PaymentMethod
-  ): string {
+  getMethodClass(method: PaymentMethod): string {
     return `method-${method}`;
   }
 }

@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../../../shared/models/customer';
 import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-customer-details',
@@ -23,6 +24,7 @@ export class CustomerDetailsComponent implements OnInit {
   customer: Customer | null = null;
 
   isLoading = true;
+  isDeleting = false;
   errorMessage = '';
 
   customerId = 0;
@@ -31,7 +33,8 @@ export class CustomerDetailsComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly customerService: CustomerService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -69,12 +72,16 @@ export class CustomerDetailsComponent implements OnInit {
         error: () => {
           this.errorMessage = 'Unable to load customer.';
           this.isLoading = false;
+
+          this.notificationService.error(
+            this.errorMessage
+          );
         }
       });
   }
 
   deleteCustomer(): void {
-    if (!this.customer) {
+    if (!this.customer || this.isDeleting) {
       return;
     }
 
@@ -87,19 +94,34 @@ export class CustomerDetailsComponent implements OnInit {
         'danger'
       )
       .subscribe(confirmed => {
-        if (!confirmed || !this.customer) {
+        if (!confirmed || !this.customer || this.isDeleting) {
           return;
         }
+
+        this.isDeleting = true;
+        this.errorMessage = '';
 
         this.customerService
           .deleteCustomer(this.customer.id)
           .subscribe({
             next: () => {
+              this.isDeleting = false;
+
+              this.notificationService.success(
+                'Customer deleted successfully.'
+              );
+
               this.router.navigate(['/customers']);
             },
 
             error: () => {
-              this.errorMessage = 'Unable to delete customer.';
+              this.isDeleting = false;
+              this.errorMessage =
+                'Unable to delete customer.';
+
+              this.notificationService.error(
+                this.errorMessage
+              );
             }
           });
       });

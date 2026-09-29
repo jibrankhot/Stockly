@@ -8,10 +8,9 @@ import { NotificationService } from '../../../core/services/notification.service
     standalone: true,
     imports: [AsyncPipe],
     templateUrl: './notification-toast.component.html',
-    styleUrl: './notification-toast.component.scss'
+    styleUrl: './notification-toast.component.scss',
 })
 export class NotificationToastComponent {
-
     readonly notificationService = inject(NotificationService);
 
     dismiss(id: number): void {

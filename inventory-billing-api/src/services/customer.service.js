@@ -2,7 +2,7 @@ const supabase = require('../config/database');
 
 const mapCustomer = (customer) => ({
     id: customer.id,
-    customerCode: customer.customer_code,
+    code: customer.customer_code,
     name: customer.name,
     email: customer.email,
     phone: customer.phone,
@@ -10,8 +10,7 @@ const mapCustomer = (customer) => ({
     city: customer.city,
     state: customer.state,
     postalCode: customer.postal_code,
-    gstNumber: customer.gst_number,
-    creditLimit: Number(customer.credit_limit || 0),
+    taxNumber: customer.tax_number,
     isActive: customer.is_active,
     createdAt: customer.created_at,
     updatedAt: customer.updated_at
@@ -52,7 +51,7 @@ const getCustomerById = async (id) => {
 
 const createCustomer = async (customerData) => {
     const insertData = {
-        customer_code: customerData.customerCode || null,
+        customer_code: customerData.code || customerData.customerCode || null,
         name: customerData.name.trim(),
         email: customerData.email || null,
         phone: customerData.phone || null,
@@ -60,8 +59,7 @@ const createCustomer = async (customerData) => {
         city: customerData.city || null,
         state: customerData.state || null,
         postal_code: customerData.postalCode || null,
-        gst_number: customerData.gstNumber || null,
-        credit_limit: Number(customerData.creditLimit || 0),
+        tax_number: customerData.taxNumber || null,
         is_active: customerData.isActive ?? true
     };
 
@@ -89,9 +87,9 @@ const createCustomer = async (customerData) => {
 const updateCustomer = async (id, customerData) => {
     const updateData = {};
 
-    if (customerData.customerCode !== undefined) {
+    if (customerData.code !== undefined || customerData.customerCode !== undefined) {
         updateData.customer_code =
-            customerData.customerCode || null;
+            customerData.code ?? customerData.customerCode ?? null;
     }
 
     if (customerData.name !== undefined) {
@@ -122,13 +120,8 @@ const updateCustomer = async (id, customerData) => {
         updateData.postal_code = customerData.postalCode || null;
     }
 
-    if (customerData.gstNumber !== undefined) {
-        updateData.gst_number = customerData.gstNumber || null;
-    }
-
-    if (customerData.creditLimit !== undefined) {
-        updateData.credit_limit =
-            Number(customerData.creditLimit);
+    if (customerData.taxNumber !== undefined) {
+        updateData.tax_number = customerData.taxNumber || null;
     }
 
     if (customerData.isActive !== undefined) {

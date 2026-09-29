@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
@@ -7,8 +8,10 @@ import {
     Validators
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { CustomerService } from '../../services/customer.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-customer-create',
@@ -29,9 +32,10 @@ export class CustomerCreateComponent {
     errorMessage = '';
 
     constructor(
-        private fb: FormBuilder,
-        private customerService: CustomerService,
-        private router: Router
+        private readonly fb: FormBuilder,
+        private readonly customerService: CustomerService,
+        private readonly notificationService: NotificationService,
+        private readonly router: Router
     ) {
         this.customerForm = this.fb.group({
             code: [
@@ -105,6 +109,10 @@ export class CustomerCreateComponent {
     }
 
     saveCustomer(): void {
+        if (this.isSaving) {
+            return;
+        }
+
         if (this.customerForm.invalid) {
             this.customerForm.markAllAsTouched();
             return;
@@ -114,10 +122,17 @@ export class CustomerCreateComponent {
         this.errorMessage = '';
 
         this.customerService
-            .createCustomer(this.customerForm.value)
-            .subscribe({
-                next: (customer) => {
+            .createCustomer(this.customerForm.getRawValue())
+            .pipe(
+                finalize(() => {
                     this.isSaving = false;
+                })
+            )
+            .subscribe({
+                next: customer => {
+                    this.notificationService.success(
+                        'Customer created successfully.'
+                    );
 
                     this.router.navigate([
                         '/customers',
@@ -126,14 +141,21 @@ export class CustomerCreateComponent {
                 },
 
                 error: () => {
-                    this.isSaving = false;
                     this.errorMessage =
                         'Unable to create customer.';
+
+                    this.notificationService.error(
+                        this.errorMessage
+                    );
                 }
             });
     }
 
     cancel(): void {
+        if (this.isSaving) {
+            return;
+        }
+
         this.router.navigate(['/customers']);
     }
 }

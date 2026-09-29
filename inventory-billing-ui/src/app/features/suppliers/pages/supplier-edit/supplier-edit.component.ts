@@ -1,9 +1,11 @@
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Supplier } from '../../../../shared/models/supplier';
 import { SupplierService } from '../../services/supplier.service';
 import { SupplierFormComponent } from '../../components/supplier-form/supplier-form.component';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-supplier-edit',
@@ -25,7 +27,8 @@ export class SupplierEditComponent implements OnInit {
     constructor(
         private readonly route: ActivatedRoute,
         private readonly router: Router,
-        private readonly supplierService: SupplierService
+        private readonly supplierService: SupplierService,
+        private readonly notificationService: NotificationService
     ) { }
 
     ngOnInit(): void {
@@ -63,6 +66,12 @@ export class SupplierEditComponent implements OnInit {
                     );
 
                     this.isLoading = false;
+
+                    this.notificationService.error(
+                        error?.error?.message ||
+                        'Failed to load supplier. Please try again.'
+                    );
+
                     this.router.navigate(['/suppliers']);
                 }
             });
@@ -82,24 +91,22 @@ export class SupplierEditComponent implements OnInit {
             )
             .subscribe({
                 next: updatedSupplier => {
-                    console.log(
-                        'Supplier updated:',
-                        updatedSupplier
-                    );
-
                     this.isSubmitting = false;
 
                     if (!updatedSupplier) {
-                        console.error(
+                        this.notificationService.error(
                             'Supplier could not be updated.'
                         );
 
                         return;
                     }
 
+                    this.notificationService.success(
+                        'Supplier updated successfully.'
+                    );
+
                     this.router.navigate([
-                        '/suppliers',
-                        updatedSupplier.id
+                        '/suppliers'
                     ]);
                 },
 
@@ -110,6 +117,11 @@ export class SupplierEditComponent implements OnInit {
                     );
 
                     this.isSubmitting = false;
+
+                    this.notificationService.error(
+                        error?.error?.message ||
+                        'Failed to update supplier. Please try again.'
+                    );
                 }
             });
     }
@@ -117,8 +129,7 @@ export class SupplierEditComponent implements OnInit {
     onCancel(): void {
         if (this.supplier) {
             this.router.navigate([
-                '/suppliers',
-                this.supplier.id
+                '/suppliers'
             ]);
 
             return;

@@ -2,17 +2,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoaderService {
-
   private activeRequests = 0;
 
   private readonly loadingSubject =
     new BehaviorSubject<boolean>(false);
 
-  readonly loading$ =
-    this.loadingSubject.asObservable();
+  readonly loading$ = this.loadingSubject.asObservable();
 
   show(): void {
     this.activeRequests++;
@@ -23,12 +21,10 @@ export class LoaderService {
   hide(): void {
     this.activeRequests = Math.max(
       0,
-      this.activeRequests - 1
+      this.activeRequests - 1,
     );
 
-    this.loadingSubject.next(
-      this.activeRequests > 0
-    );
+    this.loadingSubject.next(this.activeRequests > 0);
   }
 
   reset(): void {

@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 
@@ -14,7 +13,7 @@ export interface ModalState {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModalService {
   private readonly defaultState: ModalState = {
@@ -23,7 +22,7 @@ export class ModalService {
     message: '',
     confirmText: 'Confirm',
     cancelText: 'Cancel',
-    variant: 'default'
+    variant: 'default',
   };
 
   private readonly modalSubject =
@@ -38,7 +37,7 @@ export class ModalService {
     message: string,
     confirmText = 'Confirm',
     cancelText = 'Cancel',
-    variant: ModalVariant = 'default'
+    variant: ModalVariant = 'default',
   ): Observable<boolean> {
     // Cancel any previously open dialog.
     if (this.resultSubject) {
@@ -53,7 +52,7 @@ export class ModalService {
       message,
       confirmText,
       cancelText,
-      variant
+      variant,
     });
 
     return this.resultSubject.asObservable();

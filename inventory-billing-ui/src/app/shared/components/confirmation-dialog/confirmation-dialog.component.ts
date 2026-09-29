@@ -1,6 +1,6 @@
-
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+
 import { ModalService } from '../../../core/services/modal.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { ModalService } from '../../../core/services/modal.service';
   standalone: true,
   imports: [AsyncPipe],
   templateUrl: './confirmation-dialog.component.html',
-  styleUrl: './confirmation-dialog.component.scss'
+  styleUrl: './confirmation-dialog.component.scss',
 })
 export class ConfirmationDialogComponent {
   readonly modalService = inject(ModalService);

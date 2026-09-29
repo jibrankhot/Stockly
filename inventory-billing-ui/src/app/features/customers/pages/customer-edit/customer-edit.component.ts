@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -7,9 +8,11 @@ import {
     Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { CustomerService } from '../../services/customer.service';
 import { Customer } from '../../../../shared/models/customer';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-customer-edit',
@@ -34,10 +37,11 @@ export class CustomerEditComponent implements OnInit {
     errorMessage = '';
 
     constructor(
-        private fb: FormBuilder,
-        private route: ActivatedRoute,
-        private router: Router,
-        private customerService: CustomerService
+        private readonly fb: FormBuilder,
+        private readonly route: ActivatedRoute,
+        private readonly router: Router,
+        private readonly customerService: CustomerService,
+        private readonly notificationService: NotificationService
     ) {
         this.customerForm = this.fb.group({
             code: [
@@ -160,11 +164,19 @@ export class CustomerEditComponent implements OnInit {
                     this.errorMessage =
                         'Unable to load customer.';
                     this.isLoading = false;
+
+                    this.notificationService.error(
+                        this.errorMessage
+                    );
                 }
             });
     }
 
     saveCustomer(): void {
+        if (this.isSaving) {
+            return;
+        }
+
         if (this.customerForm.invalid) {
             this.customerForm.markAllAsTouched();
             return;
@@ -176,27 +188,38 @@ export class CustomerEditComponent implements OnInit {
         this.customerService
             .updateCustomer(
                 this.customerId,
-                this.customerForm.value
+                this.customerForm.getRawValue()
+            )
+            .pipe(
+                finalize(() => {
+                    this.isSaving = false;
+                })
             )
             .subscribe({
                 next: () => {
-                    this.isSaving = false;
+                    this.notificationService.success(
+                        'Customer updated successfully.'
+                    );
 
-                    this.router.navigate([
-                        '/customers',
-                        this.customerId
-                    ]);
+                    this.router.navigate(['/customers']);
                 },
 
                 error: () => {
-                    this.isSaving = false;
                     this.errorMessage =
                         'Unable to update customer.';
+
+                    this.notificationService.error(
+                        this.errorMessage
+                    );
                 }
             });
     }
 
     cancel(): void {
+        if (this.isSaving) {
+            return;
+        }
+
         this.router.navigate([
             '/customers',
             this.customerId

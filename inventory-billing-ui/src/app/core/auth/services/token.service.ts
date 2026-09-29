@@ -1,16 +1,16 @@
-
 import { Injectable } from '@angular/core';
+
 import { StorageService } from '../../services/storage.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenService {
   private readonly tokenKey = 'stockly_access_token';
   private readonly refreshTokenKey = 'stockly_refresh_token';
 
   constructor(
-    private readonly storageService: StorageService
+    private readonly storageService: StorageService,
   ) { }
 
   setAccessToken(token: string): void {

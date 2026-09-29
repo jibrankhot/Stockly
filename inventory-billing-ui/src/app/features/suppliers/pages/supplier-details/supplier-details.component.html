@@ -52,15 +52,11 @@
         <div class="card-header">
 
             <div>
-
-                <h2>
-                    Contact Information
-                </h2>
+                <h2>Contact Information</h2>
 
                 <p>
                     Supplier contact details.
                 </p>
-
             </div>
 
         </div>
@@ -70,23 +66,11 @@
             <div class="detail-item">
 
                 <span class="detail-label">
-                    Contact Person
-                </span>
-
-                <strong>
-                    {{ supplier.contactPerson }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
                     Email
                 </span>
 
                 <strong>
-                    {{ supplier.email }}
+                    {{ supplier.email || 'Not provided' }}
                 </strong>
 
             </div>
@@ -98,7 +82,7 @@
                 </span>
 
                 <strong>
-                    {{ supplier.phone }}
+                    {{ supplier.phone || 'Not provided' }}
                 </strong>
 
             </div>
@@ -115,15 +99,11 @@
         <div class="card-header">
 
             <div>
-
-                <h2>
-                    Address
-                </h2>
+                <h2>Address</h2>
 
                 <p>
                     Supplier business address.
                 </p>
-
             </div>
 
         </div>
@@ -137,7 +117,7 @@
                 </span>
 
                 <strong>
-                    {{ supplier.address }}
+                    {{ supplier.address || 'Not provided' }}
                 </strong>
 
             </div>
@@ -149,7 +129,7 @@
                 </span>
 
                 <strong>
-                    {{ supplier.city }}
+                    {{ supplier.city || 'Not provided' }}
                 </strong>
 
             </div>
@@ -161,7 +141,7 @@
                 </span>
 
                 <strong>
-                    {{ supplier.state }}
+                    {{ supplier.state || 'Not provided' }}
                 </strong>
 
             </div>
@@ -173,7 +153,7 @@
                 </span>
 
                 <strong>
-                    {{ supplier.postalCode }}
+                    {{ supplier.postalCode || 'Not provided' }}
                 </strong>
 
             </div>
@@ -190,15 +170,11 @@
         <div class="card-header">
 
             <div>
-
-                <h2>
-                    Business Information
-                </h2>
+                <h2>Business Information</h2>
 
                 <p>
-                    Tax and payment information.
+                    Supplier tax information.
                 </p>
-
             </div>
 
         </div>
@@ -217,18 +193,6 @@
 
             </div>
 
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Payment Terms
-                </span>
-
-                <strong>
-                    {{ supplier.paymentTerms }}
-                </strong>
-
-            </div>
-
         </div>
 
     </section>
@@ -241,15 +205,11 @@
         <div class="card-header">
 
             <div>
-
-                <h2>
-                    Record Information
-                </h2>
+                <h2>Record Information</h2>
 
                 <p>
                     Supplier record timestamps.
                 </p>
-
             </div>
 
         </div>
@@ -288,6 +248,12 @@
 
     <div class="loading-state">
         Loading supplier...
+    </div>
+
+    } @else {
+
+    <div class="loading-state">
+        Supplier information is unavailable.
     </div>
 
     }

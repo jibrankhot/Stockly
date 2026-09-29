@@ -1,9 +1,14 @@
+
 const validateSupplier = (req, res, next) => {
     const body = req.body || {};
 
     if (
         req.method === 'POST' &&
-        (!body.name || typeof body.name !== 'string' || !body.name.trim())
+        (
+            !body.name ||
+            typeof body.name !== 'string' ||
+            !body.name.trim()
+        )
     ) {
         return res.status(422).json({
             success: false,
@@ -11,10 +16,27 @@ const validateSupplier = (req, res, next) => {
         });
     }
 
-    if (body.name !== undefined && typeof body.name !== 'string') {
+    if (
+        body.name !== undefined &&
+        (
+            typeof body.name !== 'string' ||
+            !body.name.trim()
+        )
+    ) {
         return res.status(422).json({
             success: false,
-            message: 'Supplier name must be a string'
+            message: 'Supplier name must be a non-empty string'
+        });
+    }
+
+    if (
+        body.code !== undefined &&
+        body.code !== null &&
+        typeof body.code !== 'string'
+    ) {
+        return res.status(422).json({
+            success: false,
+            message: 'Supplier code must be a string'
         });
     }
 

@@ -1,11 +1,9 @@
-
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
-
   setItem<T>(key: string, value: T): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -33,7 +31,7 @@ export class StorageService {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error(`Failed to remove data for key "${key}".`, error);
+      console.error(`Failed to remove storage key "${key}".`, error);
     }
   }
 

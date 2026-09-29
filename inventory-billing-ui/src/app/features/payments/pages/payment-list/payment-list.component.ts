@@ -1,3 +1,4 @@
+
 import {
   CommonModule,
   DatePipe,
@@ -18,6 +19,8 @@ import {
 } from '../../../../shared/models/payment';
 
 import { PaymentService } from '../../services/payment.service';
+import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -32,8 +35,7 @@ import { PaymentService } from '../../services/payment.service';
   templateUrl: './payment-list.component.html',
   styleUrl: './payment-list.component.scss'
 })
-export class PaymentListComponent
-  implements OnInit {
+export class PaymentListComponent implements OnInit {
 
   payments: Payment[] = [];
   filteredPayments: Payment[] = [];
@@ -45,7 +47,9 @@ export class PaymentListComponent
   errorMessage = '';
 
   constructor(
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private modalService: ModalService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -59,54 +63,57 @@ export class PaymentListComponent
     this.paymentService
       .getPayments()
       .subscribe({
-        next: (payments) => {
+        next: payments => {
           this.payments = payments;
           this.applyFilters();
           this.isLoading = false;
         },
 
-        error: () => {
-          this.errorMessage =
-            'Unable to load payments.';
+        error: error => {
+          this.errorMessage = 'Unable to load payments.';
           this.isLoading = false;
+
+          console.error(
+            'Failed to load payments:',
+            error
+          );
+
+          this.notificationService.error(
+            error?.error?.message ||
+            'Unable to load payments. Please try again.'
+          );
         }
       });
   }
 
   applyFilters(): void {
-    const search =
-      this.searchTerm
-        .trim()
-        .toLowerCase();
+    const search = this.searchTerm
+      .trim()
+      .toLowerCase();
 
-    this.filteredPayments =
-      this.payments.filter(payment => {
+    this.filteredPayments = this.payments.filter(payment => {
 
-        const matchesSearch =
-          !search ||
-          payment.paymentNumber
-            .toLowerCase()
-            .includes(search) ||
-          payment.invoiceNumber
-            .toLowerCase()
-            .includes(search) ||
-          payment.customerName
-            .toLowerCase()
-            .includes(search) ||
-          payment.referenceNumber
-            .toLowerCase()
-            .includes(search);
+      const matchesSearch =
+        !search ||
+        payment.paymentNumber
+          .toLowerCase()
+          .includes(search) ||
+        payment.invoiceNumber
+          .toLowerCase()
+          .includes(search) ||
+        payment.customerName
+          .toLowerCase()
+          .includes(search) ||
+        payment.referenceNumber
+          .toLowerCase()
+          .includes(search);
 
-        const matchesMethod =
-          this.methodFilter === 'all' ||
-          payment.paymentMethod ===
-          this.methodFilter;
+      const matchesMethod =
+        this.methodFilter === 'all' ||
+        payment.paymentMethod === this.methodFilter;
 
-        return (
-          matchesSearch &&
-          matchesMethod
-        );
-      });
+      return matchesSearch && matchesMethod;
+    });
   }
 
   clearFilters(): void {
@@ -116,12 +123,62 @@ export class PaymentListComponent
     this.applyFilters();
   }
 
-  getMethodLabel(
-    method: PaymentMethod
-  ): string {
+  deletePayment(payment: Payment): void {
+    this.modalService
+      .open(
+        'Delete Payment?',
+        `Are you sure you want to delete payment "${payment.paymentNumber}"?`,
+        'Delete Payment',
+        'Cancel',
+        'danger'
+      )
+      .subscribe(confirmed => {
 
+        if (!confirmed) {
+          return;
+        }
+
+        this.paymentService
+          .deletePayment(payment.id)
+          .subscribe({
+            next: deleted => {
+
+              if (!deleted) {
+                this.notificationService.error(
+                  'Payment could not be deleted.'
+                );
+
+                return;
+              }
+
+              this.payments = this.payments.filter(
+                item => item.id !== payment.id
+              );
+
+              this.applyFilters();
+
+              this.notificationService.success(
+                'Payment deleted successfully.'
+              );
+            },
+
+            error: error => {
+              console.error(
+                'Failed to delete payment:',
+                error
+              );
+
+              this.notificationService.error(
+                error?.error?.message ||
+                'Failed to delete payment. Please try again.'
+              );
+            }
+          });
+      });
+  }
+
+  getMethodLabel(method: PaymentMethod): string {
     switch (method) {
-
       case 'cash':
         return 'Cash';
 
@@ -142,16 +199,13 @@ export class PaymentListComponent
     }
   }
 
-  getMethodClass(
-    method: PaymentMethod
-  ): string {
+  getMethodClass(method: PaymentMethod): string {
     return `method-${method}`;
   }
 
   get totalPaymentAmount(): number {
     return this.payments.reduce(
-      (total, payment) =>
-        total + payment.amount,
+      (total, payment) => total + payment.amount,
       0
     );
   }
@@ -165,9 +219,6 @@ export class PaymentListComponent
       return 0;
     }
 
-    return (
-      this.totalPaymentAmount /
-      this.payments.length
-    );
+    return this.totalPaymentAmount / this.payments.length;
   }
 }

@@ -1,9 +1,11 @@
+
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Supplier } from '../../../../shared/models/supplier';
 import { SupplierService } from '../../services/supplier.service';
 import { SupplierFormComponent } from '../../components/supplier-form/supplier-form.component';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-supplier-create',
@@ -20,6 +22,7 @@ export class SupplierCreateComponent {
 
     constructor(
         private readonly supplierService: SupplierService,
+        private readonly notificationService: NotificationService,
         private readonly router: Router
     ) { }
 
@@ -30,9 +33,11 @@ export class SupplierCreateComponent {
             .createSupplier(supplierData)
             .subscribe({
                 next: supplier => {
-                    console.log('Supplier created:', supplier);
-
                     this.isSubmitting = false;
+
+                    this.notificationService.success(
+                        'Supplier created successfully.'
+                    );
 
                     this.router.navigate(['/suppliers']);
                 },
@@ -44,6 +49,11 @@ export class SupplierCreateComponent {
                     );
 
                     this.isSubmitting = false;
+
+                    this.notificationService.error(
+                        error?.error?.message ||
+                        'Failed to create supplier. Please try again.'
+                    );
                 }
             });
     }

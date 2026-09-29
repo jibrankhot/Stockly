@@ -191,7 +191,7 @@
 
 table {
   width: 100%;
-  min-width: 1050px;
+  min-width: 900px;
   border-collapse: collapse;
   font-size: 13px;
 }
@@ -251,44 +251,37 @@ tbody tr {
   display: flex;
   flex-direction: column;
   gap: 3px;
+
+  strong {
+    color: #111827;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  span {
+    color: #9ca3af;
+    font-size: 11px;
+  }
 }
 
-.supplier-info strong {
-  color: #111827;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.supplier-info span {
-  color: #9ca3af;
-  font-size: 11px;
-}
-
-/* Contact */
+/* Contact and Location */
 
 .contact-info,
 .location-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
-}
 
-.contact-info strong,
-.location-info strong {
-  color: #374151;
-  font-size: 12px;
-  font-weight: 600;
-}
+  strong {
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+  }
 
-.contact-info span,
-.location-info span {
-  color: #9ca3af;
-  font-size: 11px;
-}
-
-.payment-terms {
-  color: #374151;
-  font-size: 12px;
+  span {
+    color: #9ca3af;
+    font-size: 11px;
+  }
 }
 
 /* Status */
@@ -359,7 +352,7 @@ tbody tr {
   }
 }
 
-/* Empty State */
+/* Empty and Loading States */
 
 .empty-state {
   display: flex;
@@ -367,6 +360,19 @@ tbody tr {
   flex-direction: column;
   padding: 60px 20px;
   text-align: center;
+
+  h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 6px 0 18px;
+    color: #9ca3af;
+    font-size: 12px;
+  }
 }
 
 .empty-icon {
@@ -380,19 +386,6 @@ tbody tr {
   background: #f3f4f6;
   color: #6b7280;
   font-size: 20px;
-}
-
-.empty-state h3 {
-  margin: 0;
-  color: #111827;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.empty-state p {
-  margin: 6px 0 18px;
-  color: #9ca3af;
-  font-size: 12px;
 }
 
 /* Responsive */

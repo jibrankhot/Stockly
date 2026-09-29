@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Supplier } from '../../../../shared/models/supplier';
 import { SupplierService } from '../../services/supplier.service';
 import { ModalService } from '../../../../core/services/modal.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-supplier-list',
@@ -31,7 +33,8 @@ export class SupplierListComponent implements OnInit {
   constructor(
     private readonly supplierService: SupplierService,
     private readonly router: Router,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -47,20 +50,19 @@ export class SupplierListComponent implements OnInit {
 
       const matchesSearch =
         !search ||
-        supplier.name.toLowerCase().includes(search) ||
-        supplier.code.toLowerCase().includes(search) ||
-        supplier.contactPerson.toLowerCase().includes(search) ||
-        supplier.email.toLowerCase().includes(search);
+        (supplier.name ?? '').toLowerCase().includes(search) ||
+        (supplier.code ?? '').toLowerCase().includes(search) ||
+        (supplier.email ?? '').toLowerCase().includes(search) ||
+        (supplier.phone ?? '').toLowerCase().includes(search) ||
+        (supplier.city ?? '').toLowerCase().includes(search) ||
+        (supplier.state ?? '').toLowerCase().includes(search);
 
       const matchesStatus =
         this.selectedStatus === 'all' ||
         (this.selectedStatus === 'active' && supplier.isActive) ||
         (this.selectedStatus === 'inactive' && !supplier.isActive);
 
-      return (
-        matchesSearch &&
-        matchesStatus
-      );
+      return matchesSearch && matchesStatus;
     });
   }
 
@@ -80,6 +82,11 @@ export class SupplierListComponent implements OnInit {
         );
 
         this.isLoading = false;
+
+        this.notificationService.error(
+          error?.error?.message ||
+          'Failed to load suppliers. Please try again.'
+        );
       }
     });
   }
@@ -120,7 +127,7 @@ export class SupplierListComponent implements OnInit {
             next: deleted => {
 
               if (!deleted) {
-                console.error(
+                this.notificationService.error(
                   'Supplier could not be deleted.'
                 );
 
@@ -130,12 +137,21 @@ export class SupplierListComponent implements OnInit {
               this.suppliers = this.suppliers.filter(
                 item => item.id !== supplier.id
               );
+
+              this.notificationService.success(
+                'Supplier deleted successfully.'
+              );
             },
 
             error: error => {
               console.error(
                 'Failed to delete supplier:',
                 error
+              );
+
+              this.notificationService.error(
+                error?.error?.message ||
+                'Failed to delete supplier. Please try again.'
               );
             }
           });

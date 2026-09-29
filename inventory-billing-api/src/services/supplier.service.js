@@ -1,8 +1,9 @@
+
 const supabase = require('../config/database');
 
 const mapSupplier = (supplier) => ({
     id: supplier.id,
-    supplierCode: supplier.supplier_code,
+    code: supplier.supplier_code,
     name: supplier.name,
     email: supplier.email,
     phone: supplier.phone,
@@ -10,7 +11,7 @@ const mapSupplier = (supplier) => ({
     city: supplier.city,
     state: supplier.state,
     postalCode: supplier.postal_code,
-    gstNumber: supplier.gst_number,
+    taxNumber: supplier.tax_number,
     isActive: supplier.is_active,
     createdAt: supplier.created_at,
     updatedAt: supplier.updated_at
@@ -51,7 +52,7 @@ const getSupplierById = async (id) => {
 
 const createSupplier = async (supplierData) => {
     const insertData = {
-        supplier_code: supplierData.supplierCode || null,
+        supplier_code: supplierData.code || supplierData.supplierCode || null,
         name: supplierData.name.trim(),
         email: supplierData.email || null,
         phone: supplierData.phone || null,
@@ -59,7 +60,7 @@ const createSupplier = async (supplierData) => {
         city: supplierData.city || null,
         state: supplierData.state || null,
         postal_code: supplierData.postalCode || null,
-        gst_number: supplierData.gstNumber || null,
+        tax_number: supplierData.taxNumber || null,
         is_active: supplierData.isActive ?? true
     };
 
@@ -87,9 +88,9 @@ const createSupplier = async (supplierData) => {
 const updateSupplier = async (id, supplierData) => {
     const updateData = {};
 
-    if (supplierData.supplierCode !== undefined) {
+    if (supplierData.code !== undefined || supplierData.supplierCode !== undefined) {
         updateData.supplier_code =
-            supplierData.supplierCode || null;
+            supplierData.code || supplierData.supplierCode || null;
     }
 
     if (supplierData.name !== undefined) {
@@ -120,8 +121,8 @@ const updateSupplier = async (id, supplierData) => {
         updateData.postal_code = supplierData.postalCode || null;
     }
 
-    if (supplierData.gstNumber !== undefined) {
-        updateData.gst_number = supplierData.gstNumber || null;
+    if (supplierData.taxNumber !== undefined) {
+        updateData.tax_number = supplierData.taxNumber || null;
     }
 
     if (supplierData.isActive !== undefined) {

@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -16,10 +15,9 @@ export interface NotificationMessage {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
-
   private nextId = 1;
 
   private readonly defaultDuration = 8000;
@@ -37,28 +35,28 @@ export class NotificationService {
 
   success(
     message: string,
-    duration = this.defaultDuration
+    duration = this.defaultDuration,
   ): void {
     this.show('success', message, duration);
   }
 
   error(
     message: string,
-    duration = this.defaultDuration
+    duration = this.defaultDuration,
   ): void {
     this.show('error', message, duration);
   }
 
   warning(
     message: string,
-    duration = this.defaultDuration
+    duration = this.defaultDuration,
   ): void {
     this.show('warning', message, duration);
   }
 
   info(
     message: string,
-    duration = this.defaultDuration
+    duration = this.defaultDuration,
   ): void {
     this.show('info', message, duration);
   }
@@ -68,14 +66,14 @@ export class NotificationService {
 
     const notifications =
       this.notificationSubject.value.filter(
-        notification => notification.id !== id
+        (notification) => notification.id !== id,
       );
 
     this.notificationSubject.next(notifications);
   }
 
   clear(): void {
-    this.timers.forEach(timer => clearTimeout(timer));
+    this.timers.forEach((timer) => clearTimeout(timer));
     this.timers.clear();
 
     this.notificationSubject.next([]);
@@ -84,7 +82,7 @@ export class NotificationService {
   private show(
     type: NotificationType,
     message: string,
-    duration: number
+    duration: number,
   ): void {
     const trimmedMessage = message.trim();
 
@@ -96,12 +94,12 @@ export class NotificationService {
       id: this.nextId++,
       type,
       message: trimmedMessage,
-      duration: Math.max(0, duration)
+      duration: Math.max(0, duration),
     };
 
     this.notificationSubject.next([
       ...this.notificationSubject.value,
-      notification
+      notification,
     ]);
 
     if (notification.duration > 0) {

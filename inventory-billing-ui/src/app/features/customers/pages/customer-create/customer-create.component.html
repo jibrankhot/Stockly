@@ -5,9 +5,7 @@
 
         <div>
             <h1>Add Customer</h1>
-            <p>
-                Create a new customer record.
-            </p>
+            <p>Create a new customer record.</p>
         </div>
 
         <a routerLink="/customers" class="btn btn-outline">
@@ -15,7 +13,6 @@
         </a>
 
     </div>
-
 
     <!-- Form -->
     <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()">
@@ -39,21 +36,20 @@
                     <input id="code" type="text" formControlName="code" placeholder="CUS-006">
 
                     <small *ngIf="
-              customerForm.get('code')?.touched &&
-              customerForm.get('code')?.hasError('required')
-            ">
+                            customerForm.get('code')?.touched &&
+                            customerForm.get('code')?.hasError('required')
+                        ">
                         Customer code is required.
                     </small>
 
                     <small *ngIf="
-              customerForm.get('code')?.touched &&
-              customerForm.get('code')?.hasError('maxlength')
-            ">
+                            customerForm.get('code')?.touched &&
+                            customerForm.get('code')?.hasError('maxlength')
+                        ">
                         Customer code cannot exceed 20 characters.
                     </small>
 
                 </div>
-
 
                 <!-- Name -->
                 <div class="form-group">
@@ -65,21 +61,20 @@
                     <input id="name" type="text" formControlName="name" placeholder="Enter customer name">
 
                     <small *ngIf="
-              customerForm.get('name')?.touched &&
-              customerForm.get('name')?.hasError('required')
-            ">
+                            customerForm.get('name')?.touched &&
+                            customerForm.get('name')?.hasError('required')
+                        ">
                         Customer name is required.
                     </small>
 
                     <small *ngIf="
-              customerForm.get('name')?.touched &&
-              customerForm.get('name')?.hasError('maxlength')
-            ">
+                            customerForm.get('name')?.touched &&
+                            customerForm.get('name')?.hasError('maxlength')
+                        ">
                         Customer name cannot exceed 100 characters.
                     </small>
 
                 </div>
-
 
                 <!-- Tax Number -->
                 <div class="form-group">
@@ -92,7 +87,6 @@
 
                 </div>
 
-
                 <!-- Status -->
                 <div class="form-group status-group">
 
@@ -104,9 +98,7 @@
 
                         <input type="checkbox" formControlName="isActive">
 
-                        <span>
-                            Active Customer
-                        </span>
+                        <span>Active Customer</span>
 
                     </label>
 
@@ -115,7 +107,6 @@
             </div>
 
         </section>
-
 
         <!-- Contact Information -->
         <section class="card">
@@ -129,28 +120,23 @@
                 <!-- Email -->
                 <div class="form-group">
 
-                    <label for="email">
-                        Email
-                    </label>
+                    <label for="email">Email</label>
 
                     <input id="email" type="email" formControlName="email" placeholder="customer@example.com">
 
                     <small *ngIf="
-              customerForm.get('email')?.touched &&
-              customerForm.get('email')?.hasError('email')
-            ">
+                            customerForm.get('email')?.touched &&
+                            customerForm.get('email')?.hasError('email')
+                        ">
                         Enter a valid email address.
                     </small>
 
                 </div>
 
-
                 <!-- Phone -->
                 <div class="form-group">
 
-                    <label for="phone">
-                        Phone
-                    </label>
+                    <label for="phone">Phone</label>
 
                     <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number">
 
@@ -159,7 +145,6 @@
             </div>
 
         </section>
-
 
         <!-- Address -->
         <section class="card">
@@ -173,46 +158,35 @@
                 <!-- Address -->
                 <div class="form-group full-width">
 
-                    <label for="address">
-                        Address
-                    </label>
+                    <label for="address">Address</label>
 
-                    <textarea id="address" rows="3" formControlName="address" placeholder="Enter customer address">
-          </textarea>
+                    <textarea id="address" rows="3" formControlName="address"
+                        placeholder="Enter customer address"></textarea>
 
                 </div>
-
 
                 <!-- City -->
                 <div class="form-group">
 
-                    <label for="city">
-                        City
-                    </label>
+                    <label for="city">City</label>
 
                     <input id="city" type="text" formControlName="city" placeholder="Enter city">
 
                 </div>
 
-
                 <!-- State -->
                 <div class="form-group">
 
-                    <label for="state">
-                        State
-                    </label>
+                    <label for="state">State</label>
 
                     <input id="state" type="text" formControlName="state" placeholder="Enter state">
 
                 </div>
 
-
                 <!-- Postal Code -->
                 <div class="form-group">
 
-                    <label for="postalCode">
-                        Postal Code
-                    </label>
+                    <label for="postalCode">Postal Code</label>
 
                     <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code">
 
@@ -222,12 +196,10 @@
 
         </section>
 
-
         <!-- Error -->
-        <div *ngIf="errorMessage" class="error-message">
+        <div *ngIf="errorMessage" class="error-message" role="alert">
             {{ errorMessage }}
         </div>
-
 
         <!-- Actions -->
         <div class="form-actions">
@@ -237,9 +209,7 @@
             </button>
 
             <button type="submit" class="btn btn-primary" [disabled]="isSaving">
-
                 {{ isSaving ? 'Saving...' : 'Create Customer' }}
-
             </button>
 
         </div>

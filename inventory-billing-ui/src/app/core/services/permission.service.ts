@@ -3,12 +3,11 @@ import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PermissionService {
-
   constructor(
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) { }
 
   hasPermission(permission: string): boolean {
@@ -17,13 +16,13 @@ export class PermissionService {
 
   hasAnyPermission(permissions: string[]): boolean {
     return permissions.some(
-      permission => this.hasPermission(permission)
+      (permission) => this.hasPermission(permission),
     );
   }
 
   hasAllPermissions(permissions: string[]): boolean {
     return permissions.every(
-      permission => this.hasPermission(permission)
+      (permission) => this.hasPermission(permission),
     );
   }
 
