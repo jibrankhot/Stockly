@@ -4,23 +4,35 @@ import {
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
+import {
+  catchError,
+  tap,
+  throwError,
+} from 'rxjs';
 
 import { TokenService } from '../auth/services/token.service';
 import { NotificationService } from '../services/notification.service';
 
 let isHandlingUnauthorized = false;
 
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+export const errorInterceptor: HttpInterceptorFn = (
+  req,
+  next,
+) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);
   const tokenService = inject(TokenService);
 
-  const isLoginRequest = req.url.includes('/auth/login');
+  const isLoginRequest =
+    /\/auth\/login\/?$/.test(
+      new URL(
+        req.url,
+        window.location.origin,
+      ).pathname,
+    );
 
   return next(req).pipe(
     tap(() => {
-      // Reset the session handler after a successful login.
       if (isLoginRequest) {
         isHandlingUnauthorized = false;
       }
@@ -28,15 +40,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
     catchError((error: HttpErrorResponse) => {
       switch (error.status) {
-        case 401:
-          // Let the login page handle invalid credentials.
+        case 401: {
           if (isLoginRequest) {
             break;
           }
 
           tokenService.clearTokens();
 
-          // Avoid duplicate notifications and redirects.
           if (!isHandlingUnauthorized) {
             isHandlingUnauthorized = true;
 
@@ -45,10 +55,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             );
 
             if (!router.url.startsWith('/auth/login')) {
-              router.navigate(['/auth/login']);
+              void router.navigate(['/auth/login']);
             }
           }
+
           break;
+        }
 
         case 403:
           notificationService.error(

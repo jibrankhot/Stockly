@@ -1,9 +1,16 @@
-import { Component, Input } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  Component,
+  Input,
+} from '@angular/core';
 
 import {
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
+
+import {
+  SIDEBAR_ITEMS,
   SidebarItem,
-  SIDEBAR_ITEMS
 } from './sidebar-items';
 
 @Component({
@@ -11,26 +18,26 @@ import {
   standalone: true,
   imports: [
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
   ],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-
   @Input()
   isOpen = true;
 
-  expandedMenus = new Set<string>();
+  private readonly expandedMenus = new Set<string>();
 
-  readonly sidebarItems: SidebarItem[] = SIDEBAR_ITEMS;
+  readonly sidebarItems: readonly SidebarItem[] = SIDEBAR_ITEMS;
 
   toggleMenu(label: string): void {
     if (this.expandedMenus.has(label)) {
       this.expandedMenus.delete(label);
-    } else {
-      this.expandedMenus.add(label);
+      return;
     }
+
+    this.expandedMenus.add(label);
   }
 
   isMenuExpanded(label: string): boolean {

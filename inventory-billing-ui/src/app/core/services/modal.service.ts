@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  ReplaySubject,
+} from 'rxjs';
 
 export type ModalVariant = 'default' | 'danger';
 
@@ -26,11 +30,15 @@ export class ModalService {
   };
 
   private readonly modalSubject =
-    new BehaviorSubject<ModalState>(this.defaultState);
+    new BehaviorSubject<ModalState>(
+      this.defaultState,
+    );
 
-  readonly modal$ = this.modalSubject.asObservable();
+  readonly modal$ =
+    this.modalSubject.asObservable();
 
-  private resultSubject: ReplaySubject<boolean> | null = null;
+  private resultSubject: ReplaySubject<boolean> | null =
+    null;
 
   open(
     title: string,
@@ -39,12 +47,12 @@ export class ModalService {
     cancelText = 'Cancel',
     variant: ModalVariant = 'default',
   ): Observable<boolean> {
-    // Cancel any previously open dialog.
     if (this.resultSubject) {
       this.finish(false);
     }
 
-    this.resultSubject = new ReplaySubject<boolean>(1);
+    this.resultSubject =
+      new ReplaySubject<boolean>(1);
 
     this.modalSubject.next({
       isOpen: true,
@@ -74,12 +82,17 @@ export class ModalService {
     const subject = this.resultSubject;
 
     if (!subject) {
-      this.modalSubject.next({ ...this.defaultState });
+      this.modalSubject.next({
+        ...this.defaultState,
+      });
       return;
     }
 
     this.resultSubject = null;
-    this.modalSubject.next({ ...this.defaultState });
+
+    this.modalSubject.next({
+      ...this.defaultState,
+    });
 
     subject.next(result);
     subject.complete();

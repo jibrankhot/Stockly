@@ -1,100 +1,48 @@
 <div class="main-layout" [class.sidebar-open]="isSidebarOpen" [class.sidebar-closed]="!isSidebarOpen"
     [class.is-navigating]="isNavigating">
-
-    <!-- =====================================================
-       SIDEBAR
-       ===================================================== -->
-
+    <!-- Sidebar -->
     <aside class="navigation-column">
-
         <app-sidebar [isOpen]="isSidebarOpen" (toggleSidebar)="toggleSidebar()" />
-
     </aside>
 
-
-    <!-- =====================================================
-       APPLICATION AREA
-       ===================================================== -->
-
+    <!-- Application Area -->
     <section class="application-column">
-
-        <!-- ===================================================
-         NAVBAR
-         =================================================== -->
-
+        <!-- Navbar -->
         <app-navbar (menuToggle)="toggleSidebar()" />
 
-
-        <!-- ===================================================
-         MAIN CONTENT
-         =================================================== -->
-
+        <!-- Main Content -->
         <main class="main-content">
-
             <div class="content-wrapper">
-
                 <!-- Breadcrumb -->
-
                 <app-breadcrumb />
 
-
                 <!-- Routed Page -->
-
                 <div class="page-content" [class.page-transition-active]="!isNavigating">
-
                     <router-outlet />
-
                 </div>
-
             </div>
-
         </main>
-
     </section>
 
-
-    <!-- =====================================================
-       MOBILE SIDEBAR OVERLAY
-       ===================================================== -->
-
+    <!-- Mobile Sidebar Overlay -->
     @if (isSidebarOpen) {
-
     <button type="button" class="sidebar-overlay" aria-label="Close navigation menu"
         (click)="closeSidebarOnMobile()"></button>
-
     }
 
-
-    <!-- =====================================================
-       NAVIGATION LOADER
-       ===================================================== -->
-
+    <!-- Navigation Loader -->
     @if (isNavigating) {
-
     <div class="navigation-loader" role="status" aria-live="polite" aria-label="Loading page">
-
         <div class="navigation-loader-card">
-
             <div class="navigation-spinner">
                 <span></span>
             </div>
 
             <div class="navigation-loader-content">
-
-                <strong>
-                    Loading
-                </strong>
-
-                <span>
-                    Preparing your page...
-                </span>
-
+                <strong>Loading</strong>
+                <span>Preparing your page...</span>
             </div>
-
         </div>
-
     </div>
-
     }
-
 </div>

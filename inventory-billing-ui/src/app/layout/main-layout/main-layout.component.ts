@@ -1,17 +1,18 @@
 import {
   Component,
+  DestroyRef,
   HostListener,
-  inject
+  inject,
 } from '@angular/core';
-
 import {
   NavigationCancel,
   NavigationEnd,
   NavigationError,
   NavigationStart,
   Router,
-  RouterOutlet
+  RouterOutlet,
 } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { NavbarComponent } from '../components/navbar/navbar.component';
 import { SidebarComponent } from '../components/sidebar/sidebar.component';
@@ -24,180 +25,174 @@ import { BreadcrumbComponent } from '../components/breadcrumb/breadcrumb.compone
     RouterOutlet,
     NavbarComponent,
     SidebarComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
   ],
   templateUrl: './main-layout.component.html',
-  styleUrl: './main-layout.component.scss'
+  styleUrl: './main-layout.component.scss',
 })
 export class MainLayoutComponent {
-
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
-  /* =======================================================
-     SIDEBAR STATE
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Sidebar state
+  // ---------------------------------------------------------------------------
 
   isSidebarOpen = true;
 
-  /*
-   * Desktop and mobile use different sidebar behaviour.
-   *
-   * Desktop:
-   * - Open = full sidebar
-   * - Closed = compact sidebar
-   *
-   * Mobile:
-   * - Open = drawer
-   * - Closed = hidden drawer
-   */
   private desktopSidebarState = true;
 
-  /* =======================================================
-     NAVIGATION STATE
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Navigation state
+  // ---------------------------------------------------------------------------
 
   isNavigating = false;
 
   private readonly minimumLoaderDuration = 300;
-
   private navigationStartTime = 0;
+  private navigationTimer: ReturnType<typeof setTimeout> | null = null;
 
-  /* =======================================================
-     BREAKPOINT
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Responsive state
+  // ---------------------------------------------------------------------------
 
   private readonly mobileBreakpoint = 767;
 
-  /* =======================================================
-     CONSTRUCTOR
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Mobile scroll lock state
+  // ---------------------------------------------------------------------------
+
+  private bodyScrollLocked = false;
+  private bodyScrollPosition = 0;
+
+  private previousBodyStyles = {
+    position: '',
+    top: '',
+    left: '',
+    right: '',
+    width: '',
+    overflow: '',
+  };
+
+  private previousDocumentOverflow = '';
 
   constructor() {
     this.initializeSidebarState();
     this.listenToRouterNavigation();
+
+    this.destroyRef.onDestroy(() => {
+      this.clearNavigationTimer();
+      this.unlockBodyScroll();
+    });
   }
 
-  /* =======================================================
-     WINDOW RESIZE
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Window resize
+  // ---------------------------------------------------------------------------
 
   @HostListener('window:resize')
   onWindowResize(): void {
-
     if (this.isMobileViewport()) {
-
-      /*
-       * Mobile always starts with the drawer closed.
-       *
-       * This prevents the desktop sidebar state from
-       * becoming a full-screen mobile sidebar.
-       */
       this.isSidebarOpen = false;
-
+      this.unlockBodyScroll();
       return;
     }
 
-    /*
-     * When returning to desktop, restore the last
-     * desktop sidebar state.
-     */
     this.isSidebarOpen = this.desktopSidebarState;
+    this.unlockBodyScroll();
   }
 
-  /* =======================================================
-     ESCAPE KEY
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Escape key
+  // ---------------------------------------------------------------------------
 
   @HostListener('window:keydown.escape')
   onEscapeKey(): void {
-
     if (this.isMobileViewport()) {
       this.closeSidebarOnMobile();
     }
   }
 
-  /* =======================================================
-     SIDEBAR TOGGLE
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Sidebar toggle
+  // ---------------------------------------------------------------------------
 
   toggleSidebar(): void {
+    const nextState = !this.isSidebarOpen;
 
-    this.isSidebarOpen = !this.isSidebarOpen;
-
-    /*
-     * Only remember the sidebar state on desktop.
-     *
-     * Mobile drawer state should never overwrite the
-     * desktop collapsed/expanded preference.
-     */
     if (!this.isMobileViewport()) {
-      this.desktopSidebarState = this.isSidebarOpen;
+      this.isSidebarOpen = nextState;
+      this.desktopSidebarState = nextState;
+      this.unlockBodyScroll();
+      return;
+    }
+
+    this.isSidebarOpen = nextState;
+
+    if (nextState) {
+      this.lockBodyScroll();
+    } else {
+      this.unlockBodyScroll();
     }
   }
 
-  /* =======================================================
-     CLOSE MOBILE SIDEBAR
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Close mobile sidebar
+  // ---------------------------------------------------------------------------
 
   closeSidebarOnMobile(): void {
-
     if (!this.isMobileViewport()) {
       return;
     }
 
     this.isSidebarOpen = false;
+    this.unlockBodyScroll();
   }
 
-  /* =======================================================
-     ROUTER NAVIGATION
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Router navigation
+  // ---------------------------------------------------------------------------
 
   private listenToRouterNavigation(): void {
+    this.router.events
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.clearNavigationTimer();
 
-    this.router.events.subscribe(event => {
+          this.navigationStartTime = Date.now();
+          this.isNavigating = true;
 
-      if (event instanceof NavigationStart) {
+          this.closeSidebarOnMobile();
+          return;
+        }
 
-        this.navigationStartTime = Date.now();
-
-        this.isNavigating = true;
-
-        /*
-         * Close the mobile drawer whenever the user
-         * navigates to another route.
-         */
-        this.closeSidebarOnMobile();
-
-        return;
-      }
-
-      if (
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError
-      ) {
-
-        this.finishNavigation();
-      }
-    });
+        if (
+          event instanceof NavigationEnd ||
+          event instanceof NavigationCancel ||
+          event instanceof NavigationError
+        ) {
+          this.finishNavigation();
+        }
+      });
   }
 
-  /* =======================================================
-     FINISH NAVIGATION
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Finish navigation
+  // ---------------------------------------------------------------------------
 
   private finishNavigation(): void {
+    const elapsedTime = Date.now() - this.navigationStartTime;
 
-    const elapsedTime =
-      Date.now() - this.navigationStartTime;
-
-    const remainingTime =
-      this.minimumLoaderDuration - elapsedTime;
+    const remainingTime = Math.max(
+      0,
+      this.minimumLoaderDuration - elapsedTime,
+    );
 
     if (remainingTime > 0) {
-
-      setTimeout(() => {
+      this.navigationTimer = setTimeout(() => {
         this.isNavigating = false;
+        this.navigationTimer = null;
       }, remainingTime);
 
       return;
@@ -206,31 +201,116 @@ export class MainLayoutComponent {
     this.isNavigating = false;
   }
 
-  /* =======================================================
-     INITIAL SIDEBAR STATE
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Clear pending navigation timer
+  // ---------------------------------------------------------------------------
+
+  private clearNavigationTimer(): void {
+    if (this.navigationTimer === null) {
+      return;
+    }
+
+    clearTimeout(this.navigationTimer);
+    this.navigationTimer = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Initial sidebar state
+  // ---------------------------------------------------------------------------
 
   private initializeSidebarState(): void {
-
     if (this.isMobileViewport()) {
-
       this.isSidebarOpen = false;
-
       return;
     }
 
     this.isSidebarOpen = true;
-
     this.desktopSidebarState = true;
   }
 
-  /* =======================================================
-     MOBILE VIEWPORT CHECK
-     ======================================================= */
+  // ---------------------------------------------------------------------------
+  // Mobile viewport check
+  // ---------------------------------------------------------------------------
 
   private isMobileViewport(): boolean {
+    return (
+      typeof window !== 'undefined' &&
+      window.innerWidth <= this.mobileBreakpoint
+    );
+  }
 
-    return typeof window !== 'undefined'
-      && window.innerWidth <= this.mobileBreakpoint;
+  // ---------------------------------------------------------------------------
+  // Lock page scroll while mobile drawer is open
+  // ---------------------------------------------------------------------------
+
+  private lockBodyScroll(): void {
+    if (
+      this.bodyScrollLocked ||
+      !this.isMobileViewport() ||
+      typeof window === 'undefined' ||
+      typeof document === 'undefined'
+    ) {
+      return;
+    }
+
+    this.bodyScrollPosition = window.scrollY;
+
+    const body = document.body;
+    const documentElement = document.documentElement;
+
+    this.previousBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+    };
+
+    this.previousDocumentOverflow = documentElement.style.overflow;
+
+    body.style.position = 'fixed';
+    body.style.top = `-${this.bodyScrollPosition}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+
+    documentElement.style.overflow = 'hidden';
+
+    this.bodyScrollLocked = true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Restore page scroll after mobile drawer closes
+  // ---------------------------------------------------------------------------
+
+  private unlockBodyScroll(): void {
+    if (
+      !this.bodyScrollLocked ||
+      typeof window === 'undefined' ||
+      typeof document === 'undefined'
+    ) {
+      return;
+    }
+
+    const body = document.body;
+    const documentElement = document.documentElement;
+
+    body.style.position = this.previousBodyStyles.position;
+    body.style.top = this.previousBodyStyles.top;
+    body.style.left = this.previousBodyStyles.left;
+    body.style.right = this.previousBodyStyles.right;
+    body.style.width = this.previousBodyStyles.width;
+    body.style.overflow = this.previousBodyStyles.overflow;
+
+    documentElement.style.overflow = this.previousDocumentOverflow;
+
+    const scrollPosition = this.bodyScrollPosition;
+
+    this.bodyScrollLocked = false;
+    this.bodyScrollPosition = 0;
+
+    window.scrollTo(0, scrollPosition);
   }
 }

@@ -19,7 +19,6 @@ export interface NotificationMessage {
 })
 export class NotificationService {
   private nextId = 1;
-
   private readonly defaultDuration = 8000;
 
   private readonly timers = new Map<
@@ -33,41 +32,28 @@ export class NotificationService {
   readonly notifications$ =
     this.notificationSubject.asObservable();
 
-  success(
-    message: string,
-    duration = this.defaultDuration,
-  ): void {
+  success(message: string, duration = this.defaultDuration): void {
     this.show('success', message, duration);
   }
 
-  error(
-    message: string,
-    duration = this.defaultDuration,
-  ): void {
+  error(message: string, duration = this.defaultDuration): void {
     this.show('error', message, duration);
   }
 
-  warning(
-    message: string,
-    duration = this.defaultDuration,
-  ): void {
+  warning(message: string, duration = this.defaultDuration): void {
     this.show('warning', message, duration);
   }
 
-  info(
-    message: string,
-    duration = this.defaultDuration,
-  ): void {
+  info(message: string, duration = this.defaultDuration): void {
     this.show('info', message, duration);
   }
 
   remove(id: number): void {
     this.clearTimer(id);
 
-    const notifications =
-      this.notificationSubject.value.filter(
-        (notification) => notification.id !== id,
-      );
+    const notifications = this.notificationSubject.value.filter(
+      (notification) => notification.id !== id,
+    );
 
     this.notificationSubject.next(notifications);
   }
@@ -75,7 +61,6 @@ export class NotificationService {
   clear(): void {
     this.timers.forEach((timer) => clearTimeout(timer));
     this.timers.clear();
-
     this.notificationSubject.next([]);
   }
 

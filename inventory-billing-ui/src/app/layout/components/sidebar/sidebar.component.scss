@@ -9,16 +9,9 @@
    ========================================================= */
 
 .sidebar {
-  /*
-   * Reference design uses a compact application sidebar.
-   */
   width: 192px;
   min-width: 192px;
 
-  /*
-   * Keep the navigation visible while the main dashboard
-   * scrolls vertically.
-   */
   position: sticky;
 
   top: var(--navbar-height);
@@ -612,10 +605,11 @@
 @media (max-width: 767px) {
 
   /*
-   * The desktop sidebar remains a normal layout element.
-   * On mobile the host becomes the drawer container so the
-   * sidebar cannot stretch to the full viewport width.
+   * The host is the drawer positioning layer.
+   *
+   * It covers only the area below the navbar.
    */
+
   :host {
     position: fixed;
 
@@ -623,12 +617,13 @@
     left: 0;
     bottom: 0;
 
-    width: 280px !important;
+    width: 280px;
     max-width: calc(100vw - 48px);
 
-    min-width: 0 !important;
+    min-width: 0;
 
     height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
 
     z-index: calc(var(--z-overlay) + 1);
 
@@ -638,23 +633,29 @@
   }
 
   /*
-   * Actual drawer.
+   * ACTUAL DRAWER
+   *
+   * This is the ONLY scroll container.
    */
-  .sidebar {
-    position: absolute;
 
-    top: 0;
+  .sidebar {
+    position: fixed;
+
+    top: var(--navbar-height);
     left: 0;
 
-    width: 280px !important;
+    width: 280px;
     max-width: calc(100vw - 48px);
 
-    min-width: 0 !important;
+    min-width: 0;
 
-    height: 100%;
-    min-height: 0;
+    height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
 
     box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
 
     background: var(--sidebar-background);
 
@@ -663,14 +664,29 @@
     overflow-x: hidden;
     overflow-y: auto;
 
+    /*
+     * Prevent scroll chaining to the page.
+     */
+
+    overscroll-behavior: contain;
+
+    /*
+     * Allow vertical touch scrolling inside
+     * the drawer.
+     */
+
+    touch-action: pan-y;
+
+    -webkit-overflow-scrolling: touch;
+
     z-index: calc(var(--z-overlay) + 1);
 
-    box-shadow:
-      8px 0 24px rgba(0, 0, 0, 0.24);
+    pointer-events: auto;
 
     transform: translateX(0);
 
-    pointer-events: auto;
+    box-shadow:
+      8px 0 24px rgba(0, 0, 0, 0.24);
 
     transition:
       transform var(--duration-normal) var(--ease-emphasized),
@@ -678,14 +694,18 @@
   }
 
   /*
-   * Closed state:
-   * move the drawer completely outside the viewport.
+   * CLOSED DRAWER
    */
+
   .sidebar.sidebar-closed {
-    width: 280px !important;
+    width: 280px;
+
     max-width: calc(100vw - 48px);
 
-    min-width: 0 !important;
+    min-width: 0;
+
+    height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
 
     transform: translateX(-105%);
 
@@ -699,7 +719,9 @@
      --------------------------------------------------------- */
 
   .sidebar-header {
-    height: 64px;
+    flex: 0 0 var(--navbar-height);
+
+    height: var(--navbar-height);
 
     padding: 0 14px;
 
@@ -729,11 +751,21 @@
      --------------------------------------------------------- */
 
   .sidebar-nav {
+    flex: 0 0 auto;
+
     align-items: stretch;
 
     width: 100%;
 
     padding: 16px 10px;
+
+    /*
+     * Do NOT create another scroll container.
+     *
+     * .sidebar owns scrolling.
+     */
+
+    overflow: visible;
   }
 
   .nav-group {
@@ -754,6 +786,7 @@
 
   .nav-icon {
     width: 20px;
+
     min-width: 20px;
   }
 
@@ -783,11 +816,10 @@
     margin-left: 18px;
   }
 
-  /* ---------------------------------------------------------
-     IMPORTANT:
-     Mobile is a drawer, NOT the desktop collapsed
-     icon-only sidebar.
-     --------------------------------------------------------- */
+  /*
+   * Mobile is a drawer, not the desktop
+   * collapsed icon-only sidebar.
+   */
 
   .sidebar.sidebar-closed .sidebar-header {
     justify-content: flex-start;
@@ -849,18 +881,18 @@
 @media (max-width: 479px) {
 
   :host {
-    width: 270px !important;
+    width: 270px;
 
     max-width: calc(100vw - 40px);
   }
 
   .sidebar,
   .sidebar.sidebar-closed {
-    width: 270px !important;
+    width: 270px;
 
     max-width: calc(100vw - 40px);
 
-    min-width: 0 !important;
+    min-width: 0;
   }
 }
 

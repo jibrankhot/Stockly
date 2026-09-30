@@ -1,6 +1,5 @@
 :host {
   display: block;
-
   min-height: 100vh;
 }
 
@@ -13,13 +12,11 @@
   --collapsed-sidebar-width: 72px;
 
   display: grid;
-
   grid-template-columns:
     var(--expanded-sidebar-width)
     minmax(0, 1fr);
 
   min-height: 100vh;
-
   background: var(--color-background);
 
   transition:
@@ -52,19 +49,11 @@
   z-index: var(--z-sidebar, 800);
 
   background: var(--sidebar-background);
-
   overflow: visible;
 }
 
-/*
- * The sidebar component owns the actual navigation.
- *
- * MainLayout only provides the column.
- */
-
 .navigation-column app-sidebar {
   display: block;
-
   width: 100%;
 }
 
@@ -79,7 +68,6 @@
   min-height: 100vh;
 
   display: flex;
-
   flex-direction: column;
 
   background: var(--color-background);
@@ -92,8 +80,8 @@
 .main-content {
   flex: 1;
 
+  width: 100%;
   min-width: 0;
-
   min-height: calc(100vh - var(--navbar-height));
 
   overflow-x: hidden;
@@ -103,7 +91,6 @@
 
 .content-wrapper {
   width: 100%;
-
   max-width: var(--content-max-width);
 
   margin: 0 auto;
@@ -111,7 +98,6 @@
 
 .page-content {
   width: 100%;
-
   padding: var(--space-6);
 }
 
@@ -135,35 +121,30 @@
   display: none;
 
   position: fixed;
-
   inset: var(--navbar-height) 0 0;
-
-  z-index: var(--z-overlay);
 
   width: 100%;
   height: calc(100vh - var(--navbar-height));
+  height: calc(100dvh - var(--navbar-height));
 
   margin: 0;
   padding: 0;
 
   border: 0;
 
+  z-index: var(--z-overlay);
+
   background: rgba(15, 23, 42, 0.46);
 
   cursor: pointer;
-
-  /*
-   * Do NOT use backdrop-filter here.
-   *
-   * The sidebar and the content behind it should
-   * remain visually sharp.
-   */
 
   animation:
     stockly-overlay-in
     var(--duration-normal)
     var(--ease-standard)
     both;
+
+  touch-action: none;
 }
 
 /* =========================================================
@@ -172,20 +153,17 @@
 
 .navigation-loader {
   position: fixed;
-
   inset: var(--navbar-height) 0 0;
 
   z-index: calc(var(--z-overlay) + 10);
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   padding: var(--space-6);
 
-  background:
-    rgba(248, 250, 252, 0.72);
+  background: rgba(248, 250, 252, 0.72);
 
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -203,7 +181,6 @@
 
 .navigation-loader-card {
   display: flex;
-
   align-items: center;
 
   gap: var(--space-4);
@@ -215,11 +192,9 @@
     var(--space-5);
 
   border: 1px solid var(--color-border);
-
   border-radius: var(--radius-lg);
 
   background: var(--color-surface);
-
   box-shadow: var(--shadow-dialog);
 
   animation:
@@ -238,26 +213,16 @@
   height: 34px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
 
-  border:
-    3px solid
-    var(--color-primary-100);
-
-  border-top-color:
-    var(--color-primary-700);
-
+  border: 3px solid var(--color-primary-100);
+  border-top-color: var(--color-primary-700);
   border-radius: 50%;
 
-  animation:
-    stockly-spin
-    700ms
-    linear
-    infinite;
+  animation: stockly-spin 700ms linear infinite;
 }
 
 .navigation-spinner span {
@@ -275,7 +240,6 @@
 
 .navigation-loader-content {
   display: flex;
-
   flex-direction: column;
 
   gap: 3px;
@@ -287,9 +251,7 @@
   color: var(--color-text-primary);
 
   font-size: 13px;
-
   font-weight: 700;
-
   line-height: 1.3;
 }
 
@@ -297,7 +259,6 @@
   color: var(--color-text-muted);
 
   font-size: 11px;
-
   line-height: 1.4;
 }
 
@@ -306,10 +267,8 @@
    ========================================================= */
 
 @media (max-width: 1024px) {
-
   .main-layout {
     --expanded-sidebar-width: 192px;
-
     --collapsed-sidebar-width: 72px;
   }
 
@@ -323,19 +282,12 @@
    ========================================================= */
 
 @media (max-width: 767px) {
-
-  /*
-   * On mobile the desktop grid disappears.
-   *
-   * Sidebar becomes an off-canvas drawer through
-   * sidebar.component.scss.
-   */
-
   .main-layout,
   .main-layout.sidebar-closed,
   .main-layout.sidebar-open {
     display: block;
 
+    width: 100%;
     min-height: 100vh;
   }
 
@@ -344,12 +296,13 @@
 
     width: 0;
     min-width: 0;
-
     min-height: 0;
 
     background: transparent;
 
     z-index: auto;
+
+    overflow: visible;
   }
 
   .navigation-column app-sidebar {
@@ -358,15 +311,12 @@
 
   .application-column {
     width: 100%;
-
     min-height: 100vh;
   }
 
   .main-content {
     width: 100%;
-
-    min-height:
-      calc(100vh - var(--navbar-height));
+    min-height: calc(100vh - var(--navbar-height));
   }
 
   .page-content {
@@ -374,7 +324,7 @@
   }
 
   /* -------------------------------------------------------
-     MOBILE OVERLAY
+     Mobile overlay
      ------------------------------------------------------- */
 
   .sidebar-open .sidebar-overlay {
@@ -382,7 +332,7 @@
   }
 
   /* -------------------------------------------------------
-     NAVIGATION LOADER
+     Navigation loader
      ------------------------------------------------------- */
 
   .navigation-loader {
@@ -403,16 +353,12 @@
    ========================================================= */
 
 @media (max-width: 479px) {
-
   .page-content {
     padding: var(--space-3);
   }
 
   .navigation-loader-card {
-    width: min(
-      220px,
-      calc(100vw - 32px)
-    );
+    width: min(220px, calc(100vw - 32px));
   }
 }
 
@@ -421,7 +367,6 @@
    ========================================================= */
 
 @media (min-width: 1441px) {
-
   .page-content {
     padding: var(--space-8);
   }
@@ -432,7 +377,6 @@
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .main-layout {
     transition: none;
   }

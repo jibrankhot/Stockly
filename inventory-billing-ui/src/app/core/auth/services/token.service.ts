@@ -14,7 +14,7 @@ export class TokenService {
   ) { }
 
   setAccessToken(token: string): void {
-    if (!token || !token.trim()) {
+    if (!token.trim()) {
       throw new Error('Access token cannot be empty.');
     }
 
@@ -30,15 +30,20 @@ export class TokenService {
   }
 
   setRefreshToken(token: string): void {
-    if (!token || !token.trim()) {
+    if (!token.trim()) {
       throw new Error('Refresh token cannot be empty.');
     }
 
-    this.storageService.setItem(this.refreshTokenKey, token);
+    this.storageService.setItem(
+      this.refreshTokenKey,
+      token,
+    );
   }
 
   getRefreshToken(): string | null {
-    return this.storageService.getItem<string>(this.refreshTokenKey);
+    return this.storageService.getItem<string>(
+      this.refreshTokenKey,
+    );
   }
 
   removeRefreshToken(): void {

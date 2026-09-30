@@ -1,0 +1,297 @@
+:host {
+  display: inline-flex;
+  min-width: 0;
+}
+
+:host(.full-width) {
+  width: 100%;
+}
+
+.button {
+  --button-height: 40px;
+  --button-horizontal-padding: 16px;
+
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  width: auto;
+  min-width: 0;
+  min-height: var(--button-height);
+
+  padding:
+    0
+    var(--button-horizontal-padding);
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--color-primary-100);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* ----------------------------------------
+   Sizes
+---------------------------------------- */
+
+.button--small {
+  --button-height: 34px;
+  --button-horizontal-padding: 12px;
+
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.button--medium {
+  --button-height: 40px;
+  --button-horizontal-padding: 16px;
+
+  font-size: 13px;
+}
+
+.button--large {
+  --button-height: 46px;
+  --button-horizontal-padding: 20px;
+
+  font-size: 14px;
+}
+
+/* ----------------------------------------
+   Primary
+---------------------------------------- */
+
+.button--primary {
+  color: #ffffff;
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-700);
+    border-color: var(--color-primary-700);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-primary-800);
+    border-color: var(--color-primary-800);
+  }
+}
+
+/* ----------------------------------------
+   Secondary
+---------------------------------------- */
+
+.button--secondary {
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+
+  &:hover:not(:disabled) {
+    background: var(--color-background);
+    border-color: var(--color-border-strong);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-gray-100);
+  }
+}
+
+/* ----------------------------------------
+   Outline
+---------------------------------------- */
+
+.button--outline {
+  color: var(--color-primary-700);
+  background: transparent;
+  border-color: var(--color-primary-300);
+
+  &:hover:not(:disabled) {
+    color: var(--color-primary-700);
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-500);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-primary-100);
+  }
+}
+
+/* ----------------------------------------
+   Ghost
+---------------------------------------- */
+
+.button--ghost {
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    color: var(--color-text-primary);
+    background: var(--color-gray-100);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-gray-200);
+  }
+}
+
+/* ----------------------------------------
+   Danger
+---------------------------------------- */
+
+.button--danger {
+  color: #ffffff;
+  background: var(--color-danger-600);
+  border-color: var(--color-danger-600);
+
+  &:hover:not(:disabled) {
+    background: var(--color-danger-700);
+    border-color: var(--color-danger-700);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-danger-800);
+    border-color: var(--color-danger-800);
+  }
+}
+
+/* ----------------------------------------
+   Success
+---------------------------------------- */
+
+.button--success {
+  color: #ffffff;
+  background: var(--color-success-600);
+  border-color: var(--color-success-600);
+
+  &:hover:not(:disabled) {
+    background: var(--color-success-700);
+    border-color: var(--color-success-700);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-success-800);
+    border-color: var(--color-success-800);
+  }
+}
+
+/* ----------------------------------------
+   Full Width
+---------------------------------------- */
+
+.button--full-width {
+  width: 100%;
+}
+
+/* ----------------------------------------
+   Loading
+---------------------------------------- */
+
+.button--loading {
+  cursor: wait;
+}
+
+.button-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+}
+
+.button-content--hidden {
+  visibility: hidden;
+}
+
+.button-spinner {
+  position: absolute;
+
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+
+  animation: stockly-button-spin 650ms linear infinite;
+}
+
+/* ----------------------------------------
+   Responsive
+---------------------------------------- */
+
+@media (max-width: 767px) {
+  .button--large {
+    --button-height: 44px;
+  }
+}
+
+@media (max-width: 479px) {
+  .button {
+    --button-horizontal-padding: 14px;
+  }
+
+  .button--small {
+    --button-horizontal-padding: 10px;
+  }
+
+  .button--large {
+    --button-horizontal-padding: 16px;
+  }
+}
+
+/* ----------------------------------------
+   Reduced Motion
+---------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button-spinner {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------
+   Animation
+---------------------------------------- */
+
+@keyframes stockly-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

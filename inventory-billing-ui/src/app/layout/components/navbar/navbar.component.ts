@@ -1,9 +1,8 @@
 import {
   Component,
   EventEmitter,
-  Output
+  Output,
 } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
 
 import { UserMenuComponent } from '../user-menu/user-menu.component';
@@ -13,19 +12,23 @@ import { UserMenuComponent } from '../user-menu/user-menu.component';
   standalone: true,
   imports: [
     FormsModule,
-    UserMenuComponent
+    UserMenuComponent,
   ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
-
   @Output()
   readonly menuToggle = new EventEmitter<void>();
 
   searchQuery = '';
 
-  readonly notificationCount = 3;
+  /**
+   * Notification count will be connected to the
+   * notification source/service when the navbar
+   * notification functionality is implemented.
+   */
+  notificationCount = 0;
 
   onMenuToggle(): void {
     this.menuToggle.emit();
@@ -38,6 +41,8 @@ export class NavbarComponent {
       return;
     }
 
+    // Global search functionality will be connected
+    // to the appropriate feature/service.
     console.log('Global search:', query);
   }
 

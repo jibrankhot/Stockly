@@ -14,15 +14,21 @@ export class PermissionService {
     return this.authService.hasPermission(permission);
   }
 
-  hasAnyPermission(permissions: string[]): boolean {
+  hasAnyPermission(
+    permissions: string[],
+  ): boolean {
     return permissions.some(
-      (permission) => this.hasPermission(permission),
+      (permission) =>
+        this.hasPermission(permission),
     );
   }
 
-  hasAllPermissions(permissions: string[]): boolean {
+  hasAllPermissions(
+    permissions: string[],
+  ): boolean {
     return permissions.every(
-      (permission) => this.hasPermission(permission),
+      (permission) =>
+        this.hasPermission(permission),
     );
   }
 

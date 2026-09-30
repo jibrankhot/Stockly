@@ -1,1 +1,10 @@
-<p>button works!</p>
+<button class="button" [class]="buttonClasses.join(' ')" [attr.type]="type" [disabled]="isDisabled"
+    [attr.aria-label]="ariaLabel || null" [attr.aria-busy]="loading">
+    @if (loading) {
+    <span class="button-spinner" aria-hidden="true"></span>
+    }
+
+    <span class="button-content" [class.button-content--hidden]="loading">
+        <ng-content />
+    </span>
+</button>

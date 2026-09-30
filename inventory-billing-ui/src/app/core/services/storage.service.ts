@@ -6,9 +6,15 @@ import { Injectable } from '@angular/core';
 export class StorageService {
   setItem<T>(key: string, value: T): void {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      localStorage.setItem(
+        key,
+        JSON.stringify(value),
+      );
     } catch (error) {
-      console.error(`Failed to store data for key "${key}".`, error);
+      console.error(
+        `Failed to store data for key "${key}".`,
+        error,
+      );
     }
   }
 
@@ -22,7 +28,11 @@ export class StorageService {
 
       return JSON.parse(value) as T;
     } catch (error) {
-      console.error(`Failed to retrieve data for key "${key}".`, error);
+      console.error(
+        `Failed to retrieve data for key "${key}".`,
+        error,
+      );
+
       return null;
     }
   }
@@ -31,7 +41,10 @@ export class StorageService {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error(`Failed to remove storage key "${key}".`, error);
+      console.error(
+        `Failed to remove storage key "${key}".`,
+        error,
+      );
     }
   }
 
@@ -39,7 +52,10 @@ export class StorageService {
     try {
       localStorage.clear();
     } catch (error) {
-      console.error('Failed to clear local storage.', error);
+      console.error(
+        'Failed to clear local storage.',
+        error,
+      );
     }
   }
 
@@ -47,7 +63,11 @@ export class StorageService {
     try {
       return localStorage.getItem(key) !== null;
     } catch (error) {
-      console.error(`Failed to check storage key "${key}".`, error);
+      console.error(
+        `Failed to check storage key "${key}".`,
+        error,
+      );
+
       return false;
     }
   }

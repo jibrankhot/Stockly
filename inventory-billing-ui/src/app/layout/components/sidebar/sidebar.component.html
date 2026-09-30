@@ -1,5 +1,4 @@
 <aside class="sidebar" [class.sidebar-closed]="!isOpen" [attr.aria-hidden]="!isOpen">
-
     <!-- =====================================================
        SIDEBAR HEADER
        ===================================================== -->
@@ -7,7 +6,7 @@
     <div class="sidebar-header">
 
         <a class="brand" routerLink="/dashboard" title="Stockly Dashboard">
-            <span class="brand-mark">
+            <span class="brand-mark" aria-hidden="true">
                 S
             </span>
 
@@ -64,11 +63,11 @@
 
                 @for (
                 child of item.children;
-                track child.label
+                track child.route
                 ) {
 
                 <a class="nav-item submenu-item" [routerLink]="child.route" routerLinkActive="active"
-                    [title]="!isOpen ? child.label : ''">
+                    [routerLinkActiveOptions]="{ exact: true }" [title]="!isOpen ? child.label : ''">
 
                     <span class="nav-icon" aria-hidden="true">
                         {{ child.icon }}
@@ -89,6 +88,7 @@
         </div>
 
         }
+
 
         <!-- =================================================
            SINGLE MENU ITEM

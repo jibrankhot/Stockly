@@ -1,29 +1,17 @@
 <header class="navbar">
-
-  <!-- =====================================================
-       LEFT SECTION
-       ===================================================== -->
-
+  <!-- Left Section -->
   <div class="navbar-left">
-
     <!-- Sidebar Toggle -->
-
     <button type="button" class="menu-button" aria-label="Toggle sidebar" title="Toggle sidebar"
       (click)="onMenuToggle()">
       <span></span>
       <span></span>
       <span></span>
     </button>
-
   </div>
 
-
-  <!-- =====================================================
-       GLOBAL SEARCH
-       ===================================================== -->
-
+  <!-- Global Search -->
   <div class="navbar-search">
-
     <span class="search-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round">
@@ -33,57 +21,38 @@
       </svg>
     </span>
 
-
     <input type="search" [(ngModel)]="searchQuery" placeholder="Search products, customers, or invoices..."
       aria-label="Search products, customers, or invoices" (keyup.enter)="onSearch()" />
 
-
     @if (searchQuery) {
-
     <button type="button" class="search-clear" aria-label="Clear search" title="Clear search" (click)="clearSearch()">
       ×
     </button>
-
     }
-
   </div>
 
-
-  <!-- =====================================================
-       RIGHT SECTION
-       ===================================================== -->
-
+  <!-- Right Section -->
   <div class="navbar-right">
-
     <!-- Notifications -->
-
     <button type="button" class="notification-button" aria-label="Notifications" title="Notifications">
-
       <span class="notification-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-
           <path d="M10 21h4" />
         </svg>
       </span>
 
-
       @if (notificationCount > 0) {
-
-      <span class="notification-badge" [attr.aria-label]="notificationCount + ' unread notifications'">
+      <span class="notification-badge" [attr.aria-label]="
+            notificationCount + ' unread notifications'
+          ">
         {{ notificationCount }}
       </span>
-
       }
-
     </button>
 
-
     <!-- User Menu -->
-
     <app-user-menu />
-
   </div>
-
 </header>

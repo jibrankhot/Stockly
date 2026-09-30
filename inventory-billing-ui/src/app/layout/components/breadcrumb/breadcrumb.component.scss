@@ -1,5 +1,14 @@
 :host {
   display: block;
+
+  /*
+   * Keep breadcrumb aligned with the page content.
+   * The page content uses the same horizontal spacing.
+   */
+  padding:
+    var(--space-6)
+    var(--space-6)
+    0;
 }
 
 /* =========================================================
@@ -14,7 +23,6 @@
   gap: 6px;
 
   min-height: 24px;
-
   margin-bottom: var(--space-5);
 
   font-size: 13px;
@@ -42,11 +50,9 @@
 
   font-size: 13px;
   font-weight: 500;
-
   line-height: 1.4;
 
   text-decoration: none;
-
   text-overflow: ellipsis;
   white-space: nowrap;
 
@@ -59,7 +65,6 @@
 
 .breadcrumb-item:hover {
   color: var(--color-primary-700);
-
   background: var(--color-primary-50);
 }
 
@@ -122,7 +127,6 @@
 
 .breadcrumb-item.current:hover {
   color: var(--color-text-primary);
-
   background: transparent;
 }
 
@@ -131,6 +135,12 @@
    ========================================================= */
 
 @media (max-width: 1024px) {
+  :host {
+    padding:
+      var(--space-5)
+      var(--space-5)
+      0;
+  }
 
   .breadcrumb {
     margin-bottom: var(--space-4);
@@ -142,6 +152,12 @@
    ========================================================= */
 
 @media (max-width: 767px) {
+  :host {
+    padding:
+      var(--space-4)
+      var(--space-4)
+      0;
+  }
 
   .breadcrumb {
     gap: 5px;
@@ -174,6 +190,12 @@
    ========================================================= */
 
 @media (max-width: 479px) {
+  :host {
+    padding:
+      var(--space-3)
+      var(--space-3)
+      0;
+  }
 
   .breadcrumb {
     gap: 4px;
@@ -184,9 +206,9 @@
   }
 
   /*
-   Hide the Home text on very small screens.
-   The home icon remains visible.
-  */
+   * Hide the Home text on very small screens.
+   * Keep the home icon visible.
+   */
 
   .breadcrumb-home span:not(.home-icon) {
     display: none;
@@ -198,7 +220,6 @@
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .breadcrumb {
     animation: none;
   }

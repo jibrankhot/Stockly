@@ -1,43 +1,29 @@
 <nav class="breadcrumb" aria-label="Breadcrumb">
-
-    <!-- Home -->
-
     <a class="breadcrumb-item breadcrumb-home" routerLink="/dashboard">
         <span class="home-icon" aria-hidden="true">
             ⌂
         </span>
 
-        <span>
-            Home
-        </span>
+        <span>Home</span>
     </a>
-
 
     @for (
     breadcrumb of breadcrumbs;
     track breadcrumb.url;
     let last = $last
     ) {
-
     <span class="breadcrumb-separator" aria-hidden="true">
         /
     </span>
 
-
     @if (last) {
-
     <span class="breadcrumb-item current" aria-current="page">
         {{ breadcrumb.label }}
     </span>
-
     } @else {
-
     <a class="breadcrumb-item" [routerLink]="breadcrumb.url">
         {{ breadcrumb.label }}
     </a>
-
     }
-
     }
-
 </nav>

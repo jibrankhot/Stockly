@@ -10,11 +10,11 @@ export class LoaderService {
   private readonly loadingSubject =
     new BehaviorSubject<boolean>(false);
 
-  readonly loading$ = this.loadingSubject.asObservable();
+  readonly loading$ =
+    this.loadingSubject.asObservable();
 
   show(): void {
     this.activeRequests++;
-
     this.loadingSubject.next(true);
   }
 
@@ -24,7 +24,9 @@ export class LoaderService {
       this.activeRequests - 1,
     );
 
-    this.loadingSubject.next(this.activeRequests > 0);
+    this.loadingSubject.next(
+      this.activeRequests > 0,
+    );
   }
 
   reset(): void {

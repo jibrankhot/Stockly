@@ -1,18 +1,21 @@
-import { Component, HostListener, inject } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../../../core/auth/services/auth.service';
 import { AuthUser } from '../../../core/auth/models/auth-user';
+import { AuthService } from '../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-user-menu',
   standalone: true,
   imports: [],
   templateUrl: './user-menu.component.html',
-  styleUrl: './user-menu.component.scss'
+  styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
-
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -29,7 +32,7 @@ export class UserMenuComponent {
       return 'User';
     }
 
-    return user.fullName || user.username;
+    return user.fullName?.trim() || user.username;
   }
 
   get initials(): string {
@@ -39,12 +42,16 @@ export class UserMenuComponent {
       return 'U';
     }
 
-    const firstInitial = user.firstName?.charAt(0) ?? '';
-    const lastInitial = user.lastName?.charAt(0) ?? '';
+    const firstInitial = user.firstName?.trim().charAt(0) ?? '';
+    const lastInitial = user.lastName?.trim().charAt(0) ?? '';
 
-    const initials = `${firstInitial}${lastInitial}`.trim();
+    const initials = `${firstInitial}${lastInitial}`.toUpperCase();
 
-    return initials || user.username.charAt(0).toUpperCase();
+    if (initials) {
+      return initials;
+    }
+
+    return user.username.trim().charAt(0).toUpperCase() || 'U';
   }
 
   get roleName(): string {
@@ -62,7 +69,7 @@ export class UserMenuComponent {
   goToProfile(): void {
     this.closeMenu();
 
-    this.router.navigate(['/settings/company']);
+    void this.router.navigate(['/settings/company']);
   }
 
   logout(): void {
@@ -70,7 +77,7 @@ export class UserMenuComponent {
 
     this.authService.logout();
 
-    this.router.navigate(['/auth/login']);
+    void this.router.navigate(['/auth/login']);
   }
 
   @HostListener('document:keydown.escape')

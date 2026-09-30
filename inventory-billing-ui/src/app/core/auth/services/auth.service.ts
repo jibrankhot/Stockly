@@ -21,7 +21,8 @@ export class AuthService {
   private readonly currentUserSubject =
     new BehaviorSubject<AuthUser | null>(null);
 
-  readonly currentUser$ = this.currentUserSubject.asObservable();
+  readonly currentUser$ =
+    this.currentUserSubject.asObservable();
 
   constructor(
     private readonly apiClient: ApiClientService,
@@ -40,7 +41,9 @@ export class AuthService {
       .pipe(
         tap((response) => {
           if (!response.success) {
-            throw new Error(response.message || 'Login failed.');
+            throw new Error(
+              response.message || 'Login failed.',
+            );
           }
 
           const backendUser = response.data.user;
@@ -55,7 +58,10 @@ export class AuthService {
 
           const user = this.mapBackendUser(backendUser);
 
-          this.tokenService.setAccessToken(response.data.token);
+          this.tokenService.setAccessToken(
+            response.data.token,
+          );
+
           this.setCurrentUser(user);
         }),
       );
@@ -98,7 +104,11 @@ export class AuthService {
   }
 
   private setCurrentUser(user: AuthUser): void {
-    this.storageService.setItem(this.currentUserKey, user);
+    this.storageService.setItem(
+      this.currentUserKey,
+      user,
+    );
+
     this.currentUserSubject.next(user);
   }
 
@@ -109,15 +119,20 @@ export class AuthService {
     }
 
     const storedUser =
-      this.storageService.getItem<AuthUser>(this.currentUserKey);
+      this.storageService.getItem<AuthUser>(
+        this.currentUserKey,
+      );
 
     if (storedUser) {
       this.currentUserSubject.next(storedUser);
     }
   }
 
-  private mapBackendUser(user: BackendAuthUser): AuthUser {
-    const nameParts = user.full_name?.trim().split(/\s+/) ?? [];
+  private mapBackendUser(
+    user: BackendAuthUser,
+  ): AuthUser {
+    const nameParts =
+      user.full_name?.trim().split(/\s+/) ?? [];
 
     const firstName = nameParts[0] ?? '';
     const lastName = nameParts.slice(1).join(' ');
@@ -129,7 +144,9 @@ export class AuthService {
       firstName,
       lastName,
       fullName: user.full_name,
-      roles: user.roles ? [user.roles.name] : [],
+      roles: user.roles
+        ? [user.roles.name]
+        : [],
       permissions: [],
     };
   }
