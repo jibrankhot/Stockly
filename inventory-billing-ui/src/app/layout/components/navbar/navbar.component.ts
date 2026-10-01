@@ -1,37 +1,44 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Output,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 
 import { UserMenuComponent } from '../user-menu/user-menu.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [
-    FormsModule,
-    UserMenuComponent,
-  ],
+  imports: [UserMenuComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
   @Output()
   readonly menuToggle = new EventEmitter<void>();
 
+  @Output()
+  readonly searchSubmitted = new EventEmitter<string>();
+
+  @Output()
+  readonly notificationsClicked = new EventEmitter<void>();
+
   searchQuery = '';
 
-  /**
-   * Notification count will be connected to the
-   * notification source/service when the navbar
-   * notification functionality is implemented.
+  /*
+   * This will eventually come from the application's
+   * notification source/service.
    */
   notificationCount = 0;
 
   onMenuToggle(): void {
     this.menuToggle.emit();
+  }
+
+  onSearchInput(value: string): void {
+    this.searchQuery = value;
   }
 
   onSearch(): void {
@@ -41,12 +48,14 @@ export class NavbarComponent {
       return;
     }
 
-    // Global search functionality will be connected
-    // to the appropriate feature/service.
-    console.log('Global search:', query);
+    this.searchSubmitted.emit(query);
   }
 
   clearSearch(): void {
     this.searchQuery = '';
+  }
+
+  onNotificationsClick(): void {
+    this.notificationsClicked.emit();
   }
 }

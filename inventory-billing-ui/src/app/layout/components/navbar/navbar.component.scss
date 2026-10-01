@@ -1,10 +1,7 @@
 :host {
   display: block;
-
   position: sticky;
-
   top: 0;
-
   z-index: var(--z-navbar, 900);
 }
 
@@ -16,11 +13,9 @@
   position: relative;
 
   width: 100%;
-
   height: var(--navbar-height);
 
   display: flex;
-
   align-items: center;
 
   box-sizing: border-box;
@@ -48,9 +43,7 @@
 
 .navbar-left {
   display: flex;
-
   align-items: center;
-
   flex-shrink: 0;
 }
 
@@ -65,9 +58,7 @@
   height: 40px;
 
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
 
@@ -78,15 +69,12 @@
   padding: 0;
 
   border: 1px solid var(--color-border);
-
   border-radius: 8px;
 
   background: var(--color-surface);
-
   color: var(--color-text-primary);
 
   cursor: pointer;
-
   overflow: hidden;
 
   transition:
@@ -100,7 +88,6 @@
   content: '';
 
   position: absolute;
-
   inset: 0;
 
   background: var(--color-primary-50);
@@ -142,7 +129,6 @@
 
 .menu-button span {
   position: relative;
-
   z-index: 1;
 
   display: block;
@@ -161,7 +147,6 @@
 
 .menu-button:hover span {
   width: 18px;
-
   background: var(--color-primary-700);
 }
 
@@ -176,25 +161,18 @@
 
   transform: translateX(-50%);
 
-  width: min(
-    360px,
-    34vw
-  );
-
+  width: min(360px, 34vw);
   height: 38px;
 
   display: flex;
-
   align-items: center;
 
   box-sizing: border-box;
 
   border: 1px solid var(--color-border);
-
   border-radius: 8px;
 
   background: var(--color-surface-muted);
-
   color: var(--color-text-secondary);
 
   transition:
@@ -209,7 +187,7 @@
   border-color: var(--color-primary-300);
 
   box-shadow:
-    0 0 0 3px rgba(72, 147, 39, 0.10);
+    0 0 0 3px rgba(72, 147, 39, 0.1);
 }
 
 /* =========================================================
@@ -221,7 +199,6 @@
   height: 18px;
 
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
 
@@ -250,23 +227,18 @@
   padding: 0 10px;
 
   border: 0;
-
   outline: 0;
 
   background: transparent;
-
   color: var(--color-text-primary);
 
   font-family: inherit;
-
   font-size: 12px;
-
   line-height: 1.4;
 }
 
 .navbar-search input::placeholder {
   color: var(--color-text-muted);
-
   opacity: 1;
 }
 
@@ -283,26 +255,21 @@
   height: 28px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
 
   margin-right: 5px;
-
   padding: 0;
 
   border: 0;
-
   border-radius: 6px;
 
   background: transparent;
-
   color: var(--color-text-muted);
 
   font-size: 18px;
-
   line-height: 1;
 
   cursor: pointer;
@@ -314,13 +281,11 @@
 
 .search-clear:hover {
   background: var(--color-surface-muted);
-
   color: var(--color-text-primary);
 }
 
 .search-clear:focus-visible {
   outline: none;
-
   box-shadow: var(--shadow-focus);
 }
 
@@ -330,7 +295,6 @@
 
 .navbar-right {
   display: flex;
-
   align-items: center;
 
   gap: 8px;
@@ -349,7 +313,6 @@
   height: 38px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
@@ -358,11 +321,9 @@
   padding: 0;
 
   border: 1px solid transparent;
-
   border-radius: 8px;
 
   background: transparent;
-
   color: var(--color-text-secondary);
 
   cursor: pointer;
@@ -405,7 +366,6 @@
   height: 20px;
 
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
 }
@@ -429,7 +389,6 @@
   height: 16px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
@@ -438,17 +397,13 @@
   padding: 0 4px;
 
   border: 2px solid var(--color-surface);
-
   border-radius: 999px;
 
   background: #ef4444;
-
   color: #ffffff;
 
   font-size: 8px;
-
   font-weight: 800;
-
   line-height: 1;
 
   box-shadow:
@@ -466,16 +421,12 @@
    ========================================================= */
 
 @media (max-width: 1024px) {
-
   .navbar {
     padding: 0 16px;
   }
 
   .navbar-search {
-    width: min(
-      320px,
-      32vw
-    );
+    width: min(320px, 32vw);
   }
 }
 
@@ -484,17 +435,15 @@
    ========================================================= */
 
 @media (max-width: 767px) {
-
   .navbar {
     height: var(--navbar-height);
-
     padding: 0 14px;
   }
 
   /*
    * Mobile layout:
    *
-   * [ Hamburger ]              [ Bell ] [ User ]
+   * [ Hamburger ]             [ Bell ] [ User ]
    *
    * No Stockly logo/text here.
    */
@@ -506,8 +455,8 @@
   /*
    * Search is hidden on mobile.
    *
-   * The compact navbar should only contain
-   * navigation + account controls.
+   * The compact navbar contains only
+   * navigation and account controls.
    */
 
   .navbar-search {
@@ -534,7 +483,6 @@
    ========================================================= */
 
 @media (max-width: 479px) {
-
   .navbar {
     padding: 0 10px;
   }
@@ -564,7 +512,6 @@
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .navbar,
   .menu-button,
   .menu-button::before,
@@ -574,7 +521,6 @@
   .notification-button,
   .notification-badge {
     transition: none;
-
     animation: none;
   }
 }

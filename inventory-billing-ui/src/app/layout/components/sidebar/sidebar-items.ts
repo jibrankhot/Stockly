@@ -5,11 +5,11 @@ export interface SidebarItem {
     children?: SidebarItem[];
 }
 
-export const SIDEBAR_ITEMS: SidebarItem[] = [
+export const SIDEBAR_ITEMS: readonly SidebarItem[] = [
     {
         label: 'Dashboard',
         icon: '▦',
-        route: '/dashboard'
+        route: '/dashboard',
     },
 
     {
@@ -19,26 +19,26 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Products',
                 icon: '•',
-                route: '/products'
+                route: '/products',
             },
             {
                 label: 'Categories',
                 icon: '•',
-                route: '/categories'
-            }
-        ]
+                route: '/categories',
+            },
+        ],
     },
 
     {
         label: 'Customers',
         icon: '♙',
-        route: '/customers'
+        route: '/customers',
     },
 
     {
         label: 'Suppliers',
         icon: '♧',
-        route: '/suppliers'
+        route: '/suppliers',
     },
 
     {
@@ -48,24 +48,24 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Stock Overview',
                 icon: '•',
-                route: '/inventory'
+                route: '/inventory',
             },
             {
                 label: 'Stock Movements',
                 icon: '•',
-                route: '/inventory/movements'
+                route: '/inventory/movements',
             },
             {
                 label: 'Stock Adjustment',
                 icon: '•',
-                route: '/inventory/adjustment'
+                route: '/inventory/adjustment',
             },
             {
                 label: 'Low Stock',
                 icon: '•',
-                route: '/inventory/low-stock'
-            }
-        ]
+                route: '/inventory/low-stock',
+            },
+        ],
     },
 
     {
@@ -75,19 +75,19 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Invoices',
                 icon: '•',
-                route: '/invoices'
+                route: '/invoices',
             },
             {
                 label: 'Sales Orders',
                 icon: '•',
-                route: '/sales-orders'
+                route: '/sales-orders',
             },
             {
                 label: 'Sales Returns',
                 icon: '•',
-                route: '/sales-returns'
-            }
-        ]
+                route: '/sales-returns',
+            },
+        ],
     },
 
     {
@@ -97,15 +97,15 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Purchase Orders',
                 icon: '•',
-                route: '/purchases'
-            }
-        ]
+                route: '/purchases',
+            },
+        ],
     },
 
     {
         label: 'Payments',
         icon: '₹',
-        route: '/payments'
+        route: '/payments',
     },
 
     {
@@ -115,24 +115,24 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Sales Report',
                 icon: '•',
-                route: '/reports/sales'
+                route: '/reports/sales',
             },
             {
                 label: 'Purchase Report',
                 icon: '•',
-                route: '/reports/purchases'
+                route: '/reports/purchases',
             },
             {
                 label: 'Inventory Report',
                 icon: '•',
-                route: '/reports/inventory'
+                route: '/reports/inventory',
             },
             {
                 label: 'Payment Report',
                 icon: '•',
-                route: '/reports/payments'
-            }
-        ]
+                route: '/reports/payments',
+            },
+        ],
     },
 
     {
@@ -142,14 +142,14 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Users',
                 icon: '•',
-                route: '/users'
+                route: '/users',
             },
             {
                 label: 'Roles',
                 icon: '•',
-                route: '/users/roles'
-            }
-        ]
+                route: '/users/roles',
+            },
+        ],
     },
 
     {
@@ -159,18 +159,18 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
             {
                 label: 'Company Profile',
                 icon: '•',
-                route: '/settings/company'
+                route: '/settings/company',
             },
             {
                 label: 'Invoice Settings',
                 icon: '•',
-                route: '/settings/invoice'
+                route: '/settings/invoice',
             },
             {
                 label: 'Tax Settings',
                 icon: '•',
-                route: '/settings/tax'
-            }
-        ]
-    }
+                route: '/settings/tax',
+            },
+        ],
+    },
 ];

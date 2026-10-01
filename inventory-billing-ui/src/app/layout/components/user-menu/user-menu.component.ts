@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   HostListener,
   inject,
@@ -14,6 +15,7 @@ import { AuthService } from '../../../core/auth/services/auth.service';
   imports: [],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);

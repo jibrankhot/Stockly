@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.loader-full-area {
+  display: flex;
+  width: 100%;
+  min-height: 220px;
+  flex-direction: column;
+}
+
+.loader-spinner {
+  display: block;
+  flex: 0 0 auto;
+  border-style: solid;
+  border-color: var(--color-primary-100);
+  border-top-color: var(--color-primary-600);
+  border-radius: 50%;
+  animation: stockly-loader-spin 700ms linear infinite;
+}
+
+.loader-small .loader-spinner {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.loader-medium .loader-spinner {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.loader-large .loader-spinner {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+.loader-message {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.loader-small .loader-message {
+  font-size: 12px;
+}
+
+.loader-large .loader-message {
+  font-size: 14px;
+}
+
+.loader-full-area .loader-message {
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .loader-full-area {
+    min-height: 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-spinner {
+    animation-duration: 1200ms;
+  }
+}
+
+@keyframes stockly-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

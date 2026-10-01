@@ -1,1 +1,80 @@
-<p>number-input works!</p>
+<div class="number-field">
+    @if (label) {
+    <label class="number-label" [for]="inputId">
+        {{ label }}
+
+        @if (required) {
+        <span class="required-indicator" aria-hidden="true">
+            *
+        </span>
+        }
+    </label>
+    }
+
+    <div class="number-wrapper" [class.number-wrapper-error]="!!errorMessage" [class.number-wrapper-disabled]="disabled"
+        [class.number-wrapper-prefix]="hasPrefix" [class.number-wrapper-suffix]="hasSuffix">
+        @if (hasPrefix) {
+        <span class="number-prefix" aria-hidden="true">
+            {{ prefix }}
+        </span>
+        }
+
+        <input class="number-control" type="number" inputmode="decimal" [id]="inputId" [name]="name || inputId"
+            [value]="value ?? ''" [placeholder]="placeholder" [min]="min" [max]="max" [step]="step"
+            [disabled]="disabled" [readOnly]="readonly" [required]="required" [attr.aria-invalid]="
+        errorMessage ? 'true' : null
+      " [attr.aria-describedby]="
+        errorMessage
+          ? inputId + '-error'
+          : hint
+            ? inputId + '-hint'
+            : null
+      " (input)="onInput($any($event.target).value)" (blur)="onBlur()" />
+
+        @if (hasSuffix) {
+        <span class="number-suffix" aria-hidden="true">
+            {{ suffix }}
+        </span>
+        }
+
+        @if (showStepper) {
+        <div class="number-stepper">
+            <button type="button" class="stepper-button" [disabled]="
+            disabled ||
+            readonly ||
+            (max !== null &&
+              value !== null &&
+              value >= max)
+          " aria-label="Increase value" (click)="increment()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+
+            <button type="button" class="stepper-button" [disabled]="
+            disabled ||
+            readonly ||
+            (min !== null &&
+              value !== null &&
+              value <= min)
+          " aria-label="Decrease value" (click)="decrement()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+            </button>
+        </div>
+        }
+    </div>
+
+    @if (errorMessage) {
+    <p class="number-error" [id]="inputId + '-error'" role="alert">
+        {{ errorMessage }}
+    </p>
+    } @else if (hint) {
+    <p class="number-hint" [id]="inputId + '-hint'">
+        {{ hint }}
+    </p>
+    }
+</div>

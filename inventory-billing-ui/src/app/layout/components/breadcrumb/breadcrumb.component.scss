@@ -86,10 +86,13 @@
 
   color: var(--color-text-muted);
 
-  font-size: 14px;
-
   transition:
     color var(--duration-fast) var(--ease-standard);
+}
+
+.home-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .breadcrumb-home:hover .home-icon {
@@ -180,8 +183,6 @@
   .home-icon {
     width: 15px;
     height: 15px;
-
-    font-size: 13px;
   }
 }
 
@@ -206,11 +207,11 @@
   }
 
   /*
-   * Hide the Home text on very small screens.
+   * Hide Home text on very small screens.
    * Keep the home icon visible.
    */
 
-  .breadcrumb-home span:not(.home-icon) {
+  .home-label {
     display: none;
   }
 }

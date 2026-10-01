@@ -1,1 +1,11 @@
-<p>status-chip works!</p>
+<span class="status-chip" [class.status-chip-success]="variant === 'success'"
+    [class.status-chip-warning]="variant === 'warning'" [class.status-chip-danger]="variant === 'danger'"
+    [class.status-chip-info]="variant === 'info'" [class.status-chip-neutral]="variant === 'neutral'">
+    @if (dot) {
+    <span class="status-dot" aria-hidden="true"></span>
+    }
+
+    <span class="status-label">
+        {{ label }}
+    </span>
+</span>

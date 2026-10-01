@@ -1,6 +1,6 @@
 @if (modalService.modal$ | async; as modal) {
 @if (modal.isOpen) {
-<div class="modal-backdrop" (click)="onBackdropClick($event)">
+<div class="modal-backdrop" role="presentation" (click)="onBackdropClick($event)">
     <section class="confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-message">
         <div class="dialog-header">
@@ -13,7 +13,10 @@
             </div>
 
             <div class="dialog-heading">
-                <h2 id="dialog-title">{{ modal.title }}</h2>
+                <h2 id="dialog-title">
+                    {{ modal.title }}
+                </h2>
+
                 <p class="dialog-subtitle">
                     Please confirm your action
                 </p>

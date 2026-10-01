@@ -1,7 +1,6 @@
 <header class="navbar">
   <!-- Left Section -->
   <div class="navbar-left">
-    <!-- Sidebar Toggle -->
     <button type="button" class="menu-button" aria-label="Toggle sidebar" title="Toggle sidebar"
       (click)="onMenuToggle()">
       <span></span>
@@ -21,8 +20,9 @@
       </svg>
     </span>
 
-    <input type="search" [(ngModel)]="searchQuery" placeholder="Search products, customers, or invoices..."
-      aria-label="Search products, customers, or invoices" (keyup.enter)="onSearch()" />
+    <input type="search" [value]="searchQuery" placeholder="Search products, customers, or invoices..."
+      aria-label="Search products, customers, or invoices" autocomplete="off"
+      (input)="onSearchInput($any($event.target).value)" (keyup.enter)="onSearch()" />
 
     @if (searchQuery) {
     <button type="button" class="search-clear" aria-label="Clear search" title="Clear search" (click)="clearSearch()">
@@ -34,7 +34,8 @@
   <!-- Right Section -->
   <div class="navbar-right">
     <!-- Notifications -->
-    <button type="button" class="notification-button" aria-label="Notifications" title="Notifications">
+    <button type="button" class="notification-button" aria-label="Notifications" title="Notifications"
+      (click)="onNotificationsClick()">
       <span class="notification-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
           stroke-linejoin="round">

@@ -1,12 +1,19 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+} from '@angular/core';
 
 @Component({
   selector: 'app-empty-state',
   standalone: true,
   imports: [],
   templateUrl: './empty-state.component.html',
-  styleUrl: './empty-state.component.scss'
+  styleUrl: './empty-state.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStateComponent {
-
+  @Input() title = 'No records found.';
+  @Input() message = '';
+  @Input() icon = 'empty';
 }

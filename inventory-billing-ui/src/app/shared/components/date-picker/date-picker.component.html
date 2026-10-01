@@ -1,1 +1,53 @@
-<p>date-picker works!</p>
+<div class="date-picker">
+    @if (label) {
+    <label class="date-picker-label" [for]="inputId">
+        {{ label }}
+
+        @if (required) {
+        <span class="required-indicator" aria-hidden="true">
+            *
+        </span>
+        }
+    </label>
+    }
+
+    <div class="date-input-wrapper" [class.date-input-wrapper-error]="
+      !!errorMessage
+    " [class.date-input-wrapper-disabled]="
+      disabled
+    ">
+        <span class="calendar-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="17" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+            </svg>
+        </span>
+
+        <input class="date-input" type="date" [id]="inputId" [name]="name || inputId" [ngModel]="value"
+            [min]="min || null" [max]="max || null" [disabled]="disabled" [required]="required" [readOnly]="readonly"
+            [attr.aria-invalid]="
+        errorMessage ? 'true' : null
+      " [attr.aria-describedby]="
+        errorMessage
+          ? inputId + '-error'
+          : hint
+            ? inputId + '-hint'
+            : null
+      " [attr.aria-label]="
+        label ? null : placeholder
+      " (ngModelChange)="onDateChange($event)" />
+    </div>
+
+    @if (errorMessage) {
+    <p class="date-picker-error" [id]="inputId + '-error'" role="alert">
+        {{ errorMessage }}
+    </p>
+    } @else if (hint) {
+    <p class="date-picker-hint" [id]="inputId + '-hint'">
+        {{ hint }}
+    </p>
+    }
+</div>

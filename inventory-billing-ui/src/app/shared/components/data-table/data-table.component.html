@@ -1,1 +1,60 @@
-<p>data-table works!</p>
+<div class="data-table-wrapper">
+    @if (loading) {
+    <div class="table-loading" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+
+        <span>Loading data...</span>
+    </div>
+    } @else if (data.length === 0) {
+    <div class="table-empty" role="status">
+        <span class="empty-icon" aria-hidden="true">
+            —
+        </span>
+
+        <span>{{ emptyMessage }}</span>
+    </div>
+    } @else {
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    @for (
+                    column of columns;
+                    track column.key
+                    ) {
+                    <th scope="col" [style.width]="column.width || null" [class.text-center]="
+                  column.align === 'center'
+                " [class.text-right]="
+                  column.align === 'right'
+                ">
+                        {{ column.label }}
+                    </th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (
+                row of data;
+                track getRowKey(row, $index)
+                ) {
+                <tr>
+                    @for (
+                    column of columns;
+                    track column.key
+                    ) {
+                    <td [class.text-center]="
+                    column.align === 'center'
+                  " [class.text-right]="
+                    column.align === 'right'
+                  ">
+                        {{ getColumnValue(row, column) }}
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>

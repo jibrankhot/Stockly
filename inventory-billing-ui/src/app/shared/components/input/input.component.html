@@ -1,1 +1,50 @@
-<p>input works!</p>
+<div class="input-field">
+    @if (label) {
+    <label class="input-label" [for]="inputId">
+        {{ label }}
+
+        @if (required) {
+        <span class="required-indicator" aria-hidden="true">
+            *
+        </span>
+        }
+    </label>
+    }
+
+    <div class="input-wrapper" [class.input-wrapper-error]="!!errorMessage" [class.input-wrapper-disabled]="disabled"
+        [class.input-wrapper-prefix]="hasPrefix" [class.input-wrapper-suffix]="hasSuffix">
+        @if (hasPrefix) {
+        <span class="input-prefix" aria-hidden="true">
+            {{ prefix }}
+        </span>
+        }
+
+        <input class="input-control" [type]="type" [id]="inputId" [name]="name || inputId" [value]="value"
+            [placeholder]="placeholder" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+            [autocomplete]="autocomplete" [attr.maxlength]="maxLength" [attr.minlength]="minLength" [attr.min]="min"
+            [attr.max]="max" [attr.step]="step" [attr.aria-invalid]="errorMessage ? 'true' : null"
+            [attr.aria-describedby]="
+        errorMessage
+          ? inputId + '-error'
+          : hint
+            ? inputId + '-hint'
+            : null
+      " (input)="onInput($any($event.target).value)" (blur)="onBlur()" />
+
+        @if (hasSuffix) {
+        <span class="input-suffix" aria-hidden="true">
+            {{ suffix }}
+        </span>
+        }
+    </div>
+
+    @if (errorMessage) {
+    <p class="input-error" [id]="inputId + '-error'" role="alert">
+        {{ errorMessage }}
+    </p>
+    } @else if (hint) {
+    <p class="input-hint" [id]="inputId + '-hint'">
+        {{ hint }}
+    </p>
+    }
+</div>

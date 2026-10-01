@@ -1,1 +1,24 @@
-<p>error-state works!</p>
+<div class="error-state" role="alert" aria-live="assertive">
+    <div class="error-state-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+    </div>
+
+    <div class="error-state-content">
+        <h3 class="error-state-title">
+            {{ title }}
+        </h3>
+
+        <p class="error-state-message">
+            {{ message }}
+        </p>
+    </div>
+
+    <div class="error-state-action">
+        <ng-content />
+    </div>
+</div>

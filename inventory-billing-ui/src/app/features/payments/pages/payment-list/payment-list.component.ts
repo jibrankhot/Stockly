@@ -103,10 +103,7 @@ export class PaymentListComponent implements OnInit {
           .includes(search) ||
         payment.customerName
           .toLowerCase()
-          .includes(search) ||
-        payment.referenceNumber
-          .toLowerCase()
-          .includes(search);
+          .includes(search)
 
       const matchesMethod =
         this.methodFilter === 'all' ||

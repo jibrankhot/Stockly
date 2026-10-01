@@ -1,1 +1,120 @@
-<p>file-upload works!</p>
+<div class="file-upload">
+    @if (label) {
+    <label class="file-upload-label">
+        {{ label }}
+
+        @if (required) {
+        <span class="required-indicator" aria-hidden="true">
+            *
+        </span>
+        }
+    </label>
+    }
+
+    <input #fileInput class="file-input" type="file" [accept]="accept" [multiple]="multiple"
+        [disabled]="disabled || loading" [attr.aria-label]="label" (change)="onFileInput($event)" />
+
+    <div class="upload-zone" [class.upload-zone-dragging]="isDragging" [class.upload-zone-error]="!!errorMessage"
+        [class.upload-zone-disabled]="disabled || loading" [class.upload-zone-has-files]="hasFiles" role="button"
+        tabindex="0" (click)="onBrowseClick(fileInput)" (keydown.enter)="onBrowseClick(fileInput)"
+        (keydown.space)="onBrowseClick(fileInput)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+        @if (loading) {
+        <div class="upload-icon upload-icon-loading">
+            <span class="upload-spinner" aria-hidden="true"></span>
+        </div>
+
+        <div class="upload-content">
+            <p class="upload-title">
+                Uploading...
+            </p>
+
+            <p class="upload-description">
+                Please wait while your files are being uploaded.
+            </p>
+        </div>
+        } @else {
+        <div class="upload-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 16V4"></path>
+                <path d="m7 9 5-5 5 5"></path>
+                <path d="M5 20h14"></path>
+            </svg>
+        </div>
+
+        <div class="upload-content">
+            <p class="upload-title">
+                <span class="upload-action">
+                    Click to upload
+                </span>
+                or drag and drop
+            </p>
+
+            <p class="upload-description">
+                @if (accept) {
+                {{ accept }}
+                } @else {
+                Select a file from your device
+                }
+
+                · Maximum {{ maxSizeMb }} MB
+            </p>
+        </div>
+        }
+    </div>
+
+    @if (errorMessage) {
+    <p class="file-upload-error" role="alert">
+        {{ errorMessage }}
+    </p>
+    } @else if (hint) {
+    <p class="file-upload-hint">
+        {{ hint }}
+    </p>
+    }
+
+    @if (selectedFiles.length > 0) {
+    <div class="selected-files">
+        <p class="selected-files-title">
+            Selected files
+        </p>
+
+        <div class="file-list">
+            @for (
+            file of selectedFiles;
+            track file.name + file.size + $index
+            ) {
+            <div class="file-item">
+                <div class="file-item-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                        <path d="M14 2v6h6"></path>
+                    </svg>
+                </div>
+
+                <div class="file-item-details">
+                    <span class="file-item-name">
+                        {{ file.name }}
+                    </span>
+
+                    <span class="file-item-size">
+                        {{ formatFileSize(file.size) }}
+                    </span>
+                </div>
+
+                <button type="button" class="file-remove-button" [disabled]="disabled || loading"
+                    [attr.aria-label]="'Remove ' + file.name" (click)="removeFile(file); $event.stopPropagation()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

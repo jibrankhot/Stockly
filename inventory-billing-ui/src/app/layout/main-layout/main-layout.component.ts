@@ -13,10 +13,10 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 import { NavbarComponent } from '../components/navbar/navbar.component';
 import { SidebarComponent } from '../components/sidebar/sidebar.component';
 import { BreadcrumbComponent } from '../components/breadcrumb/breadcrumb.component';
+
 
 @Component({
   selector: 'app-main-layout',
@@ -124,6 +124,7 @@ export class MainLayoutComponent {
       this.isSidebarOpen = nextState;
       this.desktopSidebarState = nextState;
       this.unlockBodyScroll();
+
       return;
     }
 
@@ -164,6 +165,7 @@ export class MainLayoutComponent {
           this.isNavigating = true;
 
           this.closeSidebarOnMobile();
+
           return;
         }
 

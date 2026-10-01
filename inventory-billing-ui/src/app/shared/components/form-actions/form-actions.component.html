@@ -1,1 +1,7 @@
-<p>form-actions works!</p>
+<div class="form-actions" [class.form-actions-left]="align === 'left'" [class.form-actions-center]="align === 'center'"
+    [class.form-actions-right]="align === 'right'" [class.form-actions-between]="align === 'between'"
+    [class.form-actions-sticky]="sticky">
+    <div class="form-actions-content">
+        <ng-content />
+    </div>
+</div>

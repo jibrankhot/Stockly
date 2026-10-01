@@ -1,5 +1,10 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  inject,
+} from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
 
 import { ModalService } from '../../../core/services/modal.service';
 
@@ -9,9 +14,17 @@ import { ModalService } from '../../../core/services/modal.service';
   imports: [AsyncPipe],
   templateUrl: './confirmation-dialog.component.html',
   styleUrl: './confirmation-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent {
   readonly modalService = inject(ModalService);
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.modalService.getState().isOpen) {
+      this.cancel();
+    }
+  }
 
   cancel(): void {
     this.modalService.close();

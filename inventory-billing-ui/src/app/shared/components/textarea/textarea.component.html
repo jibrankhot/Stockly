@@ -1,1 +1,34 @@
-<p>textarea works!</p>
+<div class="textarea-field">
+    @if (label) {
+    <label class="textarea-label" [for]="textareaId">
+        {{ label }}
+
+        @if (required) {
+        <span class="required-indicator" aria-hidden="true">
+            *
+        </span>
+        }
+    </label>
+    }
+
+    <textarea class="textarea-control" [id]="textareaId" [name]="name || textareaId" [value]="value"
+        [placeholder]="placeholder" [rows]="rows" [disabled]="disabled" [readonly]="readonly" [required]="required"
+        [attr.maxlength]="maxLength" [attr.minlength]="minLength" [style.resize]="resize"
+        [attr.aria-invalid]="errorMessage ? 'true' : null" [attr.aria-describedby]="
+      errorMessage
+        ? textareaId + '-error'
+        : hint
+          ? textareaId + '-hint'
+          : null
+    " (input)="onInput($any($event.target).value)" (blur)="onBlur()"></textarea>
+
+    @if (errorMessage) {
+    <p class="textarea-error" [id]="textareaId + '-error'" role="alert">
+        {{ errorMessage }}
+    </p>
+    } @else if (hint) {
+    <p class="textarea-hint" [id]="textareaId + '-hint'">
+        {{ hint }}
+    </p>
+    }
+</div>

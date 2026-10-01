@@ -1,0 +1,218 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.number-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.number-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.required-indicator {
+  color: var(--color-danger-600);
+}
+
+.number-wrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 40px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.number-wrapper:focus-within {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.number-wrapper-error {
+  border-color: var(--color-danger-500);
+}
+
+.number-wrapper-error:focus-within {
+  border-color: var(--color-danger-500);
+  box-shadow: 0 0 0 3px var(--color-danger-100);
+}
+
+.number-wrapper-disabled {
+  background: var(--color-background);
+  cursor: not-allowed;
+}
+
+.number-control {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 var(--space-3);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.number-control::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.number-control:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.number-control[readonly] {
+  cursor: default;
+}
+
+/* Hide native number steppers because we provide our own. */
+
+.number-control::-webkit-outer-spin-button,
+.number-control::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.number-control[type='number'] {
+  appearance: textfield;
+}
+
+.number-prefix,
+.number-suffix {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.number-prefix {
+  padding-left: var(--space-3);
+}
+
+.number-suffix {
+  padding-right: var(--space-3);
+}
+
+.number-wrapper-prefix .number-control {
+  padding-left: var(--space-2);
+}
+
+.number-wrapper-suffix .number-control {
+  padding-right: var(--space-2);
+}
+
+.number-stepper {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 32px;
+  width: 32px;
+  border-left: 1px solid var(--color-border);
+}
+
+.stepper-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 19px;
+  padding: 0;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 0;
+  cursor: pointer;
+}
+
+.stepper-button + .stepper-button {
+  border-top: 1px solid var(--color-border);
+}
+
+.stepper-button:hover:not(:disabled) {
+  color: var(--color-primary-600);
+  background: var(--color-background);
+}
+
+.stepper-button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+}
+
+.stepper-button:disabled {
+  color: var(--color-border-strong);
+  background: var(--color-background);
+  cursor: not-allowed;
+}
+
+.stepper-button svg {
+  width: 12px;
+  height: 12px;
+}
+
+.number-hint,
+.number-error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.number-hint {
+  color: var(--color-text-muted);
+}
+
+.number-error {
+  color: var(--color-danger-600);
+}
+
+@media (max-width: 767px) {
+  .number-wrapper {
+    min-height: 42px;
+  }
+
+  .number-control {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .number-stepper {
+    flex-basis: 36px;
+    width: 36px;
+  }
+
+  .stepper-button {
+    min-height: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .number-wrapper {
+    transition: none;
+  }
+}

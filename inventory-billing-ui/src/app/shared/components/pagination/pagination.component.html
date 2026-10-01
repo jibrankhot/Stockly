@@ -1,1 +1,87 @@
-<p>pagination works!</p>
+@if (totalItems > 0) {
+<nav class="pagination" aria-label="Pagination">
+    <div class="pagination-info">
+        Showing
+        <strong>{{ startItem }}</strong>
+        -
+        <strong>{{ endItem }}</strong>
+        of
+        <strong>{{ totalItems }}</strong>
+    </div>
+
+    <div class="pagination-controls">
+        <div class="page-size">
+            <label class="page-size-label" [for]="'page-size-' + currentPage">
+                Rows
+            </label>
+
+            <select class="page-size-select" [id]="'page-size-' + currentPage" [value]="pageSize"
+                aria-label="Rows per page" (change)="onPageSizeChange($event)">
+                @for (
+                option of pageSizeOptions;
+                track option
+                ) {
+                <option [value]="option">
+                    {{ option }}
+                </option>
+                }
+            </select>
+        </div>
+
+        <div class="page-navigation">
+            <button type="button" class="pagination-button pagination-edge" [disabled]="!hasPreviousPage"
+                aria-label="First page" (click)="goToFirstPage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="11 17 6 12 11 7"></polyline>
+                    <line x1="18" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <button type="button" class="pagination-button" [disabled]="!hasPreviousPage" aria-label="Previous page"
+                (click)="goToPreviousPage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="page-numbers">
+                @for (
+                page of visiblePages;
+                track page
+                ) {
+                <button type="button" class="pagination-button page-number" [class.page-number-active]="
+                page === currentPage
+              " [attr.aria-current]="
+                page === currentPage
+                  ? 'page'
+                  : null
+              " [attr.aria-label]="
+                'Page ' + page
+              " (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+            </div>
+
+            <button type="button" class="pagination-button" [disabled]="!hasNextPage" aria-label="Next page"
+                (click)="goToNextPage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <button type="button" class="pagination-button pagination-edge" [disabled]="!hasNextPage"
+                aria-label="Last page" (click)="goToLastPage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="13 17 18 12 13 7"></polyline>
+                    <line x1="6" y1="6" x2="6" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
+}

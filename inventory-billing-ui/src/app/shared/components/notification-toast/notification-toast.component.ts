@@ -1,5 +1,9 @@
+import {
+    ChangeDetectionStrategy,
+    Component,
+    inject,
+} from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
 
 import { NotificationService } from '../../../core/services/notification.service';
 
@@ -9,9 +13,12 @@ import { NotificationService } from '../../../core/services/notification.service
     imports: [AsyncPipe],
     templateUrl: './notification-toast.component.html',
     styleUrl: './notification-toast.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationToastComponent {
-    readonly notificationService = inject(NotificationService);
+    readonly notificationService = inject(
+        NotificationService,
+    );
 
     dismiss(id: number): void {
         this.notificationService.remove(id);

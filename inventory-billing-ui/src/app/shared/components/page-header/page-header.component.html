@@ -1,1 +1,30 @@
-<p>page-header works!</p>
+<header class="page-header">
+    <div class="page-header-main">
+        @if (showBackButton) {
+        <button type="button" class="back-button" [attr.aria-label]="backLabel" (click)="onBackClick()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </button>
+        }
+
+        <div class="page-header-content">
+            <h1 class="page-title">
+                {{ title }}
+            </h1>
+
+            @if (description) {
+            <p class="page-description">
+                {{ description }}
+            </p>
+            }
+        </div>
+    </div>
+
+    <div class="page-header-actions">
+        <ng-content />
+    </div>
+</header>

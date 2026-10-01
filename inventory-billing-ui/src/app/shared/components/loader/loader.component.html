@@ -1,1 +1,11 @@
-<p>loader works!</p>
+<div class="loader" [class.loader-small]="size === 'small'" [class.loader-medium]="size === 'medium'"
+    [class.loader-large]="size === 'large'" [class.loader-full-area]="fullArea" role="status" aria-live="polite"
+    [attr.aria-label]="message || 'Loading'">
+    <span class="loader-spinner" aria-hidden="true"></span>
+
+    @if (message) {
+    <span class="loader-message">
+        {{ message }}
+    </span>
+    }
+</div>
