@@ -1,5 +1,8 @@
 const authService = require('../services/auth.service');
-const { successResponse, errorResponse } = require('../utils/api-response');
+const {
+    successResponse,
+    errorResponse
+} = require('../utils/api-response');
 
 const login = async (req, res) => {
     try {
@@ -17,6 +20,46 @@ const login = async (req, res) => {
             res,
             error.message,
             401
+        );
+    }
+};
+
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        await authService.requestPasswordReset(email);
+
+        return successResponse(
+            res,
+            null,
+            'If an account exists with this email address, password reset instructions have been sent.'
+        );
+    } catch (error) {
+        return errorResponse(
+            res,
+            error.message,
+            500
+        );
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        await authService.resetPassword(token, newPassword);
+
+        return successResponse(
+            res,
+            null,
+            'Password has been reset successfully'
+        );
+    } catch (error) {
+        return errorResponse(
+            res,
+            error.message,
+            400
         );
     }
 };
@@ -41,5 +84,7 @@ const me = async (req, res) => {
 
 module.exports = {
     login,
+    forgotPassword,
+    resetPassword,
     me
 };
