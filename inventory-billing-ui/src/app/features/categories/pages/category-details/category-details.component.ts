@@ -1,8 +1,16 @@
-
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnInit,
+    inject,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import {
+    ActivatedRoute,
+    Router,
+} from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
@@ -11,39 +19,44 @@ import { CategoryService } from '../../services/category.service';
     selector: 'app-category-details',
     standalone: true,
     imports: [
-        DatePipe
+        DatePipe,
     ],
     templateUrl: './category-details.component.html',
-    styleUrl: './category-details.component.scss'
+    styleUrl: './category-details.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CategoryDetailsComponent implements OnInit, OnDestroy {
+export class CategoryDetailsComponent
+    implements OnInit {
+
+    private readonly activatedRoute =
+        inject(ActivatedRoute);
+
+    private readonly categoryService =
+        inject(CategoryService);
+
+    private readonly router =
+        inject(Router);
+
+    private readonly changeDetectorRef =
+        inject(ChangeDetectorRef);
 
     category: Category | null = null;
     isLoading = false;
 
-    private readonly destroy$ = new Subject<void>();
-
-    constructor(
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly categoryService: CategoryService,
-        private readonly router: Router
-    ) { }
-
     ngOnInit(): void {
-        this.activatedRoute.paramMap
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(params => {
-                const categoryId = Number(params.get('id'));
+        const categoryId = Number(
+            this.activatedRoute.snapshot.paramMap.get('id')
+        );
 
-                if (!Number.isInteger(categoryId) || categoryId <= 0) {
-                    this.category = null;
-                    this.isLoading = false;
-                    this.goBack();
-                    return;
-                }
+        if (
+            !Number.isInteger(categoryId) ||
+            categoryId <= 0
+        ) {
+            this.goBack();
+            return;
+        }
 
-                this.loadCategory(categoryId);
-            });
+        this.loadCategory(categoryId);
     }
 
     loadCategory(id: number): void {
@@ -52,18 +65,21 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
 
         this.categoryService
             .getCategoryById(id)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(
+                finalize(() => {
+                    this.isLoading = false;
+                    this.changeDetectorRef.markForCheck();
+                })
+            )
             .subscribe({
-                next: category => {
+                next: (category) => {
                     this.category = category;
-                    this.isLoading = false;
+                    this.changeDetectorRef.markForCheck();
                 },
-                error: error => {
-                    console.error('Failed to load category:', error);
+
+                error: () => {
                     this.category = null;
-                    this.isLoading = false;
-                    // The HTTP error interceptor handles the error notification.
-                }
+                },
             });
     }
 
@@ -72,19 +88,16 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.router.navigate([
+        void this.router.navigate([
             '/categories',
             this.category.id,
-            'edit'
+            'edit',
         ]);
     }
 
     goBack(): void {
-        this.router.navigate(['/categories']);
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
+        void this.router.navigate([
+            '/categories',
+        ]);
     }
 }

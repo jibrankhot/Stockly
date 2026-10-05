@@ -19,7 +19,7 @@ const getCategories = async () => {
         throw new Error(error.message);
     }
 
-    return data.map(mapCategory);
+    return (data ?? []).map(mapCategory);
 };
 
 const getCategoryById = async (id) => {
@@ -34,9 +34,13 @@ const getCategoryById = async (id) => {
     }
 
     if (!data) {
-        const error = new Error('Category not found');
-        error.statusCode = 404;
-        throw error;
+        const notFoundError = new Error(
+            'Category not found'
+        );
+
+        notFoundError.statusCode = 404;
+
+        throw notFoundError;
     }
 
     return mapCategory(data);
@@ -57,8 +61,12 @@ const createCategory = async (categoryData) => {
 
     if (error) {
         if (error.code === '23505') {
-            const duplicateError = new Error('Category name already exists');
+            const duplicateError = new Error(
+                'Category name already exists'
+            );
+
             duplicateError.statusCode = 409;
+
             throw duplicateError;
         }
 
@@ -68,19 +76,25 @@ const createCategory = async (categoryData) => {
     return mapCategory(data);
 };
 
-const updateCategory = async (id, categoryData) => {
+const updateCategory = async (
+    id,
+    categoryData
+) => {
     const updateData = {};
 
     if (categoryData.name !== undefined) {
-        updateData.name = categoryData.name.trim();
+        updateData.name =
+            categoryData.name.trim();
     }
 
     if (categoryData.description !== undefined) {
-        updateData.description = categoryData.description || null;
+        updateData.description =
+            categoryData.description || null;
     }
 
     if (categoryData.isActive !== undefined) {
-        updateData.is_active = categoryData.isActive;
+        updateData.is_active =
+            categoryData.isActive;
     }
 
     const { data, error } = await supabase
@@ -92,8 +106,12 @@ const updateCategory = async (id, categoryData) => {
 
     if (error) {
         if (error.code === '23505') {
-            const duplicateError = new Error('Category name already exists');
+            const duplicateError = new Error(
+                'Category name already exists'
+            );
+
             duplicateError.statusCode = 409;
+
             throw duplicateError;
         }
 
@@ -101,8 +119,12 @@ const updateCategory = async (id, categoryData) => {
     }
 
     if (!data) {
-        const notFoundError = new Error('Category not found');
+        const notFoundError = new Error(
+            'Category not found'
+        );
+
         notFoundError.statusCode = 404;
+
         throw notFoundError;
     }
 
@@ -120,7 +142,9 @@ const deleteCategory = async (id) => {
             const conflictError = new Error(
                 'Category cannot be deleted because products are using it'
             );
+
             conflictError.statusCode = 409;
+
             throw conflictError;
         }
 

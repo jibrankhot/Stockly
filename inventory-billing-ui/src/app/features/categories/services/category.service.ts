@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
+import { ApiResponse } from '../../../core/models/api-response';
 import { ApiClientService } from '../../../core/http/services/api-client.service';
-import { Category } from '../../../shared/models/category';
+
+import {
+    Category,
+    CreateCategoryRequest,
+    UpdateCategoryRequest,
+} from '../../../shared/models/category';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CategoryService {
-
     private readonly endpoint = 'categories';
 
     constructor(
@@ -16,42 +21,63 @@ export class CategoryService {
     ) { }
 
     getCategories(): Observable<Category[]> {
-        return this.apiClient.get<Category[]>(
-            this.endpoint
-        );
+        return this.apiClient
+            .get<ApiResponse<Category[]>>(
+                this.endpoint
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
-    getCategoryById(id: number): Observable<Category> {
-        return this.apiClient.get<Category>(
-            `${this.endpoint}/${id}`
-        );
+    getCategoryById(
+        id: number
+    ): Observable<Category> {
+        return this.apiClient
+            .get<ApiResponse<Category>>(
+                `${this.endpoint}/${id}`
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
     createCategory(
-        categoryData: Partial<Category>
+        categoryData: CreateCategoryRequest
     ): Observable<Category> {
-
-        return this.apiClient.post<Category>(
-            this.endpoint,
-            categoryData
-        );
+        return this.apiClient
+            .post<ApiResponse<Category>>(
+                this.endpoint,
+                categoryData
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
     updateCategory(
         id: number,
-        categoryData: Partial<Category>
+        categoryData: UpdateCategoryRequest
     ): Observable<Category> {
-
-        return this.apiClient.put<Category>(
-            `${this.endpoint}/${id}`,
-            categoryData
-        );
+        return this.apiClient
+            .put<ApiResponse<Category>>(
+                `${this.endpoint}/${id}`,
+                categoryData
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
-    deleteCategory(id: number): Observable<boolean> {
-
-        return this.apiClient.delete<boolean>(
-            `${this.endpoint}/${id}`
-        );
+    deleteCategory(
+        id: number
+    ): Observable<null> {
+        return this.apiClient
+            .delete<ApiResponse<null>>(
+                `${this.endpoint}/${id}`
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 }

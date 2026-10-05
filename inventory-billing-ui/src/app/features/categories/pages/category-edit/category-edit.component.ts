@@ -1,39 +1,71 @@
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnInit,
+    inject,
+} from '@angular/core';
+import {
+    ActivatedRoute,
+    Router,
+} from '@angular/router';
+import { finalize } from 'rxjs';
 
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+    Category,
+    UpdateCategoryRequest,
+} from '../../../../shared/models/category';
 
-import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
+
 import { CategoryFormComponent } from '../../category-form/category-form.component';
+
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-category-edit',
     standalone: true,
-    imports: [CategoryFormComponent],
+    imports: [
+        CategoryFormComponent,
+    ],
     templateUrl: './category-edit.component.html',
-    styleUrl: './category-edit.component.scss'
+    styleUrl: './category-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryEditComponent implements OnInit {
+    private readonly activatedRoute =
+        inject(ActivatedRoute);
+
+    private readonly categoryService =
+        inject(CategoryService);
+
+    private readonly router =
+        inject(Router);
+
+    private readonly notificationService =
+        inject(NotificationService);
+
+    private readonly changeDetectorRef =
+        inject(ChangeDetectorRef);
 
     category: Category | null = null;
+
     isLoading = false;
     isSubmitting = false;
-
-    constructor(
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly categoryService: CategoryService,
-        private readonly router: Router,
-        private readonly notificationService: NotificationService
-    ) { }
 
     ngOnInit(): void {
         const categoryId = Number(
             this.activatedRoute.snapshot.paramMap.get('id')
         );
 
-        if (!Number.isInteger(categoryId) || categoryId <= 0) {
-            this.notificationService.error('Invalid category ID.');
+        if (
+            !Number.isInteger(categoryId) ||
+            categoryId <= 0
+        ) {
+            this.notificationService.error(
+                'Invalid category ID.'
+            );
+
             this.goBack();
             return;
         }
@@ -44,52 +76,65 @@ export class CategoryEditComponent implements OnInit {
     loadCategory(id: number): void {
         this.isLoading = true;
 
-        this.categoryService.getCategoryById(id).subscribe({
-            next: category => {
-                this.category = category;
-                this.isLoading = false;
-            },
-            error: error => {
-                console.error('Failed to load category:', error);
+        this.categoryService
+            .getCategoryById(id)
+            .pipe(
+                finalize(() => {
+                    this.isLoading = false;
+                    this.changeDetectorRef.markForCheck();
+                })
+            )
+            .subscribe({
+                next: (category) => {
+                    this.category = category;
+                    this.changeDetectorRef.markForCheck();
+                },
 
-                this.category = null;
-                this.isLoading = false;
-            }
-        });
+                error: () => {
+                    this.category = null;
+                },
+            });
     }
 
-    onSubmit(categoryData: Partial<Category>): void {
-        if (!this.category || this.isSubmitting) {
+    onSubmit(
+        categoryData: UpdateCategoryRequest
+    ): void {
+        if (
+            !this.category ||
+            this.isSubmitting
+        ) {
             return;
         }
 
         this.isSubmitting = true;
 
-        this.categoryService.updateCategory(
-            this.category.id,
-            categoryData
-        ).subscribe({
-            next: updatedCategory => {
-                this.isSubmitting = false;
-
-                if (!updatedCategory) {
-                    this.notificationService.error(
-                        'Category could not be updated.'
+        this.categoryService
+            .updateCategory(
+                this.category.id,
+                categoryData
+            )
+            .pipe(
+                finalize(() => {
+                    this.isSubmitting = false;
+                    this.changeDetectorRef.markForCheck();
+                })
+            )
+            .subscribe({
+                next: (updatedCategory) => {
+                    this.notificationService.success(
+                        `Category "${updatedCategory.name}" updated successfully.`
                     );
-                    return;
-                }
 
-                this.notificationService.success(
-                    `Category "${updatedCategory.name}" updated successfully.`
-                );
+                    void this.router.navigate([
+                        '/categories',
+                    ]);
+                },
 
-                this.router.navigate(['/categories']);
-            },
-            error: error => {
-                console.error('Failed to update category:', error);
-                this.isSubmitting = false;
-            }
-        });
+                error: () => {
+                    // The HTTP error interceptor handles
+                    // the error notification.
+                },
+            });
     }
 
     onCancel(): void {
@@ -98,13 +143,15 @@ export class CategoryEditComponent implements OnInit {
             return;
         }
 
-        this.router.navigate([
+        void this.router.navigate([
             '/categories',
-            this.category.id
+            this.category.id,
         ]);
     }
 
     goBack(): void {
-        this.router.navigate(['/categories']);
+        void this.router.navigate([
+            '/categories',
+        ]);
     }
 }

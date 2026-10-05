@@ -1,238 +1,288 @@
 :host {
-  display: block;
+    display: block;
 }
 
 .category-form {
-  width: 100%;
+    width: 100%;
 }
 
-/* Card */
+/* ----------------------------------
+   Form Card
+---------------------------------- */
 
 .form-card {
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
 }
 
 .card-header {
-  padding: 18px 20px;
-  border-bottom: 1px solid #e5e7eb;
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5e7eb;
+
+    h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    p {
+        margin: 4px 0 0;
+        color: #9ca3af;
+        font-size: 11px;
+        line-height: 1.4;
+    }
 }
 
-.card-header h2 {
-  margin: 0;
-  color: #111827;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.card-header p {
-  margin: 4px 0 0;
-  color: #9ca3af;
-  font-size: 11px;
-}
-
-/* Form Content */
+/* ----------------------------------
+   Form Content
+---------------------------------- */
 
 .form-content {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-  padding: 20px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px;
 }
 
 .form-field {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
 
-.form-field.full-width {
-  grid-column: 1 / -1;
-}
+    label {
+        color: #374151;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
 
-.form-field label {
-  color: #374151;
-  font-size: 12px;
-  font-weight: 600;
+    &.full-width {
+        grid-column: 1 / -1;
+    }
 }
 
 .required {
-  color: #dc2626;
+    color: #dc2626;
 }
 
-/* Inputs */
+/* ----------------------------------
+   Inputs
+---------------------------------- */
 
 .form-field input[type='text'],
 .form-field textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  outline: none;
-  background: #ffffff;
-  color: #111827;
-  font: inherit;
-  font-size: 13px;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+    font-size: 13px;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+
+    &:focus {
+        border-color: #6b7280;
+        box-shadow:
+            0 0 0 3px
+            rgba(17, 24, 39, 0.06);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+    }
+
+    &.invalid {
+        border-color: #dc2626;
+
+        &:focus {
+            box-shadow:
+                0 0 0 3px
+                rgba(220, 38, 38, 0.08);
+        }
+    }
 }
 
 .form-field input[type='text'] {
-  height: 40px;
-  padding: 0 12px;
+    height: 40px;
+    padding: 0 12px;
 }
 
 .form-field textarea {
-  min-height: 110px;
-  padding: 10px 12px;
-  resize: vertical;
+    min-height: 110px;
+    padding: 10px 12px;
+    resize: vertical;
 }
 
-.form-field input[type='text']::placeholder,
-.form-field textarea::placeholder {
-  color: #9ca3af;
-}
-
-.form-field input[type='text']:focus,
-.form-field textarea:focus {
-  border-color: #6b7280;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
-}
-
-.form-field input.invalid,
-.form-field textarea.invalid {
-  border-color: #dc2626;
-}
-
-.form-field input.invalid:focus,
-.form-field textarea.invalid:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
-}
-
-/* Errors */
+/* ----------------------------------
+   Validation Errors
+---------------------------------- */
 
 .error-message {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  color: #dc2626;
-  font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    color: #dc2626;
+    font-size: 11px;
+    line-height: 1.4;
 }
 
-/* Checkbox */
+/* ----------------------------------
+   Checkbox
+---------------------------------- */
 
 .checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
 }
 
 .checkbox-label input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  margin: 1px 0 0;
-  accent-color: #111827;
-  cursor: pointer;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin: 1px 0 0;
+    accent-color: #111827;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+    }
 }
 
 .checkbox-content {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .checkbox-content strong {
-  color: #374151;
-  font-size: 12px;
-  font-weight: 600;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 .checkbox-content small {
-  color: #9ca3af;
-  font-size: 11px;
-  font-weight: 400;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
-/* Actions */
+/* ----------------------------------
+   Form Actions
+---------------------------------- */
 
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .btn {
-  min-width: 110px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 15px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  box-sizing: border-box;
-}
+    min-width: 110px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    box-sizing: border-box;
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+    &:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 3px;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 }
 
 .btn-primary {
-  border: 1px solid #111827;
-  background: #111827;
-  color: #ffffff;
+    border: 1px solid #111827;
+    background: #111827;
+    color: #ffffff;
 
-  &:hover:not(:disabled) {
-    background: #1f2937;
-  }
+    &:hover:not(:disabled) {
+        background: #1f2937;
+    }
 }
 
 .btn-secondary {
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-  color: #374151;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
 
-  &:hover:not(:disabled) {
-    background: #f9fafb;
-  }
+    &:hover:not(:disabled) {
+        background: #f9fafb;
+    }
 }
 
-/* Responsive */
+/* ----------------------------------
+   Responsive
+---------------------------------- */
 
 @media (max-width: 700px) {
-  .form-content {
-    grid-template-columns: 1fr;
-  }
+    .form-content {
+        grid-template-columns: 1fr;
+    }
 
-  .form-field.full-width {
-    grid-column: auto;
-  }
+    .form-field.full-width {
+        grid-column: auto;
+    }
 }
 
 @media (max-width: 480px) {
-  .form-content {
-    padding: 16px;
-  }
+    .form-content {
+        padding: 16px;
+    }
 
-  .card-header {
-    padding: 16px;
-  }
+    .card-header {
+        padding: 16px;
+    }
 
-  .form-actions {
-    flex-direction: column-reverse;
-  }
+    .form-actions {
+        flex-direction: column-reverse;
+    }
 
-  .form-actions .btn {
-    width: 100%;
-  }
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+/* ----------------------------------
+   Reduced Motion
+---------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .form-field input[type='text'],
+    .form-field textarea,
+    .btn {
+        transition: none;
+    }
 }

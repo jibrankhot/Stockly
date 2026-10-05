@@ -1,4 +1,4 @@
-<aside class="sidebar" [class.sidebar-closed]="!isOpen" [attr.aria-hidden]="!isOpen ? 'true' : null">
+<aside class="sidebar" [class.sidebar-closed]="!isOpen">
     <!-- =====================================================
        SIDEBAR HEADER
        ===================================================== -->
@@ -20,14 +20,19 @@
        ===================================================== -->
 
     <nav class="sidebar-nav" aria-label="Main navigation">
-        @for (item of sidebarItems; track item.label) {
+        @for (
+        item of sidebarItems;
+        track item.label
+        ) {
 
         @if (hasChildren(item)) {
+
         <!-- =================================================
-             MENU WITH CHILDREN
-             ================================================= -->
+                     MENU WITH CHILDREN
+                     ================================================= -->
 
         <div class="nav-group">
+
             <button type="button" class="nav-item nav-parent" [class.expanded]="isMenuExpanded(item.label)"
                 [attr.title]="!isOpen ? item.label : null" [attr.aria-expanded]="isMenuExpanded(item.label)"
                 [attr.aria-label]="!isOpen ? item.label : null" (click)="toggleMenu(item.label)">
@@ -45,11 +50,14 @@
             </button>
 
             @if (isMenuExpanded(item.label)) {
+
             <div class="submenu">
+
                 @for (
                 child of item.children;
                 track child.route
                 ) {
+
                 <a class="nav-item submenu-item" [routerLink]="child.route" routerLinkActive="active"
                     [routerLinkActiveOptions]="{ exact: true }" [title]="!isOpen ? child.label : ''">
                     <span class="nav-icon" aria-hidden="true">
@@ -60,14 +68,20 @@
                         {{ child.label }}
                     </span>
                 </a>
+
                 }
+
             </div>
+
             }
+
         </div>
+
         } @else {
+
         <!-- =================================================
-             SINGLE MENU ITEM
-             ================================================= -->
+                     SINGLE MENU ITEM
+                     ================================================= -->
 
         <a class="nav-item" [routerLink]="item.route" routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }" [title]="!isOpen ? item.label : ''">
@@ -79,7 +93,10 @@
                 {{ item.label }}
             </span>
         </a>
+
         }
+
         }
     </nav>
+
 </aside>

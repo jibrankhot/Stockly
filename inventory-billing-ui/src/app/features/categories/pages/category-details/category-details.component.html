@@ -3,48 +3,72 @@
     @if (isLoading) {
 
     <!-- Loading State -->
-    <div class="not-found loading-state" role="status" aria-live="polite">
-        <div class="loading-indicator"></div>
+    <div class="state-container" role="status" aria-live="polite">
 
-        <h2>Loading category...</h2>
+        <div class="loading-indicator" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
-        <p>Please wait while category details are being loaded.</p>
+        <h2>
+            Loading category...
+        </h2>
+
+        <p>
+            Please wait while category details are being loaded.
+        </p>
+
     </div>
 
     } @else if (category) {
 
     <!-- Page Header -->
-    <div class="page-header">
+    <header class="page-header">
 
-        <div>
+        <div class="page-header-content">
+
             <button type="button" class="back-button" (click)="goBack()">
-                ← Back to Categories
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                <span>
+                    Back to Categories
+                </span>
             </button>
 
-            <h1>Category Details</h1>
+            <h1>
+                Category Details
+            </h1>
 
-            <p>View information about this category.</p>
+            <p>
+                View information about this category.
+            </p>
+
         </div>
 
         <button type="button" class="btn btn-primary" (click)="editCategory()">
             Edit Category
         </button>
 
-    </div>
+    </header>
 
     <!-- Category Details Card -->
-    <section class="details-card">
+    <section class="details-card" aria-labelledby="category-name">
 
         <!-- Category Heading -->
         <div class="category-heading">
 
-            <div class="category-avatar">
+            <div class="category-avatar" aria-hidden="true">
                 {{ category.name.charAt(0).toUpperCase() }}
             </div>
 
             <div class="category-heading-info">
 
-                <h2>{{ category.name }}</h2>
+                <h2 id="category-name">
+                    {{ category.name }}
+                </h2>
 
                 <span class="status-badge" [class.active]="category.isActive" [class.inactive]="!category.isActive">
                     {{ category.isActive ? 'Active' : 'Inactive' }}
@@ -129,14 +153,19 @@
     } @else {
 
     <!-- Not Found State -->
-    <div class="not-found">
+    <div class="state-container">
 
-        <div class="not-found-icon">?</div>
+        <div class="not-found-icon" aria-hidden="true">
+            ?
+        </div>
 
-        <h2>Category Not Found</h2>
+        <h2>
+            Category Not Found
+        </h2>
 
         <p>
-            The category you're looking for doesn't exist.
+            The category you're looking for doesn't exist
+            or could not be loaded.
         </p>
 
         <button type="button" class="btn btn-secondary" (click)="goBack()">

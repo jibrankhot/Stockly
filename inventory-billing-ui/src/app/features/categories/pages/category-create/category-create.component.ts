@@ -1,33 +1,45 @@
-
-import { Component } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { Category } from '../../../../shared/models/category';
+import { CreateCategoryRequest } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
-import { CategoryFormComponent } from '../../category-form/category-form.component';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { CategoryFormComponent } from '../../category-form/category-form.component';
 
 @Component({
     selector: 'app-category-create',
     standalone: true,
     imports: [
-        CategoryFormComponent
+        CategoryFormComponent,
     ],
     templateUrl: './category-create.component.html',
-    styleUrl: './category-create.component.scss'
+    styleUrl: './category-create.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryCreateComponent {
+    private readonly categoryService =
+        inject(CategoryService);
+
+    private readonly router =
+        inject(Router);
+
+    private readonly notificationService =
+        inject(NotificationService);
+
+    private readonly changeDetectorRef =
+        inject(ChangeDetectorRef);
 
     isSubmitting = false;
 
-    constructor(
-        private readonly categoryService: CategoryService,
-        private readonly router: Router,
-        private readonly notificationService: NotificationService
-    ) { }
-
-    onSubmit(categoryData: Partial<Category>): void {
+    onSubmit(
+        categoryData: CreateCategoryRequest
+    ): void {
         if (this.isSubmitting) {
             return;
         }
@@ -39,20 +51,24 @@ export class CategoryCreateComponent {
             .pipe(
                 finalize(() => {
                     this.isSubmitting = false;
+                    this.changeDetectorRef.markForCheck();
                 })
             )
             .subscribe({
-                next: category => {
+                next: (category) => {
                     this.notificationService.success(
                         `Category "${category.name}" created successfully.`
                     );
 
-                    this.router.navigate(['/categories']);
+                    void this.router.navigate([
+                        '/categories',
+                    ]);
                 },
-                error: error => {
-                    console.error('Failed to create category:', error);
-                    // The HTTP error interceptor handles the error notification.
-                }
+
+                error: () => {
+                    // The HTTP error interceptor handles
+                    // the error notification.
+                },
             });
     }
 
@@ -61,6 +77,8 @@ export class CategoryCreateComponent {
             return;
         }
 
-        this.router.navigate(['/categories']);
+        void this.router.navigate([
+            '/categories',
+        ]);
     }
 }

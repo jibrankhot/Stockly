@@ -1,8 +1,14 @@
-
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Category } from '../../../../shared/models/category';
 import { CategoryService } from '../../services/category.service';
@@ -15,42 +21,62 @@ import { NotificationService } from '../../../../core/services/notification.serv
   imports: [
     DatePipe,
     FormsModule,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './category-list.component.html',
-  styleUrl: './category-list.component.scss'
+  styleUrl: './category-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryListComponent implements OnInit {
+  private readonly categoryService =
+    inject(CategoryService);
+
+  private readonly router =
+    inject(Router);
+
+  private readonly modalService =
+    inject(ModalService);
+
+  private readonly notificationService =
+    inject(NotificationService);
+
+  private readonly changeDetectorRef =
+    inject(ChangeDetectorRef);
 
   categories: Category[] = [];
   searchTerm = '';
   selectedStatus = 'all';
   isLoading = false;
 
-  constructor(
-    private readonly categoryService: CategoryService,
-    private readonly router: Router,
-    private readonly modalService: ModalService,
-    private readonly notificationService: NotificationService
-  ) { }
-
   ngOnInit(): void {
     this.loadCategories();
   }
 
   get filteredCategories(): Category[] {
-    const search = this.searchTerm.trim().toLowerCase();
+    const search = this.searchTerm
+      .trim()
+      .toLowerCase();
 
-    return this.categories.filter(category => {
+    return this.categories.filter((category) => {
       const matchesSearch =
         !search ||
-        category.name.toLowerCase().includes(search) ||
-        (category.description ?? '').toLowerCase().includes(search);
+        category.name
+          .toLowerCase()
+          .includes(search) ||
+        category.description
+          .toLowerCase()
+          .includes(search);
 
       const matchesStatus =
         this.selectedStatus === 'all' ||
-        (this.selectedStatus === 'active' && category.isActive) ||
-        (this.selectedStatus === 'inactive' && !category.isActive);
+        (
+          this.selectedStatus === 'active' &&
+          category.isActive
+        ) ||
+        (
+          this.selectedStatus === 'inactive' &&
+          !category.isActive
+        );
 
       return matchesSearch && matchesStatus;
     });
@@ -59,28 +85,39 @@ export class CategoryListComponent implements OnInit {
   loadCategories(): void {
     this.isLoading = true;
 
-    this.categoryService.getCategories().subscribe({
-      next: categories => {
-        this.categories = categories;
-        this.isLoading = false;
-      },
-      error: error => {
-        console.error('Failed to load categories:', error);
-        this.isLoading = false;
-        // The HTTP error interceptor handles the error notification.
-      }
-    });
+    this.categoryService
+      .getCategories()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (categories) => {
+          this.categories = categories;
+          this.changeDetectorRef.markForCheck();
+        },
+
+        error: () => {
+          // The HTTP error interceptor handles
+          // the error notification.
+        },
+      });
   }
 
   viewCategory(category: Category): void {
-    this.router.navigate(['/categories', category.id]);
+    void this.router.navigate([
+      '/categories',
+      category.id,
+    ]);
   }
 
   editCategory(category: Category): void {
-    this.router.navigate([
+    void this.router.navigate([
       '/categories',
       category.id,
-      'edit'
+      'edit',
     ]);
   }
 
@@ -93,38 +130,40 @@ export class CategoryListComponent implements OnInit {
         'Cancel',
         'danger'
       )
-      .subscribe(confirmed => {
+      .subscribe((confirmed) => {
         if (!confirmed) {
           return;
         }
 
-        this.categoryService.deleteCategory(category.id).subscribe({
-          next: deleted => {
-            if (!deleted) {
-              this.notificationService.error(
-                'Category could not be deleted.'
+        this.categoryService
+          .deleteCategory(category.id)
+          .subscribe({
+            next: () => {
+              this.categories =
+                this.categories.filter(
+                  (item) =>
+                    item.id !== category.id
+                );
+
+              this.notificationService.success(
+                `Category "${category.name}" deleted successfully.`
               );
-              return;
-            }
 
-            this.categories = this.categories.filter(
-              item => item.id !== category.id
-            );
+              this.changeDetectorRef.markForCheck();
+            },
 
-            this.notificationService.success(
-              `Category "${category.name}" deleted successfully.`
-            );
-          },
-          error: error => {
-            console.error('Failed to delete category:', error);
-            // The HTTP error interceptor handles the error notification.
-          }
-        });
+            error: () => {
+              // The HTTP error interceptor handles
+              // the error notification.
+            },
+          });
       });
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = 'all';
+
+    this.changeDetectorRef.markForCheck();
   }
 }

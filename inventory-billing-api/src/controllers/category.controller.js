@@ -1,59 +1,90 @@
 const categoryService = require('../services/category.service');
+const {
+    successResponse,
+    errorResponse
+} = require('../utils/api-response');
 
 const getCategories = async (req, res) => {
     try {
-        const categories = await categoryService.getCategories();
+        const categories =
+            await categoryService.getCategories();
 
-        return res.status(200).json(categories);
+        return successResponse(
+            res,
+            categories,
+            'Categories fetched successfully'
+        );
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message
-        });
+        return errorResponse(
+            res,
+            error.message,
+            error.statusCode || 500
+        );
     }
 };
 
 const getCategoryById = async (req, res) => {
     try {
-        const category = await categoryService.getCategoryById(
-            Number(req.params.id)
-        );
+        const category =
+            await categoryService.getCategoryById(
+                Number(req.params.id)
+            );
 
-        return res.status(200).json(category);
+        return successResponse(
+            res,
+            category,
+            'Category fetched successfully'
+        );
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message
-        });
+        return errorResponse(
+            res,
+            error.message,
+            error.statusCode || 500
+        );
     }
 };
 
 const createCategory = async (req, res) => {
     try {
-        const category = await categoryService.createCategory(req.body);
+        const category =
+            await categoryService.createCategory(
+                req.body
+            );
 
-        return res.status(201).json(category);
+        return successResponse(
+            res,
+            category,
+            'Category created successfully',
+            201
+        );
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message
-        });
+        return errorResponse(
+            res,
+            error.message,
+            error.statusCode || 500
+        );
     }
 };
 
 const updateCategory = async (req, res) => {
     try {
-        const category = await categoryService.updateCategory(
-            Number(req.params.id),
-            req.body
-        );
+        const category =
+            await categoryService.updateCategory(
+                Number(req.params.id),
+                req.body
+            );
 
-        return res.status(200).json(category);
+        return successResponse(
+            res,
+            category,
+            'Category updated successfully'
+        );
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message
-        });
+        return errorResponse(
+            res,
+            error.message,
+            error.statusCode || 500
+        );
     }
 };
 
@@ -63,12 +94,17 @@ const deleteCategory = async (req, res) => {
             Number(req.params.id)
         );
 
-        return res.status(200).json(true);
+        return successResponse(
+            res,
+            null,
+            'Category deleted successfully'
+        );
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message: error.message
-        });
+        return errorResponse(
+            res,
+            error.message,
+            error.statusCode || 500
+        );
     }
 };
 

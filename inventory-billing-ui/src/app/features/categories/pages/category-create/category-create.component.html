@@ -1,11 +1,12 @@
 <div class="category-create-page">
 
-    <div class="page-header">
+    <header class="page-header">
 
-        <div>
+        <div class="page-header-content">
 
-            <button type="button" class="back-button" (click)="onCancel()">
-                ← Back to Categories
+            <button type="button" class="back-button" (click)="onCancel()" [disabled]="isSubmitting">
+                <span aria-hidden="true">←</span>
+                <span>Back to Categories</span>
             </button>
 
             <h1>Create Category</h1>
@@ -16,7 +17,7 @@
 
         </div>
 
-    </div>
+    </header>
 
     <app-category-form [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)" (cancel)="onCancel()" />
 

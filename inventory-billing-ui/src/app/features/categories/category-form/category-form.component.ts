@@ -1,32 +1,40 @@
-
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  Output,
   OnChanges,
-  SimpleChanges
+  Output,
+  SimpleChanges,
+  inject,
 } from '@angular/core';
 
 import {
   FormBuilder,
-  FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
 
-import { Category } from '../../../shared/models/category';
+import {
+  Category,
+  CategoryInput,
+} from '../../../shared/models/category';
 
 @Component({
   selector: 'app-category-form',
   standalone: true,
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './category-form.component.html',
-  styleUrl: './category-form.component.scss'
+  styleUrl: './category-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CategoryFormComponent implements OnChanges {
+export class CategoryFormComponent
+  implements OnChanges {
+
+  private readonly formBuilder =
+    inject(FormBuilder);
 
   @Input()
   category: Category | null = null;
@@ -35,42 +43,46 @@ export class CategoryFormComponent implements OnChanges {
   isSubmitting = false;
 
   @Output()
-  readonly formSubmit = new EventEmitter<Partial<Category>>();
+  readonly formSubmit =
+    new EventEmitter<CategoryInput>();
 
   @Output()
-  readonly cancel = new EventEmitter<void>();
+  readonly cancel =
+    new EventEmitter<void>();
 
-  readonly categoryForm: FormGroup;
-
-  constructor(
-    private readonly formBuilder: FormBuilder
-  ) {
-    this.categoryForm = this.formBuilder.group({
+  readonly categoryForm =
+    this.formBuilder.nonNullable.group({
       name: [
         '',
         [
           Validators.required,
-          Validators.maxLength(100)
-        ]
+          Validators.maxLength(100),
+        ],
       ],
 
       description: [
         '',
-        Validators.maxLength(500)
+        [
+          Validators.maxLength(500),
+        ],
       ],
 
       isActive: [
-        true
-      ]
+        true,
+      ],
     });
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['category'] && this.category) {
+  ngOnChanges(
+    changes: SimpleChanges
+  ): void {
+    if (
+      changes['category'] &&
+      this.category
+    ) {
       this.categoryForm.patchValue({
         name: this.category.name,
         description: this.category.description,
-        isActive: this.category.isActive
+        isActive: this.category.isActive,
       });
     }
   }
@@ -86,9 +98,10 @@ export class CategoryFormComponent implements OnChanges {
       return;
     }
 
-    this.formSubmit.emit(
-      this.categoryForm.getRawValue()
-    );
+    const formValue =
+      this.categoryForm.getRawValue();
+
+    this.formSubmit.emit(formValue);
   }
 
   onCancel(): void {
@@ -99,30 +112,41 @@ export class CategoryFormComponent implements OnChanges {
     this.cancel.emit();
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.categoryForm.get(fieldName);
+  isFieldInvalid(
+    fieldName: string
+  ): boolean {
+    const field =
+      this.categoryForm.get(fieldName);
 
     return !!(
       field &&
       field.invalid &&
-      (field.dirty || field.touched)
+      (
+        field.dirty ||
+        field.touched
+      )
     );
   }
 
   private focusFirstInvalidField(): void {
     const firstInvalidControl =
-      Object.keys(this.categoryForm.controls).find(
-        fieldName =>
-          this.categoryForm.get(fieldName)?.invalid
+      Object.keys(
+        this.categoryForm.controls
+      ).find(
+        (fieldName) =>
+          this.categoryForm
+            .get(fieldName)
+            ?.invalid
       );
 
     if (!firstInvalidControl) {
       return;
     }
 
-    const element = document.getElementById(
-      firstInvalidControl
-    );
+    const element =
+      document.getElementById(
+        firstInvalidControl
+      );
 
     if (!element) {
       return;
@@ -130,7 +154,7 @@ export class CategoryFormComponent implements OnChanges {
 
     element.scrollIntoView({
       behavior: 'smooth',
-      block: 'center'
+      block: 'center',
     });
 
     setTimeout(() => {

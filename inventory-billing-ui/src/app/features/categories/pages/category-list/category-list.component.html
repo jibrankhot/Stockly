@@ -1,77 +1,178 @@
 <div class="category-list-page">
 
     <!-- Page Header -->
-    <div class="page-header">
+    <header class="page-header">
 
-        <div>
-            <h1>Categories</h1>
-            <p>Organize your products into categories.</p>
+        <div class="page-header-content">
+
+            <h1>
+                Categories
+            </h1>
+
+            <p>
+                Organize your products into categories.
+            </p>
+
         </div>
 
-        <a routerLink="/categories/create" class="btn btn-primary">
-            <span class="btn-icon">+</span>
-            Add Category
+        <!-- Desktop Add Category -->
+        <a routerLink="/categories/create" class="btn btn-primary desktop-add-category">
+            <span class="btn-icon" aria-hidden="true">
+                +
+            </span>
+
+            <span>
+                Add Category
+            </span>
         </a>
 
-    </div>
+    </header>
+
 
     <!-- Filters -->
-    <section class="filter-card">
+    <section class="filter-card" aria-label="Category filters">
 
+        <!-- Search -->
         <div class="search-field">
-            <span class="search-icon">⌕</span>
+
+            <span class="search-icon" aria-hidden="true">
+                ⌕
+            </span>
 
             <input type="search" placeholder="Search categories..." [(ngModel)]="searchTerm"
                 aria-label="Search categories" />
+
         </div>
 
-        <select [(ngModel)]="selectedStatus" aria-label="Filter by status">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
 
-        <button type="button" class="clear-button" (click)="clearFilters()">
-            Clear
-        </button>
+        <!-- Filter Actions -->
+        <div class="filter-actions">
+
+            <!-- Mobile Add Category -->
+            <a routerLink="/categories/create" class="btn btn-primary mobile-add-category">
+                <span class="btn-icon" aria-hidden="true">
+                    +
+                </span>
+
+                <span>
+                    Add Category
+                </span>
+            </a>
+
+
+            <!-- Status -->
+            <select [(ngModel)]="selectedStatus" aria-label="Filter categories by status">
+
+                <option value="all">
+                    All Status
+                </option>
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+
+            <!-- Clear -->
+            <button type="button" class="clear-button" (click)="clearFilters()">
+                Clear
+            </button>
+
+        </div>
 
     </section>
+
 
     <!-- Category Table -->
     <section class="table-card">
 
+        <!-- Table Header -->
         <div class="table-header">
+
             <div>
-                <h2>Category List</h2>
-                <span>{{ filteredCategories.length }} category(s)</span>
+
+                <h2>
+                    Category List
+                </h2>
+
+                <span>
+                    {{ filteredCategories.length }}
+                    {{ filteredCategories.length === 1 ? 'category' : 'categories' }}
+                </span>
+
             </div>
+
         </div>
+
 
         <!-- Loading State -->
         @if (isLoading) {
 
         <div class="empty-state" role="status" aria-live="polite">
-            <h3>Loading categories...</h3>
-            <p>Please wait while categories are being loaded.</p>
+
+            <div class="loading-indicator" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <h3>
+                Loading categories...
+            </h3>
+
+            <p>
+                Please wait while categories are being loaded.
+            </p>
+
         </div>
 
-        } @else if (filteredCategories.length > 0) {
+        }
+
 
         <!-- Category Table -->
+        @else if (filteredCategories.length > 0) {
+
         <div class="table-wrapper">
 
             <table>
 
                 <thead>
+
                     <tr>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Products</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th class="actions-column">Actions</th>
+
+                        <th scope="col">
+                            Category
+                        </th>
+
+                        <th scope="col">
+                            Description
+                        </th>
+
+                        <th scope="col">
+                            Products
+                        </th>
+
+                        <th scope="col">
+                            Status
+                        </th>
+
+                        <th scope="col">
+                            Created
+                        </th>
+
+                        <th scope="col" class="actions-column">
+                            Actions
+                        </th>
+
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
@@ -84,66 +185,89 @@
 
                         <!-- Category -->
                         <td>
+
                             <div class="category-cell">
 
-                                <span class="category-avatar">
+                                <span class="category-avatar" aria-hidden="true">
                                     {{ category.name.charAt(0).toUpperCase() }}
                                 </span>
 
                                 <div class="category-info">
-                                    <strong>{{ category.name }}</strong>
+
+                                    <strong>
+                                        {{ category.name }}
+                                    </strong>
+
                                 </div>
 
                             </div>
+
                         </td>
+
 
                         <!-- Description -->
                         <td>
-                            <span class="description">
+
+                            <span class="description" [title]="category.description || 'No description'">
                                 {{ category.description || 'No description' }}
                             </span>
+
                         </td>
+
 
                         <!-- Product Count -->
                         <td>
+
                             <span class="product-count">
                                 {{ category.productCount }}
                             </span>
+
                         </td>
+
 
                         <!-- Status -->
                         <td>
+
                             <span class="status-badge" [class.active]="category.isActive"
                                 [class.inactive]="!category.isActive">
                                 {{ category.isActive ? 'Active' : 'Inactive' }}
                             </span>
+
                         </td>
+
 
                         <!-- Created -->
                         <td>
+
                             <span class="created-date">
                                 {{ category.createdAt | date:'dd MMM yyyy' }}
                             </span>
+
                         </td>
+
 
                         <!-- Actions -->
                         <td>
+
                             <div class="actions">
 
-                                <button type="button" class="action-button" (click)="viewCategory(category)">
+                                <button type="button" class="action-button" (click)="viewCategory(category)"
+                                    [attr.aria-label]="'View ' + category.name">
                                     View
                                 </button>
 
-                                <button type="button" class="action-button" (click)="editCategory(category)">
+                                <button type="button" class="action-button" (click)="editCategory(category)"
+                                    [attr.aria-label]="'Edit ' + category.name">
                                     Edit
                                 </button>
 
                                 <button type="button" class="action-button delete-action"
-                                    (click)="deleteCategory(category)">
+                                    (click)="deleteCategory(category)" [attr.aria-label]="'Delete ' + category.name">
                                     Delete
                                 </button>
 
                             </div>
+
                         </td>
 
                     </tr>
@@ -156,14 +280,21 @@
 
         </div>
 
-        } @else {
+        }
+
 
         <!-- Empty State -->
+        @else {
+
         <div class="empty-state">
 
-            <div class="empty-icon">▣</div>
+            <div class="empty-icon" aria-hidden="true">
+                ▣
+            </div>
 
-            <h3>No categories found</h3>
+            <h3>
+                No categories found
+            </h3>
 
             <p>
                 Try changing your search or filter criteria.

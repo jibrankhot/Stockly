@@ -1,69 +1,64 @@
 <form class="category-form" [formGroup]="categoryForm" (ngSubmit)="submit()" novalidate>
 
     <!-- Basic Information -->
-
     <section class="form-card">
 
-        <div class="card-header">
+        <header class="card-header">
 
             <div>
                 <h2>Category Information</h2>
-                <p>Enter the category details.</p>
+
+                <p>
+                    Enter the category details.
+                </p>
             </div>
 
-        </div>
+        </header>
 
         <div class="form-content">
 
             <!-- Name -->
-
             <div class="form-field">
 
                 <label for="name">
                     Category Name
-                    <span class="required">*</span>
+                    <span class="required" aria-hidden="true">
+                        *
+                    </span>
                 </label>
 
-                <input id="name" type="text" formControlName="name" placeholder="Enter category name"
-                    [class.invalid]="isFieldInvalid('name')" />
+                <input id="name" type="text" formControlName="name" placeholder="Enter category name" autocomplete="off"
+                    [class.invalid]="isFieldInvalid('name')" [attr.aria-invalid]="isFieldInvalid('name')"
+                    [attr.aria-describedby]="
+                        isFieldInvalid('name')
+                            ? 'name-error'
+                            : null
+                    " />
 
                 @if (isFieldInvalid('name')) {
 
-                <div class="error-message">
+                <div id="name-error" class="error-message" role="alert">
 
-                    @if (categoryForm.get('name')?.hasError('required')) {
-                    <span>Category name is required.</span>
-                    }
-
-                    @if (categoryForm.get('name')?.hasError('maxlength')) {
-                    <span>Category name cannot exceed 100 characters.</span>
-                    }
-
-                </div>
-
-                }
-
-            </div>
-
-
-            <!-- Description -->
-
-            <div class="form-field full-width">
-
-                <label for="description">
-                    Description
-                </label>
-
-                <textarea id="description" rows="5" formControlName="description"
-                    placeholder="Enter category description" [class.invalid]="isFieldInvalid('description')"></textarea>
-
-                @if (isFieldInvalid('description')) {
-
-                <div class="error-message">
-
-                    @if (categoryForm.get('description')?.hasError('maxlength')) {
+                    @if (
+                    categoryForm
+                    .controls
+                    .name
+                    .hasError('required')
+                    ) {
                     <span>
-                        Description cannot exceed 500 characters.
+                        Category name is required.
+                    </span>
+                    }
+
+                    @if (
+                    categoryForm
+                    .controls
+                    .name
+                    .hasError('maxlength')
+                    ) {
+                    <span>
+                        Category name cannot exceed
+                        100 characters.
                     </span>
                     }
 
@@ -73,14 +68,54 @@
 
             </div>
 
-
-            <!-- Status -->
-
+            <!-- Description -->
             <div class="form-field full-width">
 
-                <label class="checkbox-label">
+                <label for="description">
+                    Description
+                </label>
 
-                    <input type="checkbox" formControlName="isActive" />
+                <textarea id="description" rows="5" formControlName="description"
+                    placeholder="Enter category description" [class.invalid]="
+                        isFieldInvalid('description')
+                    " [attr.aria-invalid]="
+                        isFieldInvalid('description')
+                    " [attr.aria-describedby]="
+                        isFieldInvalid('description')
+                            ? 'description-error'
+                            : null
+                    "></textarea>
+
+                @if (
+                isFieldInvalid('description')
+                ) {
+
+                <div id="description-error" class="error-message" role="alert">
+
+                    @if (
+                    categoryForm
+                    .controls
+                    .description
+                    .hasError('maxlength')
+                    ) {
+                    <span>
+                        Description cannot exceed
+                        500 characters.
+                    </span>
+                    }
+
+                </div>
+
+                }
+
+            </div>
+
+            <!-- Status -->
+            <div class="form-field full-width">
+
+                <label class="checkbox-label" for="isActive">
+
+                    <input id="isActive" type="checkbox" formControlName="isActive" />
 
                     <span class="checkbox-content">
 
@@ -89,7 +124,8 @@
                         </strong>
 
                         <small>
-                            Active categories can be assigned to products.
+                            Active categories can be
+                            assigned to products.
                         </small>
 
                     </span>
@@ -102,9 +138,7 @@
 
     </section>
 
-
     <!-- Form Actions -->
-
     <div class="form-actions">
 
         <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="onCancel()">

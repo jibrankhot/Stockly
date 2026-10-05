@@ -13,10 +13,10 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { NavbarComponent } from '../components/navbar/navbar.component';
 import { SidebarComponent } from '../components/sidebar/sidebar.component';
 import { BreadcrumbComponent } from '../components/breadcrumb/breadcrumb.component';
-
 
 @Component({
   selector: 'app-main-layout',
@@ -63,17 +63,8 @@ export class MainLayoutComponent {
   // ---------------------------------------------------------------------------
 
   private bodyScrollLocked = false;
-  private bodyScrollPosition = 0;
 
-  private previousBodyStyles = {
-    position: '',
-    top: '',
-    left: '',
-    right: '',
-    width: '',
-    overflow: '',
-  };
-
+  private previousBodyOverflow = '';
   private previousDocumentOverflow = '';
 
   constructor() {
@@ -95,6 +86,7 @@ export class MainLayoutComponent {
     if (this.isMobileViewport()) {
       this.isSidebarOpen = false;
       this.unlockBodyScroll();
+
       return;
     }
 
@@ -184,7 +176,8 @@ export class MainLayoutComponent {
   // ---------------------------------------------------------------------------
 
   private finishNavigation(): void {
-    const elapsedTime = Date.now() - this.navigationStartTime;
+    const elapsedTime =
+      Date.now() - this.navigationStartTime;
 
     const remainingTime = Math.max(
       0,
@@ -249,33 +242,26 @@ export class MainLayoutComponent {
     if (
       this.bodyScrollLocked ||
       !this.isMobileViewport() ||
-      typeof window === 'undefined' ||
       typeof document === 'undefined'
     ) {
       return;
     }
 
-    this.bodyScrollPosition = window.scrollY;
-
     const body = document.body;
     const documentElement = document.documentElement;
 
-    this.previousBodyStyles = {
-      position: body.style.position,
-      top: body.style.top,
-      left: body.style.left,
-      right: body.style.right,
-      width: body.style.width,
-      overflow: body.style.overflow,
-    };
+    this.previousBodyOverflow =
+      body.style.overflow;
 
-    this.previousDocumentOverflow = documentElement.style.overflow;
+    this.previousDocumentOverflow =
+      documentElement.style.overflow;
 
-    body.style.position = 'fixed';
-    body.style.top = `-${this.bodyScrollPosition}px`;
-    body.style.left = '0';
-    body.style.right = '0';
-    body.style.width = '100%';
+    /*
+     * Lock the page behind the drawer.
+     *
+     * We intentionally do NOT set body.position = fixed.
+     * The mobile sidebar is its own scroll container.
+     */
     body.style.overflow = 'hidden';
 
     documentElement.style.overflow = 'hidden';
@@ -290,7 +276,6 @@ export class MainLayoutComponent {
   private unlockBodyScroll(): void {
     if (
       !this.bodyScrollLocked ||
-      typeof window === 'undefined' ||
       typeof document === 'undefined'
     ) {
       return;
@@ -299,20 +284,12 @@ export class MainLayoutComponent {
     const body = document.body;
     const documentElement = document.documentElement;
 
-    body.style.position = this.previousBodyStyles.position;
-    body.style.top = this.previousBodyStyles.top;
-    body.style.left = this.previousBodyStyles.left;
-    body.style.right = this.previousBodyStyles.right;
-    body.style.width = this.previousBodyStyles.width;
-    body.style.overflow = this.previousBodyStyles.overflow;
+    body.style.overflow =
+      this.previousBodyOverflow;
 
-    documentElement.style.overflow = this.previousDocumentOverflow;
-
-    const scrollPosition = this.bodyScrollPosition;
+    documentElement.style.overflow =
+      this.previousDocumentOverflow;
 
     this.bodyScrollLocked = false;
-    this.bodyScrollPosition = 0;
-
-    window.scrollTo(0, scrollPosition);
   }
 }
