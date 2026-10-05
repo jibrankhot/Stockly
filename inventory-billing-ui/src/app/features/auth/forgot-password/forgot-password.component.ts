@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   inject,
 } from '@angular/core';
@@ -9,6 +10,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../../../core/auth/services/auth.service';
 
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { InputComponent } from '../../../shared/components/input/input.component';
@@ -28,6 +32,8 @@ import { InputComponent } from '../../../shared/components/input/input.component
 })
 export class ForgotPasswordComponent {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly forgotPasswordForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -46,13 +52,23 @@ export class ForgotPasswordComponent {
 
     const email = this.forgotPasswordForm.controls.email.value;
 
-    // API integration will be added when the authentication
-    // forgot-password endpoint/service is finalized.
-    console.log('Forgot password request:', email);
+    this.authService
+      .requestPasswordReset(email)
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.changeDetectorRef.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.isSubmitted = true;
+          this.changeDetectorRef.markForCheck();
+        },
 
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.isSubmitted = true;
-    }, 800);
+        error: () => {
+          this.changeDetectorRef.markForCheck();
+        },
+      });
   }
 }

@@ -1,27 +1,38 @@
 <div class="login-page">
     <div class="login-card">
 
-        <div class="login-header">
-            <div class="logo">
-                <span class="logo-mark">S</span>
+        <!-- Header -->
+        <header class="login-header">
+
+            <div class="logo" aria-hidden="true">
+                <span class="logo-mark">
+                    S
+                </span>
             </div>
 
-            <h1>Welcome to Stockly</h1>
+            <h1>
+                Welcome to Stockly
+            </h1>
 
             <p>
                 Sign in to manage your inventory and billing.
             </p>
-        </div>
 
+        </header>
+
+        <!-- Login Error -->
         @if (errorMessage) {
-        <div class="error-message">
+        <div class="error-message" role="alert" aria-live="polite">
             {{ errorMessage }}
         </div>
         }
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Login Form -->
+        <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
+            <!-- Username -->
             <div class="form-group">
+
                 <label for="username">
                     Username
                 </label>
@@ -37,9 +48,12 @@
                     Username is required.
                 </span>
                 }
+
             </div>
 
+            <!-- Password -->
             <div class="form-group">
+
                 <label for="password">
                     Password
                 </label>
@@ -52,28 +66,35 @@
                 loginForm.controls.password.invalid
                 ) {
                 <span class="field-error">
-                    Password must be at least 6 characters.
+                    Password is required.
                 </span>
                 }
+
             </div>
 
+            <!-- Forgot Password -->
             <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" formControlName="rememberMe" />
 
-                    <span>Remember me</span>
-                </label>
+                <span class="secure-login">
+                    Secure sign in
+                </span>
 
                 <button type="button" class="forgot-password" (click)="goToForgotPassword()">
                     Forgot password?
                 </button>
+
             </div>
 
+            <!-- Submit -->
             <button type="submit" class="login-button" [disabled]="isSubmitting">
                 @if (isSubmitting) {
-                <span>Signing in...</span>
+                <span>
+                    Signing in...
+                </span>
                 } @else {
-                <span>Sign in</span>
+                <span>
+                    Sign in
+                </span>
                 }
             </button>
 

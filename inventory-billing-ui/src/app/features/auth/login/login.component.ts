@@ -1,10 +1,16 @@
-import { Component, inject } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    inject,
+} from '@angular/core';
 import {
     FormBuilder,
     ReactiveFormsModule,
-    Validators
+    Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
 
@@ -13,21 +19,21 @@ import { AuthService } from '../../../core/auth/services/auth.service';
     standalone: true,
     imports: [ReactiveFormsModule],
     templateUrl: './login.component.html',
-    styleUrl: './login.component.scss'
+    styleUrl: './login.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
-
     private readonly formBuilder = inject(FormBuilder);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     isSubmitting = false;
     errorMessage = '';
 
     readonly loginForm = this.formBuilder.nonNullable.group({
         username: ['', [Validators.required]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        rememberMe: [false]
+        password: ['', [Validators.required]],
     });
 
     onSubmit(): void {
@@ -40,24 +46,37 @@ export class LoginComponent {
 
         this.isSubmitting = true;
 
-        const { username, password } = this.loginForm.getRawValue();
+        const { username, password } =
+            this.loginForm.getRawValue();
 
-        this.authService.login({
-            username,
-            password
-        }).subscribe({
-            next: () => {
-                this.isSubmitting = false;
-                this.router.navigate(['/dashboard']);
-            },
-            error: () => {
-                this.isSubmitting = false;
-                this.errorMessage = 'Invalid username or password.';
-            }
-        });
+        this.authService
+            .login({
+                username,
+                password,
+            })
+            .pipe(
+                finalize(() => {
+                    this.isSubmitting = false;
+                    this.changeDetectorRef.markForCheck();
+                }),
+            )
+            .subscribe({
+                next: () => {
+                    void this.router.navigate(['/dashboard']);
+                },
+
+                error: () => {
+                    this.errorMessage =
+                        'Invalid username or password.';
+
+                    this.changeDetectorRef.markForCheck();
+                },
+            });
     }
 
     goToForgotPassword(): void {
-        this.router.navigate(['/auth/forgot-password']);
+        void this.router.navigate([
+            '/auth/forgot-password',
+        ]);
     }
 }

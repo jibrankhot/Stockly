@@ -4,37 +4,55 @@
 
 .login-page {
   min-height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 24px;
+
   background: #f5f7fb;
 }
 
 .login-card {
   width: 100%;
   max-width: 440px;
+
   padding: 40px;
+
   background: #ffffff;
+
   border: 1px solid #e5e7eb;
   border-radius: 16px;
+
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
 }
 
+/* ----------------------------------------
+   Header
+---------------------------------------- */
+
 .login-header {
-  text-align: center;
   margin-bottom: 32px;
+
+  text-align: center;
 
   h1 {
     margin: 16px 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+
     color: #111827;
+
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
   p {
     margin: 0;
+
     color: #6b7280;
+
     font-size: 14px;
     line-height: 1.5;
   }
@@ -48,25 +66,41 @@
 .logo-mark {
   width: 52px;
   height: 52px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 14px;
+
   background: #111827;
   color: #ffffff;
+
   font-size: 24px;
   font-weight: 700;
 }
 
+/* ----------------------------------------
+   Error
+---------------------------------------- */
+
 .error-message {
   margin-bottom: 20px;
   padding: 12px 14px;
+
   border: 1px solid #fecaca;
   border-radius: 8px;
+
   background: #fef2f2;
   color: #b91c1c;
+
   font-size: 14px;
+  line-height: 1.5;
 }
+
+/* ----------------------------------------
+   Form
+---------------------------------------- */
 
 .login-form {
   display: flex;
@@ -80,29 +114,39 @@
   gap: 8px;
 
   label {
+    color: #374151;
+
     font-size: 14px;
     font-weight: 600;
-    color: #374151;
   }
 
   input[type='text'],
   input[type='password'] {
     width: 100%;
+
     box-sizing: border-box;
+
     padding: 12px 14px;
+
     border: 1px solid #d1d5db;
     border-radius: 8px;
+
     outline: none;
+
     font: inherit;
     color: #111827;
+
     background: #ffffff;
+
     transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+      border-color 160ms ease,
+      box-shadow 160ms ease;
 
     &:focus {
       border-color: #111827;
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+
+      box-shadow:
+        0 0 0 3px rgba(17, 24, 39, 0.08);
     }
 
     &::placeholder {
@@ -112,65 +156,108 @@
 }
 
 .field-error {
-  font-size: 12px;
   color: #dc2626;
+
+  font-size: 12px;
+  line-height: 1.4;
 }
+
+/* ----------------------------------------
+   Form Options
+---------------------------------------- */
 
 .form-options {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 16px;
 }
 
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #4b5563;
-  font-size: 13px;
-  cursor: pointer;
+.secure-login {
+  color: #9ca3af;
 
-  input {
-    cursor: pointer;
-  }
+  font-size: 12px;
 }
 
+/* ----------------------------------------
+   Forgot Password
+---------------------------------------- */
+
 .forgot-password {
-  border: 0;
   padding: 0;
+
+  border: 0;
+
   background: transparent;
+
   color: #111827;
+
   font: inherit;
   font-size: 13px;
+  font-weight: 600;
+
   cursor: pointer;
 
   &:hover {
     text-decoration: underline;
   }
+
+  &:focus-visible {
+    outline: 2px solid #111827;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
+
+/* ----------------------------------------
+   Login Button
+---------------------------------------- */
 
 .login-button {
   width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 46px;
+
   padding: 13px 16px;
+
   border: 0;
   border-radius: 8px;
+
   background: #111827;
   color: #ffffff;
+
   font: inherit;
   font-weight: 600;
+
   cursor: pointer;
-  transition: opacity 0.2s ease;
+
+  transition:
+    opacity 160ms ease,
+    background-color 160ms ease;
 
   &:hover:not(:disabled) {
-    opacity: 0.9;
+    background: #1f2937;
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
+
+  &:focus-visible {
+    outline: 2px solid #111827;
+    outline-offset: 3px;
+  }
 }
+
+/* ----------------------------------------
+   Responsive
+---------------------------------------- */
 
 @media (max-width: 480px) {
   .login-page {
@@ -181,8 +268,24 @@
     padding: 28px 20px;
   }
 
+  .login-header {
+    h1 {
+      font-size: 24px;
+    }
+  }
+
   .form-options {
     align-items: flex-start;
-    flex-direction: column;
+  }
+}
+
+/* ----------------------------------------
+   Reduced Motion
+---------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .form-group input,
+  .login-button {
+    transition: none;
   }
 }

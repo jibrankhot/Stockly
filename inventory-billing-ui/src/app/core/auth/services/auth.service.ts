@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  tap,
+} from 'rxjs';
 
 import { ApiClientService } from '../../http/services/api-client.service';
+import { ApiResponse } from '../../models/api-response';
 import { StorageService } from '../../services/storage.service';
 
 import { AuthUser } from '../models/auth-user';
@@ -16,7 +21,8 @@ import { TokenService } from './token.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly currentUserKey = 'stockly_current_user';
+  private readonly currentUserKey =
+    'stockly_current_user';
 
   private readonly currentUserSubject =
     new BehaviorSubject<AuthUser | null>(null);
@@ -37,16 +43,21 @@ export class AuthService {
     password: string;
   }): Observable<LoginResponse> {
     return this.apiClient
-      .post<LoginResponse>('/auth/login', request)
+      .post<LoginResponse>(
+        '/auth/login',
+        request,
+      )
       .pipe(
         tap((response) => {
           if (!response.success) {
             throw new Error(
-              response.message || 'Login failed.',
+              response.message ||
+              'Login failed.',
             );
           }
 
-          const backendUser = response.data.user;
+          const backendUser =
+            response.data.user;
 
           if (!backendUser.is_active) {
             this.logout();
@@ -56,7 +67,10 @@ export class AuthService {
             );
           }
 
-          const user = this.mapBackendUser(backendUser);
+          const user =
+            this.mapBackendUser(
+              backendUser,
+            );
 
           this.tokenService.setAccessToken(
             response.data.token,
@@ -67,9 +81,37 @@ export class AuthService {
       );
   }
 
+  requestPasswordReset(
+    email: string,
+  ): Observable<ApiResponse<null>> {
+    return this.apiClient
+      .post<ApiResponse<null>>(
+        '/auth/forgot-password',
+        { email },
+      );
+  }
+
+  resetPassword(
+    token: string,
+    newPassword: string,
+  ): Observable<ApiResponse<null>> {
+    return this.apiClient
+      .post<ApiResponse<null>>(
+        '/auth/reset-password',
+        {
+          token,
+          newPassword,
+        },
+      );
+  }
+
   logout(): void {
     this.tokenService.clearTokens();
-    this.storageService.removeItem(this.currentUserKey);
+
+    this.storageService.removeItem(
+      this.currentUserKey,
+    );
+
     this.currentUserSubject.next(null);
   }
 
@@ -84,18 +126,24 @@ export class AuthService {
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
 
-    return user ? user.roles.includes(role) : false;
+    return user
+      ? user.roles.includes(role)
+      : false;
   }
 
   hasAnyRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
 
     return user
-      ? roles.some((role) => user.roles.includes(role))
+      ? roles.some((role) =>
+        user.roles.includes(role),
+      )
       : false;
   }
 
-  hasPermission(permission: string): boolean {
+  hasPermission(
+    permission: string,
+  ): boolean {
     const user = this.getCurrentUser();
 
     return user
@@ -103,7 +151,9 @@ export class AuthService {
       : false;
   }
 
-  private setCurrentUser(user: AuthUser): void {
+  private setCurrentUser(
+    user: AuthUser,
+  ): void {
     this.storageService.setItem(
       this.currentUserKey,
       user,
@@ -113,8 +163,13 @@ export class AuthService {
   }
 
   private loadStoredUser(): void {
-    if (!this.tokenService.hasAccessToken()) {
-      this.storageService.removeItem(this.currentUserKey);
+    if (
+      !this.tokenService.hasAccessToken()
+    ) {
+      this.storageService.removeItem(
+        this.currentUserKey,
+      );
+
       return;
     }
 
@@ -124,7 +179,9 @@ export class AuthService {
       );
 
     if (storedUser) {
-      this.currentUserSubject.next(storedUser);
+      this.currentUserSubject.next(
+        storedUser,
+      );
     }
   }
 
@@ -132,10 +189,17 @@ export class AuthService {
     user: BackendAuthUser,
   ): AuthUser {
     const nameParts =
-      user.full_name?.trim().split(/\s+/) ?? [];
+      user.full_name
+        ?.trim()
+        .split(/\s+/) ?? [];
 
-    const firstName = nameParts[0] ?? '';
-    const lastName = nameParts.slice(1).join(' ');
+    const firstName =
+      nameParts[0] ?? '';
+
+    const lastName =
+      nameParts
+        .slice(1)
+        .join(' ');
 
     return {
       id: user.id,
