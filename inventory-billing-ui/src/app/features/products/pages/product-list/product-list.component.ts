@@ -1,8 +1,14 @@
-
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Product } from '../../../../shared/models/product';
 import { Category } from '../../../../shared/models/category';
@@ -17,30 +23,38 @@ import { ModalService } from '../../../../core/services/modal.service';
   imports: [
     RouterLink,
     DecimalPipe,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.scss'
+  styleUrl: './product-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductListComponent implements OnInit {
+
+  private readonly productService =
+    inject(ProductService);
+
+  private readonly categoryService =
+    inject(CategoryService);
+
+  private readonly router =
+    inject(Router);
+
+  private readonly modalService =
+    inject(ModalService);
+
+  private readonly changeDetectorRef =
+    inject(ChangeDetectorRef);
 
   products: Product[] = [];
   categories: Category[] = [];
 
   searchTerm = '';
-  selectedCategory = '';
+  selectedCategoryId: number | null = null;
   selectedStatus = 'all';
 
   isLoading = false;
   isLoadingCategories = false;
-  hasLoadError = false;
-
-  constructor(
-    private readonly productService: ProductService,
-    private readonly categoryService: CategoryService,
-    private readonly router: Router,
-    private readonly modalService: ModalService
-  ) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -48,23 +62,37 @@ export class ProductListComponent implements OnInit {
   }
 
   get filteredProducts(): Product[] {
-    const search = this.searchTerm.trim().toLowerCase();
+    const search =
+      this.searchTerm
+        .trim()
+        .toLowerCase();
 
-    return this.products.filter(product => {
+    return this.products.filter((product) => {
 
       const matchesSearch =
         !search ||
-        product.name.toLowerCase().includes(search) ||
-        product.sku.toLowerCase().includes(search);
+        product.name
+          .toLowerCase()
+          .includes(search) ||
+        product.sku
+          .toLowerCase()
+          .includes(search);
 
       const matchesCategory =
-        !this.selectedCategory ||
-        product.categoryName === this.selectedCategory;
+        this.selectedCategoryId === null ||
+        product.categoryId ===
+        this.selectedCategoryId;
 
       const matchesStatus =
         this.selectedStatus === 'all' ||
-        (this.selectedStatus === 'active' && product.isActive) ||
-        (this.selectedStatus === 'inactive' && !product.isActive);
+        (
+          this.selectedStatus === 'active' &&
+          product.isActive
+        ) ||
+        (
+          this.selectedStatus === 'inactive' &&
+          !product.isActive
+        );
 
       return (
         matchesSearch &&
@@ -76,48 +104,68 @@ export class ProductListComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading = true;
-    this.hasLoadError = false;
 
-    this.productService.getProducts().subscribe({
-      next: products => {
-        this.products = products;
-        this.isLoading = false;
-      },
-      error: error => {
-        console.error('Failed to load products:', error);
-        this.hasLoadError = true;
-        this.isLoading = false;
-      }
-    });
+    this.productService
+      .getProducts()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (products) => {
+          this.products = products;
+          this.changeDetectorRef.markForCheck();
+        },
+
+        error: () => {
+          // HTTP error interceptor handles
+          // the error notification.
+        },
+      });
   }
 
   loadCategories(): void {
     this.isLoadingCategories = true;
 
-    this.categoryService.getCategories().subscribe({
-      next: categories => {
-        this.categories = categories.filter(category => category.isActive);
-        this.isLoadingCategories = false;
-      },
-      error: error => {
-        console.error('Failed to load categories:', error);
-        this.isLoadingCategories = false;
-      }
-    });
+    this.categoryService
+      .getCategories()
+      .pipe(
+        finalize(() => {
+          this.isLoadingCategories = false;
+          this.changeDetectorRef.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (categories) => {
+          this.categories =
+            categories.filter(
+              (category) => category.isActive
+            );
+
+          this.changeDetectorRef.markForCheck();
+        },
+
+        error: () => {
+          // HTTP error interceptor handles
+          // the error notification.
+        },
+      });
   }
 
   viewProduct(product: Product): void {
-    this.router.navigate([
+    void this.router.navigate([
       '/products',
-      product.id
+      product.id,
     ]);
   }
 
   editProduct(product: Product): void {
-    this.router.navigate([
+    void this.router.navigate([
       '/products',
       product.id,
-      'edit'
+      'edit',
     ]);
   }
 
@@ -130,36 +178,46 @@ export class ProductListComponent implements OnInit {
         'Cancel',
         'danger'
       )
-      .subscribe(confirmed => {
+      .subscribe((confirmed) => {
+
         if (!confirmed) {
           return;
         }
 
-        this.productService.deleteProduct(product.id).subscribe({
-          next: deleted => {
-            if (!deleted) {
-              console.error('Product could not be deleted.');
-              return;
-            }
+        this.productService
+          .deleteProduct(product.id)
+          .subscribe({
+            next: () => {
+              this.products =
+                this.products.filter(
+                  (item) =>
+                    item.id !== product.id
+                );
 
-            this.products = this.products.filter(
-              item => item.id !== product.id
-            );
-          },
-          error: error => {
-            console.error('Failed to delete product:', error);
-          }
-        });
+              this.changeDetectorRef
+                .markForCheck();
+            },
+
+            error: () => {
+              // HTTP error interceptor handles
+              // the error notification.
+            },
+          });
       });
   }
 
   isLowStock(product: Product): boolean {
-    return product.currentStock <= product.minimumStock;
+    return (
+      product.currentStock <=
+      product.minimumStock
+    );
   }
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.selectedCategory = '';
+    this.selectedCategoryId = null;
     this.selectedStatus = 'all';
+
+    this.changeDetectorRef.markForCheck();
   }
 }

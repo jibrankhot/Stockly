@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
+import { ApiResponse } from '../../../core/models/api-response';
 import { ApiClientService } from '../../../core/http/services/api-client.service';
-import { Product } from '../../../shared/models/product';
+
+import {
+    Product,
+} from '../../../shared/models/product';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ProductService {
 
@@ -16,36 +20,63 @@ export class ProductService {
     ) { }
 
     getProducts(): Observable<Product[]> {
-        return this.apiClient.get<Product[]>(this.endpoint);
+        return this.apiClient
+            .get<ApiResponse<Product[]>>(
+                this.endpoint
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
-    getProductById(id: number): Observable<Product> {
-        return this.apiClient.get<Product>(
-            `${this.endpoint}/${id}`
-        );
+    getProductById(
+        id: number
+    ): Observable<Product> {
+        return this.apiClient
+            .get<ApiResponse<Product>>(
+                `${this.endpoint}/${id}`
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
-    createProduct(productData: Partial<Product>): Observable<Product> {
-        return this.apiClient.post<Product>(
-            this.endpoint,
-            productData
-        );
+    createProduct(
+        productData: Partial<Product>
+    ): Observable<Product> {
+        return this.apiClient
+            .post<ApiResponse<Product>>(
+                this.endpoint,
+                productData
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
     updateProduct(
         id: number,
         productData: Partial<Product>
     ): Observable<Product> {
-
-        return this.apiClient.put<Product>(
-            `${this.endpoint}/${id}`,
-            productData
-        );
+        return this.apiClient
+            .put<ApiResponse<Product>>(
+                `${this.endpoint}/${id}`,
+                productData
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 
-    deleteProduct(id: number): Observable<boolean> {
-        return this.apiClient.delete<boolean>(
-            `${this.endpoint}/${id}`
-        );
+    deleteProduct(
+        id: number
+    ): Observable<null> {
+        return this.apiClient
+            .delete<ApiResponse<null>>(
+                `${this.endpoint}/${id}`
+            )
+            .pipe(
+                map((response) => response.data)
+            );
     }
 }

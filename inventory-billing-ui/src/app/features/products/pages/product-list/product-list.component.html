@@ -1,203 +1,443 @@
 <div class="product-list-page">
 
     <!-- Page Header -->
-    <div class="page-header">
-        <div>
-            <h1>Products</h1>
-            <p>Manage your inventory products.</p>
+
+    <header class="page-header">
+
+        <div class="page-header-content">
+
+            <h1>
+                Products
+            </h1>
+
+            <p>
+                Manage your inventory products.
+            </p>
+
         </div>
 
-        <a routerLink="/products/create" class="btn btn-primary">
-            <span class="btn-icon">+</span>
-            Add Product
+        <!-- Desktop Add Product -->
+
+        <a routerLink="/products/create" class="btn btn-primary desktop-add-product">
+            <span class="btn-icon" aria-hidden="true">
+                +
+            </span>
+
+            <span>
+                Add Product
+            </span>
         </a>
-    </div>
+
+    </header>
+
 
     <!-- Filters -->
-    <section class="filter-card">
+
+    <section class="filter-card" aria-label="Product filters">
+
+        <!-- Search -->
 
         <div class="search-field">
-            <span class="search-icon">⌕</span>
+
+            <span class="search-icon" aria-hidden="true">
+                ⌕
+            </span>
 
             <input type="search" placeholder="Search by product name or SKU..." [(ngModel)]="searchTerm"
                 aria-label="Search products" />
+
         </div>
 
-        <select [(ngModel)]="selectedCategory" aria-label="Filter by category" [disabled]="isLoadingCategories">
-            <option value="">All Categories</option>
 
-            @for (category of categories; track category.id) {
-            <option [value]="category.name">
-                {{ category.name }}
-            </option>
-            }
-        </select>
+        <div class="filter-actions">
 
-        <select [(ngModel)]="selectedStatus" aria-label="Filter by status">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
+            <!-- Category -->
 
-        <button type="button" class="clear-button" (click)="clearFilters()">
-            Clear
-        </button>
+            <select [(ngModel)]="selectedCategoryId" aria-label="Filter by category" [disabled]="isLoadingCategories">
+
+                <option [ngValue]="null">
+                    All Categories
+                </option>
+
+                @for (
+                category of categories;
+                track category.id
+                ) {
+
+                <option [ngValue]="category.id">
+                    {{ category.name }}
+                </option>
+
+                }
+
+            </select>
+
+
+            <!-- Status -->
+
+            <select [(ngModel)]="selectedStatus" aria-label="Filter by status">
+
+                <option value="all">
+                    All Status
+                </option>
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+
+            <!-- Clear -->
+
+            <button type="button" class="clear-button" (click)="clearFilters()">
+                Clear
+            </button>
+
+
+            <!-- Mobile Add Product -->
+
+            <a routerLink="/products/create" class="btn btn-primary mobile-add-product">
+                <span class="btn-icon" aria-hidden="true">
+                    +
+                </span>
+
+                <span>
+                    Add Product
+                </span>
+            </a>
+
+        </div>
 
     </section>
 
+
     <!-- Product Table -->
+
     <section class="table-card">
 
+        <!-- Table Header -->
+
         <div class="table-header">
+
             <div>
-                <h2>Product List</h2>
-                <span>{{ filteredProducts.length }} product(s)</span>
+
+                <h2>
+                    Product List
+                </h2>
+
+                <span>
+                    {{ filteredProducts.length }}
+                    {{
+                    filteredProducts.length === 1
+                    ? 'product'
+                    : 'products'
+                    }}
+                </span>
+
             </div>
+
         </div>
+
+
+        <!-- Loading -->
 
         @if (isLoading) {
 
-        <div class="empty-state">
-            <h3>Loading products...</h3>
-            <p>Please wait while your products are being loaded.</p>
+        <div class="empty-state" role="status" aria-live="polite">
+
+            <div class="loading-indicator" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <h3>
+                Loading products...
+            </h3>
+
+            <p>
+                Please wait while your products are being loaded.
+            </p>
+
         </div>
 
-        } @else if (hasLoadError) {
+        }
 
-        <div class="empty-state">
-            <h3>Unable to load products</h3>
-            <p>Something went wrong while loading your products.</p>
 
-            <button type="button" class="btn btn-secondary" (click)="loadProducts()">
-                Try Again
-            </button>
-        </div>
+        <!-- Product Table -->
 
-        } @else if (filteredProducts.length > 0) {
+        @else if (filteredProducts.length > 0) {
 
         <div class="table-wrapper">
+
             <table>
+
                 <thead>
+
                     <tr>
-                        <th>Product</th>
-                        <th>SKU</th>
-                        <th>Category</th>
-                        <th>Purchase Price</th>
-                        <th>Selling Price</th>
-                        <th>Stock</th>
-                        <th>Status</th>
-                        <th class="actions-column">Actions</th>
+
+                        <th scope="col">
+                            Product
+                        </th>
+
+                        <th scope="col">
+                            SKU
+                        </th>
+
+                        <th scope="col">
+                            Category
+                        </th>
+
+                        <th scope="col">
+                            Purchase Price
+                        </th>
+
+                        <th scope="col">
+                            Selling Price
+                        </th>
+
+                        <th scope="col">
+                            Stock
+                        </th>
+
+                        <th scope="col">
+                            Status
+                        </th>
+
+                        <th scope="col" class="actions-column">
+                            Actions
+                        </th>
+
                     </tr>
+
                 </thead>
 
+
                 <tbody>
-                    @for (product of filteredProducts; track product.id) {
+
+                    @for (
+                    product of filteredProducts;
+                    track product.id
+                    ) {
+
                     <tr>
 
                         <!-- Product -->
-                        <td>
+
+                        <td data-label="Product">
+
                             <div class="product-cell">
-                                <span class="product-avatar">
-                                    {{ product.name.charAt(0).toUpperCase() }}
+
+                                <span class="product-avatar" aria-hidden="true">
+                                    {{
+                                    product.name
+                                    .charAt(0)
+                                    .toUpperCase()
+                                    }}
                                 </span>
 
                                 <div class="product-info">
-                                    <strong>{{ product.name }}</strong>
-                                    <span>{{ product.unit }}</span>
+
+                                    <strong>
+                                        {{ product.name }}
+                                    </strong>
+
+                                    <span>
+                                        {{ product.unit }}
+                                    </span>
+
                                 </div>
+
                             </div>
+
                         </td>
+
 
                         <!-- SKU -->
-                        <td>
-                            <span class="sku">{{ product.sku }}</span>
+
+                        <td data-label="SKU">
+
+                            <span class="sku">
+                                {{ product.sku }}
+                            </span>
+
                         </td>
+
 
                         <!-- Category -->
-                        <td>{{ product.categoryName }}</td>
+
+                        <td data-label="Category">
+
+                            <span class="category-name">
+                                {{ product.categoryName }}
+                            </span>
+
+                        </td>
+
 
                         <!-- Purchase Price -->
-                        <td>
+
+                        <td data-label="Purchase Price">
+
                             <span class="price">
-                                ₹{{ product.purchasePrice | number:'1.2-2' }}
+                                ₹{{
+                                product.purchasePrice
+                                | number:'1.2-2'
+                                }}
                             </span>
+
                         </td>
+
 
                         <!-- Selling Price -->
-                        <td>
+
+                        <td data-label="Selling Price">
+
                             <span class="price">
-                                ₹{{ product.sellingPrice | number:'1.2-2' }}
+                                ₹{{
+                                product.sellingPrice
+                                | number:'1.2-2'
+                                }}
                             </span>
+
                         </td>
 
+
                         <!-- Stock -->
-                        <td>
+
+                        <td data-label="Stock">
+
                             <div class="stock-cell">
-                                <span [class.low-stock]="isLowStock(product)">
+
+                                <span [class.low-stock]="
+                                                isLowStock(product)
+                                            ">
                                     {{ product.currentStock }}
                                 </span>
 
-                                @if (isLowStock(product)) {
-                                <span class="low-stock-label">Low stock</span>
+                                @if (
+                                isLowStock(product)
+                                ) {
+
+                                <span class="low-stock-label">
+                                    Low stock
+                                </span>
+
                                 }
+
                             </div>
+
                         </td>
+
 
                         <!-- Status -->
-                        <td>
-                            <span class="status-badge" [class.active]="product.isActive"
-                                [class.inactive]="!product.isActive">
-                                {{ product.isActive ? 'Active' : 'Inactive' }}
+
+                        <td data-label="Status">
+
+                            <span class="status-badge" [class.active]="
+                                            product.isActive
+                                        " [class.inactive]="
+                                            !product.isActive
+                                        ">
+                                {{
+                                product.isActive
+                                ? 'Active'
+                                : 'Inactive'
+                                }}
                             </span>
+
                         </td>
 
+
                         <!-- Actions -->
-                        <td>
+
+                        <td data-label="Actions" class="actions-cell">
+
                             <div class="actions">
-                                <button type="button" class="action-button" title="View product"
-                                    (click)="viewProduct(product)">
+
+                                <button type="button" class="action-button" (click)="viewProduct(product)"
+                                    [attr.aria-label]="
+                                                'View ' + product.name
+                                            ">
                                     View
                                 </button>
 
-                                <button type="button" class="action-button" title="Edit product"
-                                    (click)="editProduct(product)">
+                                <button type="button" class="action-button" (click)="editProduct(product)"
+                                    [attr.aria-label]="
+                                                'Edit ' + product.name
+                                            ">
                                     Edit
                                 </button>
 
-                                <button type="button" class="action-button delete-action" title="Delete product"
-                                    (click)="deleteProduct(product)">
+                                <button type="button" class="action-button delete-action"
+                                    (click)="deleteProduct(product)" [attr.aria-label]="
+                                                'Delete ' + product.name
+                                            ">
                                     Delete
                                 </button>
+
                             </div>
+
                         </td>
 
                     </tr>
+
                     }
+
                 </tbody>
+
             </table>
+
         </div>
 
-        } @else {
+        }
+
 
         <!-- Empty State -->
+
+        @else {
+
         <div class="empty-state">
-            <div class="empty-icon">▣</div>
+
+            <div class="empty-icon" aria-hidden="true">
+                ▣
+            </div>
 
             @if (products.length === 0) {
-            <h3>No products available</h3>
-            <p>Add a product to start managing your inventory.</p>
+
+            <h3>
+                No products available
+            </h3>
+
+            <p>
+                Add a product to start managing your inventory.
+            </p>
 
             <a routerLink="/products/create" class="btn btn-primary">
                 Add Product
             </a>
+
             } @else {
-            <h3>No matching products found</h3>
-            <p>Try changing your search or filter criteria.</p>
+
+            <h3>
+                No matching products found
+            </h3>
+
+            <p>
+                Try changing your search or filter criteria.
+            </p>
 
             <button type="button" class="btn btn-secondary" (click)="clearFilters()">
                 Clear Filters
             </button>
+
             }
+
         </div>
 
         }
