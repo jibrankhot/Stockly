@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { Product } from '../../../../shared/models/product';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { ProductService } from '../../services/product.service';
 import { ProductFormComponent } from '../../components/product-form/product-form.component';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-product-edit',
@@ -15,9 +16,16 @@ import { ProductFormComponent } from '../../components/product-form/product-form
   styleUrl: './product-edit.component.scss'
 })
 export class ProductEditComponent implements OnInit {
+  @ViewChild(ProductFormComponent)
+  private productFormComponent?: ProductFormComponent;
+
   product: Product | null = null;
+  productId: number | null = null;
+
   isLoading = false;
   isSubmitting = false;
+  hasLoadError = false;
+  isInvalidProductId = false;
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
@@ -27,37 +35,59 @@ export class ProductEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const productId = Number(
-      this.activatedRoute.snapshot.paramMap.get('id')
-    );
+    const id = Number(this.activatedRoute.snapshot.paramMap.get('id'));
 
-    if (!Number.isInteger(productId) || productId <= 0) {
-      this.product = null;
+    if (!Number.isInteger(id) || id <= 0) {
+      this.isInvalidProductId = true;
       return;
     }
 
-    this.loadProduct(productId);
+    this.productId = id;
+    this.loadProduct(id);
   }
 
   loadProduct(id: number): void {
     this.isLoading = true;
+    this.hasLoadError = false;
+    this.product = null;
 
     this.productService
       .getProductById(id)
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
+      .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
-        next: product => {
+        next: (product) => {
+          if (!product) {
+            this.hasLoadError = true;
+            this.notificationService.error(
+              'Product could not be loaded. Please try again.'
+            );
+            return;
+          }
+
           this.product = product;
         },
-        error: error => {
+        error: (error) => {
           console.error('Failed to load product:', error);
-          this.product = null;
+
+          this.hasLoadError = true;
+
+          if (error?.status === 404) {
+            this.notificationService.error('Product not found.');
+          } else {
+            this.notificationService.error(
+              'Failed to load product. Please try again.'
+            );
+          }
         }
       });
+  }
+
+  retryLoad(): void {
+    if (this.productId === null || this.isLoading) {
+      return;
+    }
+
+    this.loadProduct(this.productId);
   }
 
   onSubmit(productData: Partial<Product>): void {
@@ -69,16 +99,12 @@ export class ProductEditComponent implements OnInit {
 
     this.productService
       .updateProduct(this.product.id, productData)
-      .pipe(
-        finalize(() => {
-          this.isSubmitting = false;
-        })
-      )
+      .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
-        next: updatedProduct => {
+        next: (updatedProduct) => {
           if (!updatedProduct) {
             this.notificationService.error(
-              'Product could not be updated.'
+              'Product could not be updated. Please try again.'
             );
             return;
           }
@@ -87,12 +113,30 @@ export class ProductEditComponent implements OnInit {
             'Product updated successfully.'
           );
 
-          this.router.navigate(['/products']);
+          void this.router.navigate(['/products']);
         },
-        error: error => {
+        error: (error) => {
           console.error('Failed to update product:', error);
+
+          this.notificationService.error(
+            'Failed to update product. Please try again.'
+          );
         }
       });
+  }
+
+  onHeaderBack(): void {
+    if (this.isSubmitting) {
+      return;
+    }
+
+    if (this.productFormComponent) {
+      // Reuse the form's unsaved-changes confirmation.
+      this.productFormComponent.onCancel();
+      return;
+    }
+
+    this.goBack();
   }
 
   onCancel(): void {
@@ -100,15 +144,15 @@ export class ProductEditComponent implements OnInit {
       return;
     }
 
-    if (!this.product) {
-      this.router.navigate(['/products']);
+    if (this.product) {
+      void this.router.navigate(['/products', this.product.id]);
       return;
     }
 
-    this.router.navigate(['/products', this.product.id]);
+    this.goBack();
   }
 
   goBack(): void {
-    this.router.navigate(['/products']);
+    void this.router.navigate(['/products']);
   }
 }

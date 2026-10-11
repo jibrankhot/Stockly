@@ -1,3 +1,4 @@
+
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -30,7 +31,8 @@ export class ProductCreateComponent {
 
     this.isSubmitting = true;
 
-    this.productService.createProduct(productData)
+    this.productService
+      .createProduct(productData)
       .pipe(
         finalize(() => {
           this.isSubmitting = false;
@@ -38,14 +40,25 @@ export class ProductCreateComponent {
       )
       .subscribe({
         next: product => {
+          if (!product) {
+            this.notificationService.error(
+              'Product could not be created. Please try again.'
+            );
+            return;
+          }
+
           this.notificationService.success(
             `Product "${product.name}" created successfully.`
           );
 
-          this.router.navigate(['/products']);
+          void this.router.navigate(['/products']);
         },
         error: error => {
           console.error('Failed to create product:', error);
+
+          this.notificationService.error(
+            'Failed to create product. Please check your details and try again.'
+          );
         }
       });
   }
@@ -55,6 +68,6 @@ export class ProductCreateComponent {
       return;
     }
 
-    this.router.navigate(['/products']);
+    void this.router.navigate(['/products']);
   }
 }

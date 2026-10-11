@@ -1,44 +1,63 @@
 <div class="product-edit-page">
-
     @if (isLoading) {
-    <div class="loading-state">
+    <div class="loading-state" role="status" aria-live="polite">
+        <div class="loading-spinner" aria-hidden="true"></div>
         <p>Loading product...</p>
     </div>
     } @else if (product) {
-
-    <div class="page-header">
-        <div>
-            <button type="button" class="back-button" (click)="onCancel()">
-                ← Back to Product
+    <header class="page-header">
+        <div class="page-header-content">
+            <button type="button" class="back-button" (click)="onHeaderBack()" [disabled]="isSubmitting">
+                <span aria-hidden="true">←</span>
+                Back to Product
             </button>
 
             <h1>Edit Product</h1>
-
-            <p>
-                Update the information for {{ product.name }}.
-            </p>
+            <p>Update the information for {{ product.name }}.</p>
         </div>
-    </div>
+    </header>
 
     <app-product-form [product]="product" [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
         (cancel)="onCancel()" />
-
-    } @else {
-
-    <div class="not-found">
-        <div class="not-found-icon">?</div>
-
-        <h2>Product Not Found</h2>
-
-        <p>
-            The product you're trying to edit doesn't exist.
-        </p>
+    } @else if (isInvalidProductId) {
+    <section class="state-card">
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>Invalid Product ID</h2>
+        <p>The product ID in this URL is invalid.</p>
 
         <button type="button" class="btn btn-secondary" (click)="goBack()">
             Back to Products
         </button>
-    </div>
+    </section>
+    } @else if (hasLoadError) {
+    <section class="state-card">
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>Unable to Load Product</h2>
+        <p>
+            We couldn't load this product. Check your connection and try again.
+        </p>
 
+        <div class="state-actions">
+            <button type="button" class="btn btn-secondary" (click)="goBack()">
+                Back to Products
+            </button>
+
+            @if (productId !== null) {
+            <button type="button" class="btn btn-primary" (click)="retryLoad()" [disabled]="isLoading">
+                Try Again
+            </button>
+            }
+        </div>
+    </section>
+    } @else {
+    <section class="state-card">
+        <div class="state-icon" aria-hidden="true">?</div>
+        <h2>Product Not Found</h2>
+        <p>The requested product could not be found.</p>
+
+        <button type="button" class="btn btn-secondary" (click)="goBack()">
+            Back to Products
+        </button>
+    </section>
     }
-
 </div>
