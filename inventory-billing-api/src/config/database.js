@@ -1,9 +1,12 @@
+
+'use strict';
+
 const { createClient } = require('@supabase/supabase-js');
 const WebSocket = require('ws');
 
 const {
     supabaseUrl,
-    supabaseServiceRoleKey
+    supabaseServiceRoleKey,
 } = require('./env');
 
 const supabase = createClient(
@@ -12,15 +15,15 @@ const supabase = createClient(
     {
         auth: {
             autoRefreshToken: false,
-            persistSession: false
+            persistSession: false,
         },
         realtime: {
             params: {
-                eventsPerSecond: 10
+                eventsPerSecond: 10,
             },
-            transport: WebSocket
-        }
-    }
+            transport: WebSocket,
+        },
+    },
 );
 
 module.exports = supabase;

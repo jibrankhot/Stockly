@@ -1,3 +1,4 @@
+
 import {
   HttpErrorResponse,
   HttpInterceptorFn,
@@ -10,26 +11,28 @@ import {
   throwError,
 } from 'rxjs';
 
+import { API_CONFIG } from '../http/api.config';
 import { TokenService } from '../auth/services/token.service';
 import { NotificationService } from '../services/notification.service';
 
 let isHandlingUnauthorized = false;
 
-export const errorInterceptor: HttpInterceptorFn = (
-  req,
-  next,
-) => {
+export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);
   const tokenService = inject(TokenService);
 
+  const apiBaseUrl = API_CONFIG.baseUrl.replace(/\/+$/, '');
+  const isApiRequest =
+    req.url === apiBaseUrl ||
+    req.url.startsWith(`${apiBaseUrl}/`);
+
+  const requestPath = isApiRequest
+    ? req.url.slice(apiBaseUrl.length).split(/[?#]/)[0]
+    : '';
+
   const isLoginRequest =
-    /\/auth\/login\/?$/.test(
-      new URL(
-        req.url,
-        window.location.origin,
-      ).pathname,
-    );
+    req.method === 'POST' && requestPath === '/auth/login';
 
   return next(req).pipe(
     tap(() => {

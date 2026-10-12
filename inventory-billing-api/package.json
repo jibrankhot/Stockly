@@ -1,12 +1,18 @@
+
 {
   "name": "inventory-billing-api",
   "version": "1.0.0",
   "description": "Stockly Inventory and Billing Management API",
   "main": "src/server.js",
+  "type": "commonjs",
+  "private": true,
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "echo \"Tests not configured yet\" && exit 0"
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "keywords": [
     "stockly",
@@ -15,9 +21,7 @@
     "express",
     "supabase"
   ],
-  "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
     "bcryptjs": "^3.0.3",

@@ -3,16 +3,12 @@ import { map, Observable } from 'rxjs';
 
 import { ApiResponse } from '../../../core/models/api-response';
 import { ApiClientService } from '../../../core/http/services/api-client.service';
-
-import {
-    Product,
-} from '../../../shared/models/product';
+import { Product } from '../../../shared/models/product';
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'root'
 })
 export class ProductService {
-
     private readonly endpoint = 'products';
 
     constructor(
@@ -21,21 +17,15 @@ export class ProductService {
 
     getProducts(): Observable<Product[]> {
         return this.apiClient
-            .get<ApiResponse<Product[]>>(
-                this.endpoint
-            )
+            .get<ApiResponse<Product[]>>(this.endpoint)
             .pipe(
                 map((response) => response.data)
             );
     }
 
-    getProductById(
-        id: number
-    ): Observable<Product> {
+    getProductById(id: number): Observable<Product> {
         return this.apiClient
-            .get<ApiResponse<Product>>(
-                `${this.endpoint}/${id}`
-            )
+            .get<ApiResponse<Product>>(`${this.endpoint}/${id}`)
             .pipe(
                 map((response) => response.data)
             );
@@ -68,13 +58,9 @@ export class ProductService {
             );
     }
 
-    deleteProduct(
-        id: number
-    ): Observable<null> {
+    deleteProduct(id: number): Observable<null> {
         return this.apiClient
-            .delete<ApiResponse<null>>(
-                `${this.endpoint}/${id}`
-            )
+            .delete<ApiResponse<null>>(`${this.endpoint}/${id}`)
             .pipe(
                 map((response) => response.data)
             );

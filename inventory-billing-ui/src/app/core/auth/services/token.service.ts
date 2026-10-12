@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 
 import { StorageService } from '../../services/storage.service';
@@ -14,11 +15,13 @@ export class TokenService {
   ) { }
 
   setAccessToken(token: string): void {
-    if (!token.trim()) {
+    const normalizedToken = token.trim();
+
+    if (!normalizedToken) {
       throw new Error('Access token cannot be empty.');
     }
 
-    this.storageService.setItem(this.tokenKey, token);
+    this.storageService.setItem(this.tokenKey, normalizedToken);
   }
 
   getAccessToken(): string | null {
@@ -30,20 +33,20 @@ export class TokenService {
   }
 
   setRefreshToken(token: string): void {
-    if (!token.trim()) {
+    const normalizedToken = token.trim();
+
+    if (!normalizedToken) {
       throw new Error('Refresh token cannot be empty.');
     }
 
     this.storageService.setItem(
       this.refreshTokenKey,
-      token,
+      normalizedToken,
     );
   }
 
   getRefreshToken(): string | null {
-    return this.storageService.getItem<string>(
-      this.refreshTokenKey,
-    );
+    return this.storageService.getItem<string>(this.refreshTokenKey);
   }
 
   removeRefreshToken(): void {

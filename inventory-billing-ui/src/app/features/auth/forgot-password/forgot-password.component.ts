@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -13,7 +14,6 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/services/auth.service';
-
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { InputComponent } from '../../../shared/components/input/input.component';
 
@@ -41,16 +41,22 @@ export class ForgotPasswordComponent {
 
   isSubmitting = false;
   isSubmitted = false;
+  errorMessage = '';
 
   onSubmit(): void {
+    if (this.isSubmitting || this.isSubmitted) {
+      return;
+    }
+
     if (this.forgotPasswordForm.invalid) {
       this.forgotPasswordForm.markAllAsTouched();
       return;
     }
 
+    this.errorMessage = '';
     this.isSubmitting = true;
 
-    const email = this.forgotPasswordForm.controls.email.value;
+    const email = this.forgotPasswordForm.controls.email.value.trim();
 
     this.authService
       .requestPasswordReset(email)
@@ -61,12 +67,23 @@ export class ForgotPasswordComponent {
         }),
       )
       .subscribe({
-        next: () => {
+        next: (response) => {
+          if (!response.success) {
+            this.errorMessage =
+              response.message ||
+              'Unable to process your request. Please try again.';
+            this.changeDetectorRef.markForCheck();
+            return;
+          }
+
           this.isSubmitted = true;
           this.changeDetectorRef.markForCheck();
         },
+        error: (error) => {
+          this.errorMessage =
+            error?.error?.message ||
+            'We could not process your request right now. Please try again later.';
 
-        error: () => {
           this.changeDetectorRef.markForCheck();
         },
       });

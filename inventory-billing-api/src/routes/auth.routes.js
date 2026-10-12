@@ -1,37 +1,32 @@
+
+'use strict';
+
 const express = require('express');
 
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const {
-    validateLogin,
-    validateForgotPassword,
-    validateResetPassword
+  validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
 } = require('../validators/auth.validator');
 
 const router = express.Router();
 
+router.post('/login', validateLogin, authController.login);
+
 router.post(
-    '/login',
-    validateLogin,
-    authController.login
+  '/forgot-password',
+  validateForgotPassword,
+  authController.forgotPassword,
 );
 
 router.post(
-    '/forgot-password',
-    validateForgotPassword,
-    authController.forgotPassword
+  '/reset-password',
+  validateResetPassword,
+  authController.resetPassword,
 );
 
-router.post(
-    '/reset-password',
-    validateResetPassword,
-    authController.resetPassword
-);
-
-router.get(
-    '/me',
-    authenticate,
-    authController.me
-);
+router.get('/me', authenticate, authController.me);
 
 module.exports = router;

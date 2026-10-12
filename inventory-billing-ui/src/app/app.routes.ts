@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
@@ -41,9 +42,7 @@ export const routes: Routes = [
                 loadComponent: () =>
                     import(
                         './features/auth/reset-password/reset-password.component'
-                    ).then(
-                        m => m.ResetPasswordComponent
-                    )
+                    ).then((m) => m.ResetPasswordComponent),
             },
         ],
     },

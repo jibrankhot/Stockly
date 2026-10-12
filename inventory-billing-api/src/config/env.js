@@ -1,43 +1,144 @@
+
+'use strict';
+
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const requiredEnvVariables = [
-    'SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'JWT_SECRET',
-    'MAIL_HOST',
-    'MAIL_PORT',
-    'MAIL_USER',
-    'MAIL_PASSWORD',
-    'MAIL_FROM',
-    'FRONTEND_URL'
+const REQUIRED_VARIABLES = [
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'JWT_SECRET',
+  'MAIL_HOST',
+  'MAIL_PORT',
+  'MAIL_USER',
+  'MAIL_PASSWORD',
+  'MAIL_FROM',
+  'FRONTEND_URL',
 ];
 
-for (const variable of requiredEnvVariables) {
-    if (!process.env[variable]) {
-        throw new Error(`Missing required environment variable: ${variable}`);
-    }
+const getRequiredString = (name) => {
+  const value = process.env[name];
+
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return value.trim();
+};
+
+const parsePort = (value, name, fallback) => {
+  const rawValue = value === undefined ? String(fallback) : value.trim();
+
+  if (!/^\d+$/.test(rawValue)) {
+    throw new Error(`${name} must be a valid port number`);
+  }
+
+  const port = Number(rawValue);
+
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`${name} must be between 1 and 65535`);
+  }
+
+  return port;
+};
+
+const parseHttpUrl = (value, name) => {
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(value);
+  } catch {
+    throw new Error(`${name} must be a valid URL`);
+  }
+
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    throw new Error(`${name} must use HTTP or HTTPS`);
+  }
+
+  if (parsedUrl.username || parsedUrl.password) {
+    throw new Error(`${name} must not contain URL credentials`);
+  }
+
+  return parsedUrl;
+};
+
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+if (!['development', 'test', 'production'].includes(nodeEnv)) {
+  throw new Error(
+    'NODE_ENV must be development, test, or production',
+  );
 }
 
-module.exports = {
-    port: Number(process.env.PORT) || 5000,
-    nodeEnv: process.env.NODE_ENV || 'development',
+for (const name of REQUIRED_VARIABLES) {
+  getRequiredString(name);
+}
 
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+const supabaseUrl = parseHttpUrl(
+  getRequiredString('SUPABASE_URL'),
+  'SUPABASE_URL',
+);
 
-    jwtSecret: process.env.JWT_SECRET,
+if (
+  supabaseUrl.pathname !== '/' ||
+  supabaseUrl.search ||
+  supabaseUrl.hash
+) {
+  throw new Error(
+    'SUPABASE_URL must contain only the Supabase project origin',
+  );
+}
 
-    corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+const jwtSecret = getRequiredString('JWT_SECRET');
 
-    mail: {
-        host: process.env.MAIL_HOST,
-        port: Number(process.env.MAIL_PORT),
-        user: process.env.MAIL_USER,
-        password: process.env.MAIL_PASSWORD,
-        from: process.env.MAIL_FROM
-    },
+if (Buffer.byteLength(jwtSecret, 'utf8') < 32) {
+  throw new Error(
+    'JWT_SECRET must contain at least 32 bytes of secret material',
+  );
+}
 
-    frontendUrl: process.env.FRONTEND_URL
-};
+const frontendUrl = parseHttpUrl(
+  getRequiredString('FRONTEND_URL'),
+  'FRONTEND_URL',
+);
+
+const corsOrigin = parseHttpUrl(
+  process.env.CORS_ORIGIN?.trim() || 'http://localhost:4200',
+  'CORS_ORIGIN',
+);
+
+const mailPort = parsePort(
+  getRequiredString('MAIL_PORT'),
+  'MAIL_PORT',
+);
+
+const port = parsePort(
+  process.env.PORT,
+  'PORT',
+  5000,
+);
+
+module.exports = Object.freeze({
+  port,
+  nodeEnv,
+
+  supabaseUrl: supabaseUrl.origin,
+  supabaseServiceRoleKey: getRequiredString(
+    'SUPABASE_SERVICE_ROLE_KEY',
+  ),
+
+  jwtSecret,
+
+  corsOrigin: corsOrigin.origin,
+
+  mail: Object.freeze({
+    host: getRequiredString('MAIL_HOST'),
+    port: mailPort,
+    user: getRequiredString('MAIL_USER'),
+    password: getRequiredString('MAIL_PASSWORD'),
+    from: getRequiredString('MAIL_FROM'),
+  }),
+
+  frontendUrl: frontendUrl.origin,
+});

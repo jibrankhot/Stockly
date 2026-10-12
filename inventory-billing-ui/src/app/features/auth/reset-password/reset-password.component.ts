@@ -1,142 +1,113 @@
+
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     inject,
 } from '@angular/core';
-import {
-    FormBuilder,
-    ReactiveFormsModule,
-    Validators,
-} from '@angular/forms';
-import {
-    ActivatedRoute,
-    Router,
-    RouterLink,
-} from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-
 import { AuthService } from '../../../core/auth/services/auth.service';
-
 import { ButtonComponent } from '../../../shared/components/button/button.component';
-import { InputComponent } from '../../../shared/components/input/input.component';
 
 @Component({
     selector: 'app-reset-password',
     standalone: true,
-    imports: [
-        ReactiveFormsModule,
-        RouterLink,
-        InputComponent,
-        ButtonComponent,
-    ],
+    imports: [ReactiveFormsModule, RouterLink, ButtonComponent],
     templateUrl: './reset-password.component.html',
     styleUrl: './reset-password.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent {
-    private readonly formBuilder = inject(FormBuilder);
+    private readonly fb = inject(FormBuilder);
     private readonly authService = inject(AuthService);
-    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly cdr = inject(ChangeDetectorRef);
 
-    readonly resetPasswordForm = this.formBuilder.nonNullable.group({
+    token = this.route.snapshot.queryParamMap.get('token') ?? '';
+    isSubmitting = false;
+    isSubmitted = false;
+    errorMessage = '';
+
+    readonly resetPasswordForm = this.fb.nonNullable.group({
         newPassword: [
             '',
             [
                 Validators.required,
                 Validators.minLength(8),
+                Validators.maxLength(72),
             ],
         ],
-        confirmPassword: [
-            '',
-            [Validators.required],
-        ],
+        confirmPassword: ['', Validators.required],
     });
-
-    readonly resetToken =
-        this.activatedRoute.snapshot.queryParamMap.get('token');
-
-    isSubmitting = false;
-    isResetSuccessful = false;
-    tokenMissing = !this.resetToken;
-
-    errorMessage = '';
 
     onSubmit(): void {
         this.errorMessage = '';
 
-        if (this.tokenMissing) {
+        if (!/^[a-f\d]{64}$/i.test(this.token)) {
             this.errorMessage =
-                'This password reset link is invalid or incomplete.';
-
-            this.changeDetectorRef.markForCheck();
-            return;
-        }
-
-        // After the tokenMissing check, this local variable
-        // is correctly narrowed to string.
-        const token = this.resetToken;
-
-        if (!token) {
-            this.errorMessage =
-                'This password reset link is invalid or incomplete.';
-
-            this.changeDetectorRef.markForCheck();
+                'This reset link is invalid or expired. Please request a new one.';
             return;
         }
 
         if (this.resetPasswordForm.invalid) {
             this.resetPasswordForm.markAllAsTouched();
-            this.changeDetectorRef.markForCheck();
             return;
         }
 
-        const {
-            newPassword,
-            confirmPassword,
-        } = this.resetPasswordForm.getRawValue();
+        const { newPassword, confirmPassword } =
+            this.resetPasswordForm.getRawValue();
 
         if (newPassword !== confirmPassword) {
-            this.errorMessage =
-                'Passwords do not match.';
+            this.errorMessage = 'The passwords do not match.';
+            return;
+        }
 
-            this.changeDetectorRef.markForCheck();
+        if (new TextEncoder().encode(newPassword).length > 72) {
+            this.errorMessage =
+                'Your password must not exceed 72 UTF-8 bytes.';
             return;
         }
 
         this.isSubmitting = true;
 
         this.authService
-            .resetPassword(
-                token,
-                newPassword,
-            )
+            .resetPassword(this.token, newPassword)
             .pipe(
                 finalize(() => {
                     this.isSubmitting = false;
-                    this.changeDetectorRef.markForCheck();
+                    this.cdr.markForCheck();
                 }),
             )
             .subscribe({
-                next: () => {
-                    this.isResetSuccessful = true;
-                    this.changeDetectorRef.markForCheck();
+                next: (response) => {
+                    if (!response.success) {
+                        this.errorMessage =
+                            response.message || 'Unable to reset your password.';
+                        this.cdr.markForCheck();
+                        return;
+                    }
+
+                    this.isSubmitted = true;
+                    this.token = '';
+                    this.resetPasswordForm.reset();
+
+                    void this.router.navigate([], {
+                        relativeTo: this.route,
+                        queryParams: { token: null },
+                        replaceUrl: true,
+                    });
+
+                    this.cdr.markForCheck();
                 },
-
-                error: () => {
+                error: (error) => {
                     this.errorMessage =
-                        'This reset link is invalid or has expired. Please request a new password reset link.';
-
-                    this.changeDetectorRef.markForCheck();
+                        error?.error?.message ||
+                        'This reset link is invalid, expired, or already used. Please request a new one.';
+                    this.cdr.markForCheck();
                 },
             });
-    }
-
-    goToForgotPassword(): void {
-        void this.router.navigate([
-            '/auth/forgot-password',
-        ]);
     }
 }

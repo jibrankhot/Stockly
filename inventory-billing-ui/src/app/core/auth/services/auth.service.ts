@@ -1,8 +1,13 @@
+
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
+  catchError,
+  map,
+  of,
   tap,
+  throwError,
 } from 'rxjs';
 
 import { ApiClientService } from '../../http/services/api-client.service';
@@ -21,14 +26,12 @@ import { TokenService } from './token.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly currentUserKey =
-    'stockly_current_user';
+  private readonly currentUserKey = 'stockly_current_user';
 
   private readonly currentUserSubject =
     new BehaviorSubject<AuthUser | null>(null);
 
-  readonly currentUser$ =
-    this.currentUserSubject.asObservable();
+  readonly currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private readonly apiClient: ApiClientService,
@@ -38,26 +41,54 @@ export class AuthService {
     this.loadStoredUser();
   }
 
+  /**
+   * Validate a saved session against the backend during application startup.
+   */
+
+  initializeSession(): Observable<void> {
+    if (!this.tokenService.hasAccessToken()) {
+      this.logout();
+      return of(void 0);
+    }
+
+    return this.apiClient
+      .get<ApiResponse<BackendAuthUser>>('/auth/me')
+      .pipe(
+        tap((response) => {
+          if (!response?.success || !response.data) {
+            throw new Error('Unable to validate the current session.');
+          }
+
+          const backendUser = response.data;
+
+          if (!backendUser.is_active) {
+            throw new Error('Your account is inactive.');
+          }
+
+          this.setCurrentUser(this.mapBackendUser(backendUser));
+        }),
+        map(() => void 0),
+        catchError(() => {
+          this.logout();
+          return of(void 0);
+        }),
+      );
+  }
+
+
   login(request: {
     username: string;
     password: string;
   }): Observable<LoginResponse> {
     return this.apiClient
-      .post<LoginResponse>(
-        '/auth/login',
-        request,
-      )
+      .post<LoginResponse>('/auth/login', request)
       .pipe(
         tap((response) => {
           if (!response.success) {
-            throw new Error(
-              response.message ||
-              'Login failed.',
-            );
+            throw new Error(response.message || 'Login failed.');
           }
 
-          const backendUser =
-            response.data.user;
+          const backendUser = response.data.user;
 
           if (!backendUser.is_active) {
             this.logout();
@@ -67,16 +98,12 @@ export class AuthService {
             );
           }
 
-          const user =
-            this.mapBackendUser(
-              backendUser,
-            );
-
-          this.tokenService.setAccessToken(
-            response.data.token,
-          );
-
-          this.setCurrentUser(user);
+          this.tokenService.setAccessToken(response.data.token);
+          this.setCurrentUser(this.mapBackendUser(backendUser));
+        }),
+        catchError((error: unknown) => {
+          this.logout();
+          return throwError(() => error);
         }),
       );
   }
@@ -84,34 +111,28 @@ export class AuthService {
   requestPasswordReset(
     email: string,
   ): Observable<ApiResponse<null>> {
-    return this.apiClient
-      .post<ApiResponse<null>>(
-        '/auth/forgot-password',
-        { email },
-      );
+    return this.apiClient.post<ApiResponse<null>>(
+      '/auth/forgot-password',
+      { email },
+    );
   }
 
   resetPassword(
     token: string,
     newPassword: string,
   ): Observable<ApiResponse<null>> {
-    return this.apiClient
-      .post<ApiResponse<null>>(
-        '/auth/reset-password',
-        {
-          token,
-          newPassword,
-        },
-      );
+    return this.apiClient.post<ApiResponse<null>>(
+      '/auth/reset-password',
+      {
+        token,
+        newPassword,
+      },
+    );
   }
 
   logout(): void {
     this.tokenService.clearTokens();
-
-    this.storageService.removeItem(
-      this.currentUserKey,
-    );
-
+    this.storageService.removeItem(this.currentUserKey);
     this.currentUserSubject.next(null);
   }
 
@@ -125,25 +146,18 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
-
-    return user
-      ? user.roles.includes(role)
-      : false;
+    return user ? user.roles.includes(role) : false;
   }
 
   hasAnyRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
 
     return user
-      ? roles.some((role) =>
-        user.roles.includes(role),
-      )
+      ? roles.some((role) => user.roles.includes(role))
       : false;
   }
 
-  hasPermission(
-    permission: string,
-  ): boolean {
+  hasPermission(permission: string): boolean {
     const user = this.getCurrentUser();
 
     return user
@@ -151,66 +165,36 @@ export class AuthService {
       : false;
   }
 
-  private setCurrentUser(
-    user: AuthUser,
-  ): void {
-    this.storageService.setItem(
-      this.currentUserKey,
-      user,
-    );
-
+  private setCurrentUser(user: AuthUser): void {
+    this.storageService.setItem(this.currentUserKey, user);
     this.currentUserSubject.next(user);
   }
 
   private loadStoredUser(): void {
-    if (
-      !this.tokenService.hasAccessToken()
-    ) {
-      this.storageService.removeItem(
-        this.currentUserKey,
-      );
-
+    if (!this.tokenService.hasAccessToken()) {
+      this.storageService.removeItem(this.currentUserKey);
       return;
     }
 
     const storedUser =
-      this.storageService.getItem<AuthUser>(
-        this.currentUserKey,
-      );
+      this.storageService.getItem<AuthUser>(this.currentUserKey);
 
     if (storedUser) {
-      this.currentUserSubject.next(
-        storedUser,
-      );
+      this.currentUserSubject.next(storedUser);
     }
   }
 
-  private mapBackendUser(
-    user: BackendAuthUser,
-  ): AuthUser {
-    const nameParts =
-      user.full_name
-        ?.trim()
-        .split(/\s+/) ?? [];
-
-    const firstName =
-      nameParts[0] ?? '';
-
-    const lastName =
-      nameParts
-        .slice(1)
-        .join(' ');
+  private mapBackendUser(user: BackendAuthUser): AuthUser {
+    const nameParts = user.full_name?.trim().split(/\s+/) ?? [];
 
     return {
       id: user.id,
       username: user.username,
       email: user.email ?? '',
-      firstName,
-      lastName,
+      firstName: nameParts[0] ?? '',
+      lastName: nameParts.slice(1).join(' '),
       fullName: user.full_name,
-      roles: user.roles
-        ? [user.roles.name]
-        : [],
+      roles: user.roles ? [user.roles.name] : [],
       permissions: [],
     };
   }

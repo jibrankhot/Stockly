@@ -1,85 +1,138 @@
+
+'use strict';
+
+const sendValidationError = (res, message) =>
+  res.status(422).json({
+    success: false,
+    message,
+  });
+
+const getRequestBody = (req) => {
+  if (
+    !req.body ||
+    typeof req.body !== 'object' ||
+    Array.isArray(req.body)
+  ) {
+    return null;
+  }
+
+  return req.body;
+};
+
 const validateLogin = (req, res, next) => {
-    const { username, password } = req.body;
+  const body = getRequestBody(req);
 
-    if (!username || typeof username !== 'string') {
-        return res.status(422).json({
-            success: false,
-            message: 'Username is required'
-        });
-    }
+  if (!body) {
+    return sendValidationError(
+      res,
+      'Request body must be a JSON object',
+    );
+  }
 
-    if (!password || typeof password !== 'string') {
-        return res.status(422).json({
-            success: false,
-            message: 'Password is required'
-        });
-    }
+  const { username, password } = body;
 
-    next();
+  if (typeof username !== 'string' || !username.trim()) {
+    return sendValidationError(res, 'Username is required');
+  }
+
+  if (typeof password !== 'string' || !password) {
+    return sendValidationError(res, 'Password is required');
+  }
+
+  if (username.trim().length > 100) {
+    return sendValidationError(res, 'Username is too long');
+  }
+
+  return next();
 };
 
 const validateForgotPassword = (req, res, next) => {
-    const { email } = req.body;
+  const body = getRequestBody(req);
 
-    if (!email || typeof email !== 'string') {
-        return res.status(422).json({
-            success: false,
-            message: 'Email is required'
-        });
-    }
+  if (!body) {
+    return sendValidationError(
+      res,
+      'Request body must be a JSON object',
+    );
+  }
 
-    const normalizedEmail = email.trim();
+  const { email } = body;
 
-    if (!normalizedEmail) {
-        return res.status(422).json({
-            success: false,
-            message: 'Email is required'
-        });
-    }
+  if (typeof email !== 'string' || !email.trim()) {
+    return sendValidationError(res, 'Email is required');
+  }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const normalizedEmail = email.trim().toLowerCase();
 
-    if (!emailPattern.test(normalizedEmail)) {
-        return res.status(422).json({
-            success: false,
-            message: 'Please provide a valid email address'
-        });
-    }
+  if (normalizedEmail.length > 254) {
+    return sendValidationError(
+      res,
+      'Email address is too long',
+    );
+  }
 
-    req.body.email = normalizedEmail.toLowerCase();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    next();
+  if (!emailPattern.test(normalizedEmail)) {
+    return sendValidationError(
+      res,
+      'Please provide a valid email address',
+    );
+  }
+
+  req.body.email = normalizedEmail;
+
+  return next();
 };
 
 const validateResetPassword = (req, res, next) => {
-    const { token, newPassword } = req.body;
+  const body = getRequestBody(req);
 
-    if (!token || typeof token !== 'string') {
-        return res.status(422).json({
-            success: false,
-            message: 'Reset token is required'
-        });
-    }
+  if (!body) {
+    return sendValidationError(
+      res,
+      'Request body must be a JSON object',
+    );
+  }
 
-    if (!newPassword || typeof newPassword !== 'string') {
-        return res.status(422).json({
-            success: false,
-            message: 'New password is required'
-        });
-    }
+  const { token, newPassword } = body;
 
-    if (newPassword.length < 8) {
-        return res.status(422).json({
-            success: false,
-            message: 'Password must be at least 8 characters long'
-        });
-    }
+  if (
+    typeof token !== 'string' ||
+    !/^[a-f0-9]{64}$/i.test(token)
+  ) {
+    return sendValidationError(
+      res,
+      'A valid reset token is required',
+    );
+  }
 
-    next();
+  if (typeof newPassword !== 'string' || !newPassword) {
+    return sendValidationError(
+      res,
+      'New password is required',
+    );
+  }
+
+  if (newPassword.length < 8) {
+    return sendValidationError(
+      res,
+      'Password must be at least 8 characters long',
+    );
+  }
+
+  if (Buffer.byteLength(newPassword, 'utf8') > 72) {
+    return sendValidationError(
+      res,
+      'Password must not exceed 72 UTF-8 bytes',
+    );
+  }
+
+  return next();
 };
 
 module.exports = {
-    validateLogin,
-    validateForgotPassword,
-    validateResetPassword
+  validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
 };

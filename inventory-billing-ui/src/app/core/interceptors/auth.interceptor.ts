@@ -1,28 +1,32 @@
-import { inject } from '@angular/core';
+
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 
 import { TokenService } from '../auth/services/token.service';
 import { API_CONFIG } from '../http/api.config';
 
+const API_BASE_URL = API_CONFIG.baseUrl.replace(/\/+$/, '');
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const tokenService = inject(TokenService);
-  const token = tokenService.getAccessToken();
-
-  const baseUrl = API_CONFIG.baseUrl.replace(/\/+$/, '');
-
   const isApiRequest =
-    req.url === baseUrl ||
-    req.url.startsWith(`${baseUrl}/`);
+    req.url === API_BASE_URL ||
+    req.url.startsWith(`${API_BASE_URL}/`);
 
-  if (!token || !isApiRequest) {
+  if (!isApiRequest) {
     return next(req);
   }
 
-  const authenticatedRequest = req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const token = inject(TokenService).getAccessToken();
 
-  return next(authenticatedRequest);
+  if (!token?.trim()) {
+    return next(req);
+  }
+
+  return next(
+    req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  );
 };

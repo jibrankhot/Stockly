@@ -1,11 +1,20 @@
+
 const supabase = require('../config/database');
 
+const productSelect = `
+    *,
+    categories (
+        id,
+        name
+    )
+`;
+
 const mapProduct = (product) => ({
-    id: product.id,
+    id: Number(product.id),
     sku: product.sku,
     name: product.name,
-    description: product.description,
-    categoryId: product.category_id,
+    description: product.description ?? '',
+    categoryId: Number(product.category_id),
     categoryName: product.categories?.name || '',
     unit: product.unit,
     purchasePrice: Number(product.purchase_price),
@@ -18,13 +27,29 @@ const mapProduct = (product) => ({
     updatedAt: product.updated_at
 });
 
-const productSelect = `
-    *,
-    categories (
-        id,
-        name
-    )
-`;
+const createHttpError = (message, statusCode) => {
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    return error;
+};
+
+const handleDatabaseError = (error) => {
+    if (error.code === '23505') {
+        throw createHttpError(
+            'Product SKU already exists',
+            409
+        );
+    }
+
+    if (error.code === '23503') {
+        throw createHttpError(
+            'The selected category is invalid or the product is referenced by existing records',
+            409
+        );
+    }
+
+    throw new Error(error.message || 'Database operation failed');
+};
 
 const getProducts = async () => {
     const { data, error } = await supabase
@@ -33,10 +58,10 @@ const getProducts = async () => {
         .order('name', { ascending: true });
 
     if (error) {
-        throw new Error(error.message);
+        handleDatabaseError(error);
     }
 
-    return data.map(mapProduct);
+    return (data || []).map(mapProduct);
 };
 
 const getProductById = async (id) => {
@@ -47,13 +72,11 @@ const getProductById = async (id) => {
         .maybeSingle();
 
     if (error) {
-        throw new Error(error.message);
+        handleDatabaseError(error);
     }
 
     if (!data) {
-        const notFoundError = new Error('Product not found');
-        notFoundError.statusCode = 404;
-        throw notFoundError;
+        throw createHttpError('Product not found', 404);
     }
 
     return mapProduct(data);
@@ -63,14 +86,17 @@ const createProduct = async (productData) => {
     const insertData = {
         sku: productData.sku.trim(),
         name: productData.name.trim(),
-        description: productData.description || null,
+        description:
+            typeof productData.description === 'string'
+                ? productData.description.trim() || null
+                : null,
         category_id: Number(productData.categoryId),
-        unit: productData.unit || 'pcs',
-        purchase_price: Number(productData.purchasePrice || 0),
-        selling_price: Number(productData.sellingPrice || 0),
-        tax_rate: Number(productData.taxRate || 0),
-        current_stock: Number(productData.currentStock || 0),
-        minimum_stock: Number(productData.minimumStock || 0),
+        unit: productData.unit?.trim() || 'pcs',
+        purchase_price: Number(productData.purchasePrice ?? 0),
+        selling_price: Number(productData.sellingPrice ?? 0),
+        tax_rate: Number(productData.taxRate ?? 0),
+        current_stock: Number(productData.currentStock ?? 0),
+        minimum_stock: Number(productData.minimumStock ?? 0),
         is_active: productData.isActive ?? true
     };
 
@@ -81,23 +107,7 @@ const createProduct = async (productData) => {
         .single();
 
     if (error) {
-        if (error.code === '23505') {
-            const duplicateError = new Error(
-                'Product SKU already exists'
-            );
-            duplicateError.statusCode = 409;
-            throw duplicateError;
-        }
-
-        if (error.code === '23503') {
-            const categoryError = new Error(
-                'Selected category does not exist'
-            );
-            categoryError.statusCode = 400;
-            throw categoryError;
-        }
-
-        throw new Error(error.message);
+        handleDatabaseError(error);
     }
 
     return mapProduct(data);
@@ -115,7 +125,10 @@ const updateProduct = async (id, productData) => {
     }
 
     if (productData.description !== undefined) {
-        updateData.description = productData.description || null;
+        updateData.description =
+            typeof productData.description === 'string'
+                ? productData.description.trim() || null
+                : null;
     }
 
     if (productData.categoryId !== undefined) {
@@ -123,7 +136,7 @@ const updateProduct = async (id, productData) => {
     }
 
     if (productData.unit !== undefined) {
-        updateData.unit = productData.unit;
+        updateData.unit = productData.unit.trim();
     }
 
     if (productData.purchasePrice !== undefined) {
@@ -150,6 +163,13 @@ const updateProduct = async (id, productData) => {
         updateData.is_active = productData.isActive;
     }
 
+    if (Object.keys(updateData).length === 0) {
+        throw createHttpError(
+            'Provide at least one field to update',
+            422
+        );
+    }
+
     const { data, error } = await supabase
         .from('products')
         .update(updateData)
@@ -158,50 +178,30 @@ const updateProduct = async (id, productData) => {
         .maybeSingle();
 
     if (error) {
-        if (error.code === '23505') {
-            const duplicateError = new Error(
-                'Product SKU already exists'
-            );
-            duplicateError.statusCode = 409;
-            throw duplicateError;
-        }
-
-        if (error.code === '23503') {
-            const categoryError = new Error(
-                'Selected category does not exist'
-            );
-            categoryError.statusCode = 400;
-            throw categoryError;
-        }
-
-        throw new Error(error.message);
+        handleDatabaseError(error);
     }
 
     if (!data) {
-        const notFoundError = new Error('Product not found');
-        notFoundError.statusCode = 404;
-        throw notFoundError;
+        throw createHttpError('Product not found', 404);
     }
 
     return mapProduct(data);
 };
 
 const deleteProduct = async (id) => {
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('products')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select('id')
+        .maybeSingle();
 
     if (error) {
-        if (error.code === '23503') {
-            const conflictError = new Error(
-                'Product cannot be deleted because it is being used in transactions'
-            );
-            conflictError.statusCode = 409;
-            throw conflictError;
-        }
+        handleDatabaseError(error);
+    }
 
-        throw new Error(error.message);
+    if (!data) {
+        throw createHttpError('Product not found', 404);
     }
 
     return true;

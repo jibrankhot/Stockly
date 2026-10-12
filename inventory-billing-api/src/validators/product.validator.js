@@ -1,15 +1,85 @@
+
+const allowedFields = new Set([
+    'sku',
+    'name',
+    'description',
+    'categoryId',
+    'unit',
+    'purchasePrice',
+    'sellingPrice',
+    'taxRate',
+    'currentStock',
+    'minimumStock',
+    'isActive'
+]);
+
+const numericFields = [
+    'purchasePrice',
+    'sellingPrice',
+    'taxRate',
+    'currentStock',
+    'minimumStock'
+];
+
+const numericLimits = {
+    purchasePrice: 9999999999.99,
+    sellingPrice: 9999999999.99,
+    taxRate: 100,
+    currentStock: 9999999999.99,
+    minimumStock: 9999999999.99
+};
+
+const validateProductId = (req, res, next) => {
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Product ID must be a valid positive integer'
+        });
+    }
+
+    next();
+};
+
 const validateProduct = (req, res, next) => {
-    const body = req.body || {};
+    const body = req.body;
+
+    if (
+        body === null ||
+        typeof body !== 'object' ||
+        Array.isArray(body)
+    ) {
+        return res.status(422).json({
+            success: false,
+            message: 'Request body must be a JSON object'
+        });
+    }
 
     const isCreateRequest = req.method === 'POST';
+    const fields = Object.keys(body);
 
-    const requiredFields = [
-        'sku',
-        'name',
-        'categoryId'
-    ];
+    if (!isCreateRequest && fields.length === 0) {
+        return res.status(422).json({
+            success: false,
+            message: 'Provide at least one field to update'
+        });
+    }
+
+    const unknownFields = fields.filter(
+        (field) => !allowedFields.has(field)
+    );
+
+    if (unknownFields.length > 0) {
+        return res.status(422).json({
+            success: false,
+            message: `Unsupported field: ${unknownFields[0]}`
+        });
+    }
 
     if (isCreateRequest) {
+        const requiredFields = ['sku', 'name', 'categoryId'];
+
         for (const field of requiredFields) {
             if (
                 body[field] === undefined ||
@@ -27,89 +97,124 @@ const validateProduct = (req, res, next) => {
         }
     }
 
-    if (body.sku !== undefined) {
-        if (
-            typeof body.sku !== 'string' ||
-            body.sku.trim() === ''
-        ) {
+    const stringRules = [
+        { field: 'sku', label: 'SKU', max: 100 },
+        { field: 'name', label: 'Product name', max: 200 },
+        { field: 'description', label: 'Description', max: 500 },
+        { field: 'unit', label: 'Unit', max: 50 }
+    ];
+
+    for (const rule of stringRules) {
+        const value = body[rule.field];
+
+        if (value === undefined || value === null) {
+            if (
+                rule.field === 'description' &&
+                value === null
+            ) {
+                continue;
+            }
+
+            if (value === null) {
+                return res.status(422).json({
+                    success: false,
+                    message: `${rule.label} must be a string`
+                });
+            }
+
+            continue;
+        }
+
+        if (typeof value !== 'string') {
             return res.status(422).json({
                 success: false,
-                message: 'SKU must be a non-empty string'
+                message: `${rule.label} must be a string`
             });
         }
-    }
 
-    if (body.name !== undefined) {
+        const normalizedValue = value.trim();
+
         if (
-            typeof body.name !== 'string' ||
-            body.name.trim() === ''
+            rule.field !== 'description' &&
+            normalizedValue.length === 0
         ) {
             return res.status(422).json({
                 success: false,
-                message: 'Product name must be a non-empty string'
+                message: `${rule.label} must not be empty`
             });
         }
-    }
 
-    if (body.description !== undefined) {
-        if (
-            body.description !== null &&
-            typeof body.description !== 'string'
-        ) {
+        if (normalizedValue.length > rule.max) {
             return res.status(422).json({
                 success: false,
-                message: 'Description must be a string'
+                message: `${rule.label} must not exceed ${rule.max} characters`
             });
         }
     }
 
     if (body.categoryId !== undefined) {
+        const categoryId = Number(body.categoryId);
+
         if (
-            !Number.isInteger(Number(body.categoryId)) ||
-            Number(body.categoryId) <= 0
+            !Number.isSafeInteger(categoryId) ||
+            categoryId <= 0
         ) {
             return res.status(422).json({
                 success: false,
-                message: 'categoryId must be a valid ID'
+                message: 'categoryId must be a valid positive integer'
             });
         }
     }
-
-    if (body.unit !== undefined) {
-        if (
-            typeof body.unit !== 'string' ||
-            body.unit.trim() === ''
-        ) {
-            return res.status(422).json({
-                success: false,
-                message: 'Unit must be a non-empty string'
-            });
-        }
-    }
-
-    const numericFields = [
-        'purchasePrice',
-        'sellingPrice',
-        'taxRate',
-        'currentStock',
-        'minimumStock'
-    ];
 
     for (const field of numericFields) {
-        if (body[field] !== undefined) {
-            const value = Number(body[field]);
+        if (body[field] === undefined) {
+            continue;
+        }
 
-            if (
-                Number.isNaN(value) ||
-                !Number.isFinite(value) ||
-                value < 0
-            ) {
-                return res.status(422).json({
-                    success: false,
-                    message:
-                        `${field} must be a valid non-negative number`
-                });
-            }
+        const value = body[field];
+
+        if (
+            value === null ||
+            value === '' ||
+            !['number', 'string'].includes(typeof value)
+        ) {
+            return res.status(422).json({
+                success: false,
+                message: `${field} must be a valid non-negative number`
+            });
+        }
+
+        const numberValue = Number(value);
+
+        if (
+            !Number.isFinite(numberValue) ||
+            numberValue < 0 ||
+            numberValue > numericLimits[field]
+        ) {
+            return res.status(422).json({
+                success: false,
+                message: `${field} is outside the allowed range`
+            });
+        }
+
+        if (
+            typeof value === 'string' &&
+            !/^\d+(\.\d{1,2})?$/.test(value.trim())
+        ) {
+            return res.status(422).json({
+                success: false,
+                message: `${field} must have no more than two decimal places`
+            });
+        }
+
+        if (
+            typeof value === 'number' &&
+            Math.round(value * 100) !== value * 100
+        ) {
+            return res.status(422).json({
+                success: false,
+                message: `${field} must have no more than two decimal places`
+            });
         }
     }
 
@@ -127,5 +232,6 @@ const validateProduct = (req, res, next) => {
 };
 
 module.exports = {
-    validateProduct
+    validateProduct,
+    validateProductId
 };

@@ -1,15 +1,29 @@
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  setItem<T>(key: string, value: T): void {
+  private get storage(): Storage | null {
     try {
-      localStorage.setItem(
-        key,
-        JSON.stringify(value),
-      );
+      return typeof localStorage !== 'undefined'
+        ? localStorage
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  setItem<T>(key: string, value: T): void {
+    const storage = this.storage;
+
+    if (!storage) {
+      return;
+    }
+
+    try {
+      storage.setItem(key, JSON.stringify(value));
     } catch (error) {
       console.error(
         `Failed to store data for key "${key}".`,
@@ -19,8 +33,14 @@ export class StorageService {
   }
 
   getItem<T>(key: string): T | null {
+    const storage = this.storage;
+
+    if (!storage) {
+      return null;
+    }
+
     try {
-      const value = localStorage.getItem(key);
+      const value = storage.getItem(key);
 
       if (value === null) {
         return null;
@@ -29,7 +49,7 @@ export class StorageService {
       return JSON.parse(value) as T;
     } catch (error) {
       console.error(
-        `Failed to retrieve data for key "${key}".`,
+        `Failed to retrieve storage data for key "${key}".`,
         error,
       );
 
@@ -38,8 +58,14 @@ export class StorageService {
   }
 
   removeItem(key: string): void {
+    const storage = this.storage;
+
+    if (!storage) {
+      return;
+    }
+
     try {
-      localStorage.removeItem(key);
+      storage.removeItem(key);
     } catch (error) {
       console.error(
         `Failed to remove storage key "${key}".`,
@@ -49,19 +75,43 @@ export class StorageService {
   }
 
   clear(): void {
+    const storage = this.storage;
+
+    if (!storage) {
+      return;
+    }
+
     try {
-      localStorage.clear();
+      const keysToRemove: string[] = [];
+
+      for (let index = 0; index < storage.length; index++) {
+        const key = storage.key(index);
+
+        if (key?.startsWith('stockly_')) {
+          keysToRemove.push(key);
+        }
+      }
+
+      for (const key of keysToRemove) {
+        storage.removeItem(key);
+      }
     } catch (error) {
       console.error(
-        'Failed to clear local storage.',
+        'Failed to clear Stockly local storage.',
         error,
       );
     }
   }
 
   hasItem(key: string): boolean {
+    const storage = this.storage;
+
+    if (!storage) {
+      return false;
+    }
+
     try {
-      return localStorage.getItem(key) !== null;
+      return storage.getItem(key) !== null;
     } catch (error) {
       console.error(
         `Failed to check storage key "${key}".`,
