@@ -1,32 +1,25 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class LoaderService {
   private activeRequests = 0;
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
-  private readonly loadingSubject =
-    new BehaviorSubject<boolean>(false);
+  readonly loading$ = this.loadingSubject.asObservable();
 
-  readonly loading$ =
-    this.loadingSubject.asObservable();
+  get isLoading(): boolean {
+    return this.loadingSubject.value;
+  }
 
   show(): void {
     this.activeRequests++;
-    this.loadingSubject.next(true);
+    this.updateLoadingState();
   }
 
   hide(): void {
-    this.activeRequests = Math.max(
-      0,
-      this.activeRequests - 1,
-    );
-
-    this.loadingSubject.next(
-      this.activeRequests > 0,
-    );
+    this.activeRequests = Math.max(0, this.activeRequests - 1);
+    this.updateLoadingState();
   }
 
   reset(): void {
@@ -34,7 +27,7 @@ export class LoaderService {
     this.loadingSubject.next(false);
   }
 
-  isLoading(): boolean {
-    return this.loadingSubject.value;
+  private updateLoadingState(): void {
+    this.loadingSubject.next(this.activeRequests > 0);
   }
 }

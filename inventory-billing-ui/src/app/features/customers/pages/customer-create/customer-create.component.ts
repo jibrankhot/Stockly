@@ -1,12 +1,7 @@
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import {
-    FormBuilder,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators
-} from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -25,93 +20,73 @@ import { NotificationService } from '../../../../core/services/notification.serv
     styleUrl: './customer-create.component.scss'
 })
 export class CustomerCreateComponent {
+    private readonly fb = inject(FormBuilder);
+    private readonly customerService = inject(CustomerService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly router = inject(Router);
 
-    customerForm: FormGroup;
+    readonly customerForm = this.fb.nonNullable.group({
+        code: [
+            '',
+            [
+                Validators.required,
+                Validators.maxLength(20)
+            ]
+        ],
+        name: [
+            '',
+            [
+                Validators.required,
+                Validators.maxLength(100)
+            ]
+        ],
+        email: [
+            '',
+            [
+                Validators.email,
+                Validators.maxLength(100)
+            ]
+        ],
+        phone: ['', [Validators.maxLength(20)]],
+        address: ['', [Validators.maxLength(200)]],
+        city: ['', [Validators.maxLength(50)]],
+        state: ['', [Validators.maxLength(50)]],
+        postalCode: ['', [Validators.maxLength(10)]],
+        taxNumber: ['', [Validators.maxLength(30)]],
+        isActive: [true]
+    });
 
     isSaving = false;
+    submitted = false;
     errorMessage = '';
 
-    constructor(
-        private readonly fb: FormBuilder,
-        private readonly customerService: CustomerService,
-        private readonly notificationService: NotificationService,
-        private readonly router: Router
-    ) {
-        this.customerForm = this.fb.group({
-            code: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(20)
-                ]
-            ],
+    get codeControl() {
+        return this.customerForm.controls.code;
+    }
 
-            name: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(100)
-                ]
-            ],
+    get nameControl() {
+        return this.customerForm.controls.name;
+    }
 
-            email: [
-                '',
-                [
-                    Validators.email,
-                    Validators.maxLength(100)
-                ]
-            ],
+    get emailControl() {
+        return this.customerForm.controls.email;
+    }
 
-            phone: [
-                '',
-                [
-                    Validators.maxLength(20)
-                ]
-            ],
+    showError(
+        controlName: keyof typeof this.customerForm.controls
+    ): boolean {
+        const control = this.customerForm.controls[controlName];
 
-            address: [
-                '',
-                [
-                    Validators.maxLength(200)
-                ]
-            ],
-
-            city: [
-                '',
-                [
-                    Validators.maxLength(50)
-                ]
-            ],
-
-            state: [
-                '',
-                [
-                    Validators.maxLength(50)
-                ]
-            ],
-
-            postalCode: [
-                '',
-                [
-                    Validators.maxLength(10)
-                ]
-            ],
-
-            taxNumber: [
-                '',
-                [
-                    Validators.maxLength(30)
-                ]
-            ],
-
-            isActive: [true]
-        });
+        return control.invalid &&
+            (control.touched || this.submitted);
     }
 
     saveCustomer(): void {
         if (this.isSaving) {
             return;
         }
+
+        this.submitted = true;
 
         if (this.customerForm.invalid) {
             this.customerForm.markAllAsTouched();
@@ -134,15 +109,14 @@ export class CustomerCreateComponent {
                         'Customer created successfully.'
                     );
 
-                    this.router.navigate([
+                    void this.router.navigate([
                         '/customers',
                         customer.id
                     ]);
                 },
-
                 error: () => {
                     this.errorMessage =
-                        'Unable to create customer.';
+                        'Unable to create customer. Please check the details and try again.';
 
                     this.notificationService.error(
                         this.errorMessage
@@ -156,6 +130,6 @@ export class CustomerCreateComponent {
             return;
         }
 
-        this.router.navigate(['/customers']);
+        void this.router.navigate(['/customers']);
     }
 }

@@ -1,4 +1,3 @@
-
 import {
   HttpErrorResponse,
   HttpInterceptorFn,
@@ -17,30 +16,32 @@ import { NotificationService } from '../services/notification.service';
 
 let isHandlingUnauthorized = false;
 
+const API_BASE_URL = API_CONFIG.baseUrl.replace(/\/+$/, '');
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const notificationService = inject(NotificationService);
   const tokenService = inject(TokenService);
 
-  const apiBaseUrl = API_CONFIG.baseUrl.replace(/\/+$/, '');
   const isApiRequest =
-    req.url === apiBaseUrl ||
-    req.url.startsWith(`${apiBaseUrl}/`);
+    req.url === API_BASE_URL ||
+    req.url.startsWith(`${API_BASE_URL}/`);
 
   const requestPath = isApiRequest
-    ? req.url.slice(apiBaseUrl.length).split(/[?#]/)[0]
+    ? req.url.slice(API_BASE_URL.length).split(/[?#]/)[0]
     : '';
 
   const isLoginRequest =
     req.method === 'POST' && requestPath === '/auth/login';
 
   return next(req).pipe(
-    tap(() => {
-      if (isLoginRequest) {
-        isHandlingUnauthorized = false;
-      }
+    tap({
+      next: () => {
+        if (isLoginRequest) {
+          isHandlingUnauthorized = false;
+        }
+      },
     }),
-
     catchError((error: HttpErrorResponse) => {
       switch (error.status) {
         case 401: {
@@ -48,10 +49,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           }
 
-          tokenService.clearTokens();
-
           if (!isHandlingUnauthorized) {
             isHandlingUnauthorized = true;
+            tokenService.clearTokens();
 
             notificationService.error(
               'Your session has expired or is no longer valid. Please log in again.',

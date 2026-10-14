@@ -1,104 +1,87 @@
 <div class="login-page">
-    <div class="login-card">
-
-        <!-- Header -->
+    <main class="login-card">
         <header class="login-header">
-
             <div class="logo" aria-hidden="true">
-                <span class="logo-mark">
-                    S
-                </span>
+                <span class="logo-mark">S</span>
             </div>
 
-            <h1>
-                Welcome to Stockly
-            </h1>
+            <h1>Welcome to Stockly</h1>
 
-            <p>
-                Sign in to manage your inventory and billing.
-            </p>
-
+            <p>Sign in to manage your inventory and billing.</p>
         </header>
 
-        <!-- Login Error -->
         @if (errorMessage) {
         <div class="error-message" role="alert" aria-live="polite">
             {{ errorMessage }}
         </div>
         }
 
-        <!-- Login Form -->
         <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-
-            <!-- Username -->
             <div class="form-group">
-
-                <label for="username">
-                    Username
-                </label>
+                <label for="username">Username</label>
 
                 <input id="username" type="text" formControlName="username" placeholder="Enter your username"
-                    autocomplete="username" />
+                    autocomplete="username" autocapitalize="none" spellcheck="false" [attr.aria-invalid]="
+            loginForm.controls.username.touched &&
+            loginForm.controls.username.invalid
+          " [attr.aria-describedby]="
+            loginForm.controls.username.touched &&
+            loginForm.controls.username.invalid
+              ? 'username-error'
+              : null
+          " />
 
                 @if (
                 loginForm.controls.username.touched &&
                 loginForm.controls.username.invalid
                 ) {
-                <span class="field-error">
+                <span id="username-error" class="field-error">
                     Username is required.
                 </span>
                 }
-
             </div>
 
-            <!-- Password -->
             <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
+                <label for="password">Password</label>
 
                 <input id="password" type="password" formControlName="password" placeholder="Enter your password"
-                    autocomplete="current-password" />
+                    autocomplete="current-password" [attr.aria-invalid]="
+            loginForm.controls.password.touched &&
+            loginForm.controls.password.invalid
+          " [attr.aria-describedby]="
+            loginForm.controls.password.touched &&
+            loginForm.controls.password.invalid
+              ? 'password-error'
+              : null
+          " />
 
                 @if (
                 loginForm.controls.password.touched &&
                 loginForm.controls.password.invalid
                 ) {
-                <span class="field-error">
+                <span id="password-error" class="field-error">
                     Password is required.
                 </span>
                 }
-
             </div>
 
-            <!-- Forgot Password -->
             <div class="form-options">
-
                 <span class="secure-login">
                     Secure sign in
                 </span>
 
-                <button type="button" class="forgot-password" (click)="goToForgotPassword()">
+                <button type="button" class="forgot-password" (click)="goToForgotPassword()" [disabled]="isSubmitting">
                     Forgot password?
                 </button>
-
             </div>
 
-            <!-- Submit -->
-            <button type="submit" class="login-button" [disabled]="isSubmitting">
+            <button type="submit" class="login-button" [disabled]="isSubmitting" [attr.aria-busy]="isSubmitting">
                 @if (isSubmitting) {
-                <span>
-                    Signing in...
-                </span>
+                <span>Signing in...</span>
                 } @else {
-                <span>
-                    Sign in
-                </span>
+                <span>Sign in</span>
                 }
             </button>
-
         </form>
-
-    </div>
+    </main>
 </div>

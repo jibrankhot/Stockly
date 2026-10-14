@@ -3,514 +3,450 @@
   position: sticky;
   top: 0;
   z-index: var(--z-navbar, 900);
+  min-width: 0;
 }
-
-/* =========================================================
-   NAVBAR
-   ========================================================= */
-
 .navbar {
   position: relative;
-
   width: 100%;
+  max-width: 100%;
   height: var(--navbar-height);
-
   display: flex;
   align-items: center;
-
   box-sizing: border-box;
-
   padding: 0 20px;
-
   background: rgba(255, 255, 255, 0.97);
-
   border-bottom: 1px solid var(--color-border);
-
-  box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.04);
-
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
-  transition:
-    background var(--duration-normal) var(--ease-standard),
-    box-shadow var(--duration-normal) var(--ease-standard);
+  transition: background var(--duration-normal) var(--ease-standard), box-shadow var(--duration-normal) var(--ease-standard);
 }
-
-/* =========================================================
-   LEFT SECTION
-   ========================================================= */
-
 .navbar-left {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
-
-/* =========================================================
-   MENU BUTTON
-   ========================================================= */
-
 .menu-button {
   position: relative;
-
   width: 40px;
   height: 40px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   gap: 4px;
-
   flex-shrink: 0;
-
   padding: 0;
-
   border: 1px solid var(--color-border);
   border-radius: 8px;
-
   background: var(--color-surface);
   color: var(--color-text-primary);
-
   cursor: pointer;
   overflow: hidden;
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
 }
-
 .menu-button::before {
   content: '';
-
   position: absolute;
   inset: 0;
-
   background: var(--color-primary-50);
-
   opacity: 0;
-
-  transition:
-    opacity var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
-
 .menu-button:hover {
   border-color: var(--color-primary-200);
-
-  box-shadow:
-    0 3px 8px rgba(15, 23, 42, 0.07);
-
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.07);
   transform: translateY(-1px);
 }
-
 .menu-button:hover::before {
   opacity: 1;
 }
-
 .menu-button:active {
   transform: translateY(0) scale(0.97);
 }
-
 .menu-button:focus-visible {
   outline: none;
-
   border-color: var(--color-primary-500);
-
   box-shadow: var(--shadow-focus);
 }
-
-/* =========================================================
-   MENU ICON
-   ========================================================= */
-
 .menu-button span {
   position: relative;
   z-index: 1;
-
   display: block;
-
   width: 17px;
   height: 2px;
-
   border-radius: 999px;
-
   background: var(--color-text-secondary);
-
-  transition:
-    width var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard);
+  transition: width var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
 }
-
 .menu-button:hover span {
   width: 18px;
   background: var(--color-primary-700);
 }
-
-/* =========================================================
-   GLOBAL SEARCH
-   ========================================================= */
-
 .navbar-search {
   position: absolute;
-
   left: 50%;
-
   transform: translateX(-50%);
-
   width: min(360px, 34vw);
   height: 38px;
-
   display: flex;
   align-items: center;
-
   box-sizing: border-box;
-
   border: 1px solid var(--color-border);
   border-radius: 8px;
-
   background: var(--color-surface-muted);
   color: var(--color-text-secondary);
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
-
 .navbar-search:focus-within {
   background: var(--color-surface);
-
   border-color: var(--color-primary-300);
-
-  box-shadow:
-    0 0 0 3px rgba(72, 147, 39, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 12%, transparent);
 }
-
-/* =========================================================
-   SEARCH ICON
-   ========================================================= */
-
 .search-icon {
   width: 18px;
   height: 18px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   margin-left: 12px;
-
   color: var(--color-text-muted);
 }
-
 .search-icon svg {
   width: 16px;
   height: 16px;
 }
-
-/* =========================================================
-   SEARCH INPUT
-   ========================================================= */
-
 .navbar-search input {
   width: 100%;
   height: 100%;
-
   min-width: 0;
-
   padding: 0 10px;
-
   border: 0;
   outline: 0;
-
   background: transparent;
   color: var(--color-text-primary);
-
   font-family: inherit;
   font-size: 12px;
   line-height: 1.4;
 }
-
 .navbar-search input::placeholder {
   color: var(--color-text-muted);
   opacity: 1;
 }
-
 .navbar-search input::-webkit-search-cancel-button {
   display: none;
 }
-
-/* =========================================================
-   SEARCH CLEAR
-   ========================================================= */
-
 .search-clear {
   width: 28px;
   height: 28px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   margin-right: 5px;
   padding: 0;
-
   border: 0;
   border-radius: 6px;
-
   background: transparent;
   color: var(--color-text-muted);
-
   font-size: 18px;
   line-height: 1;
-
   cursor: pointer;
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
 }
-
 .search-clear:hover {
   background: var(--color-surface-muted);
   color: var(--color-text-primary);
 }
-
 .search-clear:focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus);
 }
-
-/* =========================================================
-   RIGHT SECTION
-   ========================================================= */
-
 .navbar-right {
   display: flex;
   align-items: center;
-
+  justify-content: flex-end;
   gap: 8px;
-
   margin-left: auto;
+  min-width: 0;
+  flex: 0 1 auto;
 }
-
-/* =========================================================
-   NOTIFICATION BUTTON
-   ========================================================= */
-
 .notification-button {
   position: relative;
-
   width: 38px;
   height: 38px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  flex-shrink: 0;
-
+  flex: 0 0 auto;
   padding: 0;
-
   border: 1px solid transparent;
   border-radius: 8px;
-
   background: transparent;
   color: var(--color-text-secondary);
-
   cursor: pointer;
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
 }
-
 .notification-button:hover {
   background: var(--color-primary-50);
-
   border-color: var(--color-primary-100);
-
   color: var(--color-primary-700);
-
   transform: translateY(-1px);
 }
-
 .notification-button:active {
   transform: scale(0.97);
 }
-
 .notification-button:focus-visible {
   outline: none;
-
   border-color: var(--color-primary-300);
-
   box-shadow: var(--shadow-focus);
 }
-
-/* =========================================================
-   NOTIFICATION ICON
-   ========================================================= */
-
 .notification-icon {
   width: 20px;
   height: 20px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-
 .notification-icon svg {
   width: 19px;
   height: 19px;
 }
-
-/* =========================================================
-   NOTIFICATION BADGE
-   ========================================================= */
-
 .notification-badge {
   position: absolute;
-
   top: 3px;
   right: 2px;
-
   min-width: 16px;
   height: 16px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   box-sizing: border-box;
-
   padding: 0 4px;
-
   border: 2px solid var(--color-surface);
   border-radius: 999px;
-
   background: #ef4444;
-  color: #ffffff;
-
+  color: #fff;
   font-size: 8px;
   font-weight: 800;
   line-height: 1;
-
-  box-shadow:
-    0 2px 5px rgba(239, 68, 68, 0.22);
-
-  animation:
-    stockly-scale-in
-    var(--duration-fast)
-    var(--ease-emphasized)
-    both;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.22);
+  animation: stockly-scale-in var(--duration-fast) var(--ease-emphasized) both;
 }
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
+.theme-picker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.theme-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+.theme-trigger:hover,
+.theme-trigger[aria-expanded='true'] {
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+.theme-trigger:focus-visible,
+.theme-option:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+.palette-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.current-theme-swatch,
+.theme-swatch {
+  display: block;
+  width: 11px;
+  height: 11px;
+  flex: 0 0 11px;
+  border-radius: 50%;
+}
+.current-theme-swatch--green,
+.theme-swatch--green {
+  background: #489327;
+}
+.current-theme-swatch--blue,
+.theme-swatch--blue {
+  background: #3b82f6;
+}
+.theme-chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.theme-chevron--open {
+  transform: rotate(180deg);
+}
+.theme-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1100;
+  width: 230px;
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
+  padding: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface, #fff);
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.14), 0 2px 7px rgba(15, 23, 42, 0.05);
+  animation: stockly-theme-dropdown-in 140ms ease-out both;
+}
+.theme-dropdown-heading {
+  padding: 8px 10px 9px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.theme-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+}
+.theme-option:hover {
+  background: var(--color-surface-muted);
+}
+.theme-option--active {
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+}
+.theme-option-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.theme-option-title {
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 650;
+}
+.theme-option-description {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.theme-check {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--color-primary-500);
+}
+@keyframes stockly-theme-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @media (max-width: 1024px) {
   .navbar {
     padding: 0 16px;
   }
-
   .navbar-search {
     width: min(320px, 32vw);
   }
 }
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 767px) {
   .navbar {
-    height: var(--navbar-height);
-    padding: 0 14px;
+    padding: 0 12px;
   }
-
-  /*
-   * Mobile layout:
-   *
-   * [ Hamburger ]             [ Bell ] [ User ]
-   *
-   * No Stockly logo/text here.
-   */
-
-  .navbar-left {
-    gap: 0;
-  }
-
-  /*
-   * Search is hidden on mobile.
-   *
-   * The compact navbar contains only
-   * navigation and account controls.
-   */
-
   .navbar-search {
     display: none;
   }
-
   .navbar-right {
-    gap: 4px;
+    gap: 5px;
   }
-
-  .notification-button {
-    width: 36px;
-    height: 36px;
-  }
-
   .menu-button {
     width: 38px;
     height: 38px;
   }
+  .notification-button {
+    width: 36px;
+    height: 36px;
+  }
+  .theme-trigger {
+    min-height: 36px;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .theme-dropdown {
+    right: 0;
+  }
 }
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
 @media (max-width: 479px) {
   .navbar {
-    padding: 0 10px;
+    padding: 0 8px;
   }
-
   .navbar-right {
-    gap: 2px;
+    gap: 4px;
   }
-
   .menu-button {
     width: 36px;
     height: 36px;
   }
-
   .notification-button {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
-
   .notification-icon svg {
     width: 18px;
     height: 18px;
   }
+  .theme-trigger {
+    min-height: 34px;
+    gap: 5px;
+    padding: 0 7px;
+  }
+  .theme-trigger-label {
+    display: none;
+  }
+  .theme-chevron {
+    width: 12px;
+    height: 12px;
+  }
+  .theme-dropdown {
+    right: -40px;
+    width: 220px;
+  }
 }
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
   .navbar,
   .menu-button,
@@ -519,8 +455,14 @@
   .navbar-search,
   .search-clear,
   .notification-button,
-  .notification-badge {
+  .notification-badge,
+  .theme-trigger,
+  .theme-chevron,
+  .theme-option {
     transition: none;
+    animation: none;
+  }
+  .theme-dropdown {
     animation: none;
   }
 }

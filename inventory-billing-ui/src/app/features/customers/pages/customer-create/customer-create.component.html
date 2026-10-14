@@ -1,219 +1,216 @@
 <div class="page-container">
-
-    <!-- Header -->
-    <div class="page-header">
-
-        <div>
-            <h1>Add Customer</h1>
-            <p>Create a new customer record.</p>
+    <header class="page-header">
+        <div class="page-heading">
+            <span class="eyebrow">CUSTOMER MANAGEMENT</span>
+            <h1>Add customer</h1>
+            <p>Create a new customer record and add their contact information.</p>
         </div>
 
         <a routerLink="/customers" class="btn btn-outline">
-            Back to Customers
+            <span aria-hidden="true">←</span>
+            Back to customers
         </a>
+    </header>
 
-    </div>
-
-    <!-- Form -->
-    <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()">
-
-        <!-- Basic Information -->
+    <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()" novalidate>
+        <!-- Basic information -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Basic Information</h2>
+                <div class="section-heading">
+                    <span class="section-icon basic-icon" aria-hidden="true">ID</span>
+                    <div>
+                        <h2>Basic information</h2>
+                        <p>Enter the customer's identity and account status.</p>
+                    </div>
+                </div>
+                <span class="required-note"><span>*</span> Required fields</span>
             </div>
 
             <div class="form-grid">
-
-                <!-- Code -->
                 <div class="form-group">
-
                     <label for="code">
-                        Customer Code <span>*</span>
+                        Customer code <span class="required">*</span>
                     </label>
 
-                    <input id="code" type="text" formControlName="code" placeholder="CUS-006">
+                    <input id="code" type="text" formControlName="code" placeholder="e.g. CUS-006" autocomplete="off"
+                        [class.invalid]="showError('code')" [attr.aria-invalid]="showError('code')"
+                        [attr.aria-describedby]="showError('code') ? 'code-error' : null" />
 
-                    <small *ngIf="
-                            customerForm.get('code')?.touched &&
-                            customerForm.get('code')?.hasError('required')
-                        ">
-                        Customer code is required.
+                    <small id="code-error" class="field-error" *ngIf="showError('code')">
+                        <ng-container *ngIf="codeControl.hasError('required')">
+                            Customer code is required.
+                        </ng-container>
+                        <ng-container *ngIf="codeControl.hasError('maxlength')">
+                            Customer code cannot exceed 20 characters.
+                        </ng-container>
                     </small>
 
-                    <small *ngIf="
-                            customerForm.get('code')?.touched &&
-                            customerForm.get('code')?.hasError('maxlength')
-                        ">
-                        Customer code cannot exceed 20 characters.
-                    </small>
-
+                    <span class="field-hint" *ngIf="!showError('code')">
+                        Use a unique code to identify this customer.
+                    </span>
                 </div>
 
-                <!-- Name -->
                 <div class="form-group">
-
                     <label for="name">
-                        Customer Name <span>*</span>
+                        Customer name <span class="required">*</span>
                     </label>
 
-                    <input id="name" type="text" formControlName="name" placeholder="Enter customer name">
+                    <input id="name" type="text" formControlName="name" placeholder="Enter customer name"
+                        autocomplete="name" [class.invalid]="showError('name')" [attr.aria-invalid]="showError('name')"
+                        [attr.aria-describedby]="showError('name') ? 'name-error' : null" />
 
-                    <small *ngIf="
-                            customerForm.get('name')?.touched &&
-                            customerForm.get('name')?.hasError('required')
-                        ">
-                        Customer name is required.
+                    <small id="name-error" class="field-error" *ngIf="showError('name')">
+                        <ng-container *ngIf="nameControl.hasError('required')">
+                            Customer name is required.
+                        </ng-container>
+                        <ng-container *ngIf="nameControl.hasError('maxlength')">
+                            Customer name cannot exceed 100 characters.
+                        </ng-container>
                     </small>
-
-                    <small *ngIf="
-                            customerForm.get('name')?.touched &&
-                            customerForm.get('name')?.hasError('maxlength')
-                        ">
-                        Customer name cannot exceed 100 characters.
-                    </small>
-
                 </div>
 
-                <!-- Tax Number -->
                 <div class="form-group">
+                    <label for="taxNumber">Tax number</label>
 
-                    <label for="taxNumber">
-                        Tax Number
-                    </label>
+                    <input id="taxNumber" type="text" formControlName="taxNumber" placeholder="Enter tax or GST number"
+                        autocomplete="off" />
 
-                    <input id="taxNumber" type="text" formControlName="taxNumber" placeholder="Enter tax number">
-
+                    <span class="field-hint">
+                        Optional tax registration details.
+                    </span>
                 </div>
 
-                <!-- Status -->
                 <div class="form-group status-group">
+                    <label>Account status</label>
 
-                    <label>
-                        Status
+                    <label class="status-control">
+                        <input id="isActive" type="checkbox" formControlName="isActive" />
+
+                        <span class="status-switch" aria-hidden="true"></span>
+
+                        <span class="status-copy">
+                            <strong>
+                                {{ customerForm.controls.isActive.value ? 'Active customer' : 'Inactive customer' }}
+                            </strong>
+                            <small>
+                                {{ customerForm.controls.isActive.value
+                                ? 'This customer is enabled.'
+                                : 'This customer is disabled.' }}
+                            </small>
+                        </span>
                     </label>
-
-                    <label class="checkbox-label">
-
-                        <input type="checkbox" formControlName="isActive">
-
-                        <span>Active Customer</span>
-
-                    </label>
-
                 </div>
-
             </div>
-
         </section>
 
-        <!-- Contact Information -->
+        <!-- Contact information -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Contact Information</h2>
+                <div class="section-heading">
+                    <span class="section-icon contact-icon" aria-hidden="true">@</span>
+                    <div>
+                        <h2>Contact information</h2>
+                        <p>Add the details used to reach this customer.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="form-grid">
-
-                <!-- Email -->
                 <div class="form-group">
+                    <label for="email">Email address</label>
 
-                    <label for="email">Email</label>
+                    <input id="email" type="email" formControlName="email" placeholder="customer@example.com"
+                        autocomplete="email" [class.invalid]="showError('email')"
+                        [attr.aria-invalid]="showError('email')"
+                        [attr.aria-describedby]="showError('email') ? 'email-error' : null" />
 
-                    <input id="email" type="email" formControlName="email" placeholder="customer@example.com">
-
-                    <small *ngIf="
-                            customerForm.get('email')?.touched &&
-                            customerForm.get('email')?.hasError('email')
-                        ">
-                        Enter a valid email address.
+                    <small id="email-error" class="field-error" *ngIf="showError('email')">
+                        <ng-container *ngIf="emailControl.hasError('email')">
+                            Enter a valid email address.
+                        </ng-container>
+                        <ng-container *ngIf="emailControl.hasError('maxlength')">
+                            Email cannot exceed 100 characters.
+                        </ng-container>
                     </small>
-
                 </div>
 
-                <!-- Phone -->
                 <div class="form-group">
+                    <label for="phone">Phone number</label>
 
-                    <label for="phone">Phone</label>
+                    <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number"
+                        autocomplete="tel" />
 
-                    <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number">
-
+                    <span class="field-hint">
+                        Include the country code when necessary.
+                    </span>
                 </div>
-
             </div>
-
         </section>
 
         <!-- Address -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Address</h2>
+                <div class="section-heading">
+                    <span class="section-icon address-icon" aria-hidden="true">⌖</span>
+                    <div>
+                        <h2>Address</h2>
+                        <p>Record the customer's billing or business location.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="address-grid">
-
-                <!-- Address -->
                 <div class="form-group full-width">
-
-                    <label for="address">Address</label>
+                    <label for="address">Street address</label>
 
                     <textarea id="address" rows="3" formControlName="address"
-                        placeholder="Enter customer address"></textarea>
-
+                        placeholder="Building, street, area or landmark"></textarea>
                 </div>
 
-                <!-- City -->
                 <div class="form-group">
-
                     <label for="city">City</label>
 
-                    <input id="city" type="text" formControlName="city" placeholder="Enter city">
-
+                    <input id="city" type="text" formControlName="city" placeholder="Enter city"
+                        autocomplete="address-level2" />
                 </div>
 
-                <!-- State -->
                 <div class="form-group">
+                    <label for="state">State / region</label>
 
-                    <label for="state">State</label>
-
-                    <input id="state" type="text" formControlName="state" placeholder="Enter state">
-
+                    <input id="state" type="text" formControlName="state" placeholder="Enter state"
+                        autocomplete="address-level1" />
                 </div>
 
-                <!-- Postal Code -->
                 <div class="form-group">
+                    <label for="postalCode">Postal code</label>
 
-                    <label for="postalCode">Postal Code</label>
-
-                    <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code">
-
+                    <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code"
+                        autocomplete="postal-code" />
                 </div>
-
             </div>
-
         </section>
 
-        <!-- Error -->
         <div *ngIf="errorMessage" class="error-message" role="alert">
-            {{ errorMessage }}
+            <span class="error-icon" aria-hidden="true">!</span>
+            <span>{{ errorMessage }}</span>
         </div>
 
-        <!-- Actions -->
-        <div class="form-actions">
+        <footer class="form-actions">
+            <p class="form-note">
+                <span class="required">*</span> Required fields must be completed.
+            </p>
 
-            <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="isSaving">
-                Cancel
-            </button>
+            <div class="action-group">
+                <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="isSaving">
+                    Cancel
+                </button>
 
-            <button type="submit" class="btn btn-primary" [disabled]="isSaving">
-                {{ isSaving ? 'Saving...' : 'Create Customer' }}
-            </button>
-
-        </div>
-
+                <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+                    <span *ngIf="!isSaving" aria-hidden="true">＋</span>
+                    <span class="button-spinner" *ngIf="isSaving" aria-hidden="true"></span>
+                    {{ isSaving ? 'Creating customer…' : 'Create customer' }}
+                </button>
+            </div>
+        </footer>
     </form>
-
 </div>

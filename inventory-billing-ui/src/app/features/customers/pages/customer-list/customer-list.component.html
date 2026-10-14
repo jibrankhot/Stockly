@@ -1,215 +1,326 @@
 <div class="page-container">
-
-    <!-- Header -->
-    <div class="page-header">
-        <div>
-            <h1>Customers</h1>
-            <p>Manage your customers and their information.</p>
+    <header class="page-header">
+        <div class="page-title-group">
+            <div class="eyebrow">CUSTOMER MANAGEMENT</div>
+            <h1>Customers <span class="count-pill">{{ totalCustomerCount }}</span></h1>
+            <p>Manage customer details and account status.</p>
         </div>
 
-        <a routerLink="/customers/create" class="btn btn-primary">
-            + Add Customer
-        </a>
-    </div>
+        <div class="header-actions">
+            <button type="button" class="btn btn-outline" (click)="toggleImportPanel()"
+                [attr.aria-expanded]="isImportPanelOpen">
+                {{ isImportPanelOpen ? 'Close Import' : 'Import CSV' }}
+            </button>
+            <a routerLink="/customers/create" class="btn btn-primary">
+                <span class="plus-icon">+</span> Add Customer
+            </a>
+        </div>
+    </header>
 
-    <!-- Summary -->
-    <div class="summary-grid">
+    <section class="summary-grid">
+        <article class="summary-card">
+            <div class="summary-icon total-icon">C</div>
+            <div><span>Total customers</span><strong>{{ totalCustomerCount }}</strong></div>
+        </article>
+        <article class="summary-card">
+            <div class="summary-icon active-icon">✓</div>
+            <div><span>Active</span><strong>{{ activeCustomerCount }}</strong></div>
+        </article>
+        <article class="summary-card">
+            <div class="summary-icon inactive-icon">–</div>
+            <div><span>Inactive</span><strong>{{ inactiveCustomerCount }}</strong></div>
+        </article>
+    </section>
 
-        <div class="summary-card">
-            <span class="summary-label">Total Customers</span>
-            <strong>{{ totalCustomerCount }}</strong>
+    <section class="import-card" *ngIf="isImportPanelOpen">
+        <div class="import-heading">
+            <div>
+                <h2>Import customers from CSV</h2>
+                <p>Choose a CSV file, review the preview, and import up to 500 rows.</p>
+            </div>
+            <a class="btn btn-outline btn-sm" href="assets/templates/stockly_customers_import_template.csv" download>
+                Download template
+            </a>
         </div>
 
-        <div class="summary-card">
-            <span class="summary-label">Active</span>
-            <strong>{{ activeCustomerCount }}</strong>
+        <div class="file-picker">
+            <label for="customerCsvFile">CSV file</label>
+            <input #customerCsvFile id="customerCsvFile" type="file" accept=".csv,text/csv"
+                (change)="onCsvFileSelected($event)" [disabled]="isReadingCsv || isImportingCustomers" />
+            <span *ngIf="selectedCsvFile" class="selected-file">{{ selectedCsvFile.name }}</span>
         </div>
 
-        <div class="summary-card">
-            <span class="summary-label">Inactive</span>
-            <strong>{{ inactiveCustomerCount }}</strong>
+        <p *ngIf="isReadingCsv" class="info-message">Reading CSV file...</p>
+        <p *ngIf="csvFileError" class="error-message" role="alert">{{ csvFileError }}</p>
+        <p *ngIf="importErrorMessage" class="error-message" role="alert">{{ importErrorMessage }}</p>
+
+        <div *ngIf="csvPreviewRows.length > 0" class="preview-section">
+            <div class="preview-heading">
+                <h3>Preview <span>{{ csvPreviewRows.length }} rows</span></h3>
+                <button type="button" class="btn btn-outline btn-sm" (click)="clearCsvSelection(customerCsvFile)"
+                    [disabled]="isImportingCustomers || isReadingCsv">Clear file</button>
+            </div>
+
+            <div class="preview-stats">
+                <div><span>Total rows</span><strong>{{ csvPreviewRows.length }}</strong></div>
+                <div><span>Valid</span><strong class="success-text">{{ validCsvRowCount }}</strong></div>
+                <div><span>With errors</span><strong class="danger-text">{{ invalidCsvRowCount }}</strong></div>
+            </div>
+
+            <div *ngIf="invalidCsvRowCount > 0" class="warning-message">
+                Fix the reported errors in your CSV file, then select the corrected file again.
+            </div>
+
+            <div class="preview-table-wrapper">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Row</th>
+                            <th>Code</th>
+                            <th>Customer</th>
+                            <th>Email</th>
+                            <th>Validation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of csvPreviewRows">
+                            <td>{{ row.rowNumber }}</td>
+                            <td>{{ row.customerCode || '—' }}</td>
+                            <td>{{ row.name || '—' }}</td>
+                            <td>{{ row.email || '—' }}</td>
+                            <td>
+                                <span class="status-badge" [class.status-valid]="row.errors.length === 0"
+                                    [class.status-invalid]="row.errors.length > 0">
+                                    {{ row.errors.length === 0 ? 'Valid' : 'Error' }}
+                                </span>
+                                <ul *ngIf="row.errors.length > 0" class="validation-errors">
+                                    <li *ngFor="let error of row.errors">{{ error }}</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="import-footer">
+                <span>{{ invalidCsvRowCount > 0
+                    ? 'Resolve all validation errors before importing.'
+                    : 'Ready to import ' + validCsvRowCount + ' customer(s).' }}</span>
+                <button type="button" class="btn btn-primary" (click)="importCsvCustomers()" [disabled]="isImportingCustomers || isReadingCsv ||
+          csvPreviewRows.length === 0 || invalidCsvRowCount > 0">
+                    {{ isImportingCustomers ? 'Importing...' : 'Import customers' }}
+                </button>
+            </div>
         </div>
 
-    </div>
-
-    <!-- Filters -->
-    <section class="filter-card">
-
-        <div class="filter-group search-group">
-            <label for="search">Search</label>
-
-            <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
-                placeholder="Search by name, code, email or phone" />
+        <div *ngIf="importResponse" class="results-section" aria-live="polite">
+            <h3>Import results</h3>
+            <p>{{ importResponse.message }}</p>
+            <div class="result-grid">
+                <div><span>Total</span><strong>{{ importResponse.data.totalRows }}</strong></div>
+                <div><span>Imported</span><strong class="success-text">{{ importResponse.data.importedCount }}</strong>
+                </div>
+                <div><span>Skipped</span><strong>{{ importResponse.data.skippedCount }}</strong></div>
+                <div><span>Invalid</span><strong class="danger-text">{{ importResponse.data.invalidCount }}</strong>
+                </div>
+                <div><span>Failed</span><strong class="danger-text">{{ importResponse.data.failedCount }}</strong></div>
+            </div>
+            <div class="preview-table-wrapper">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Row</th>
+                            <th>Code</th>
+                            <th>Customer</th>
+                            <th>Status</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let result of importResponse.data.results">
+                            <td>{{ result.row }}</td>
+                            <td>{{ result.code || '—' }}</td>
+                            <td>{{ result.name || '—' }}</td>
+                            <td><span class="status-badge" [ngClass]="getImportResultClass(result)">{{ result.status
+                                    }}</span></td>
+                            <td>{{ result.message }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </section>
 
-        <div class="filter-group">
-            <label for="status">Status</label>
-
-            <select id="status" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
-                <option value="all">All</option>
+    <section class="filter-toolbar">
+        <div class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="customerSearch" type="search" aria-label="Search customers"
+                placeholder="Search name, code, email or phone..." [(ngModel)]="searchTerm"
+                (ngModelChange)="applyFilters()" />
+        </div>
+        <div class="status-filter">
+            <label for="customerStatus">Status</label>
+            <select id="customerStatus" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+                <option value="all">All statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
         </div>
-
-        <button type="button" class="btn btn-outline clear-btn" (click)="clearFilters()">
-            Clear
-        </button>
-
+        <button type="button" class="btn btn-outline btn-sm" (click)="clearFilters()">Reset</button>
     </section>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="state-card">
-        <p>Loading customers...</p>
+    <div *ngIf="isLoading" class="state-card">Loading customers...</div>
+
+    <div *ngIf="!isLoading && errorMessage" class="error-banner" role="alert">
+        <span>{{ errorMessage }}</span>
+        <button type="button" class="btn btn-outline btn-sm" (click)="loadCustomers()">Retry</button>
     </div>
 
-    <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-message" role="alert">
-        <p>{{ errorMessage }}</p>
-
-        <button type="button" class="btn btn-outline" (click)="loadCustomers()"
-            [disabled]="isDeletingCustomerId !== null">
-            Retry
-        </button>
-    </div>
-
-    <!-- Customer Table -->
     <section *ngIf="!isLoading && !errorMessage" class="table-card">
-
-        <div class="table-header">
+        <div class="table-heading">
             <div>
-                <h2>Customer List</h2>
-
-                <span>
-                    {{ filteredCustomers.length }}
-                    {{ filteredCustomers.length === 1 ? 'customer' : 'customers' }}
-                </span>
+                <h2>Customer directory</h2>
+                <p>Showing {{ pageStart }}–{{ pageEnd }} of {{ filteredCustomers.length }} customers</p>
             </div>
+            <span class="table-count">{{ filteredCustomers.length }} results</span>
         </div>
 
-        <div class="table-wrapper">
-
-            <table>
+        <!-- Desktop layout -->
+        <div class="table-wrapper desktop-customer-table" *ngIf="filteredCustomers.length > 0">
+            <table class="customer-table">
                 <thead>
                     <tr>
-                        <th>Code</th>
                         <th>Customer</th>
                         <th>Contact</th>
                         <th>Location</th>
                         <th>Status</th>
                         <th>Created</th>
-                        <th class="actions-column">Actions</th>
+                        <th class="actions-heading">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
-                    <tr *ngFor="let customer of filteredCustomers">
-
+                    <tr *ngFor="let customer of paginatedCustomers">
                         <td>
-                            <span class="customer-code">
-                                {{ customer.code }}
+                            <div class="customer-cell">
+                                <div class="customer-avatar">{{ (customer.name || 'C').charAt(0).toUpperCase() }}</div>
+                                <div class="customer-details">
+                                    <strong>{{ customer.name }}</strong>
+                                    <span>{{ customer.code }}</span>
+                                    <small *ngIf="customer.taxNumber">Tax No: {{ customer.taxNumber }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-cell"><span>{{ customer.email || '—' }}</span><span>{{ customer.phone ||
+                                    '—' }}</span></div>
+                        </td>
+                        <td>
+                            <div class="location-cell">
+                                <strong>{{ customer.city || '—' }}</strong>
+                                <span>{{ customer.state || '' }} {{ customer.postalCode ? '· ' + customer.postalCode :
+                                    '' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge" [class.status-valid]="customer.isActive"
+                                [class.status-muted]="!customer.isActive">
+                                <span class="status-dot"></span>{{ customer.isActive ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-
+                        <td class="date-cell">{{ customer.createdAt | date:'dd MMM yyyy' }}</td>
                         <td>
-                            <div class="customer-name">
-                                {{ customer.name }}
-                            </div>
-
-                            <div *ngIf="customer.taxNumber" class="tax-number">
-                                Tax No: {{ customer.taxNumber }}
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="contact-info">
-                                {{ customer.email }}
-                            </div>
-
-                            <div class="contact-info">
-                                {{ customer.phone }}
-                            </div>
-                        </td>
-
-                        <td>
-                            <div>{{ customer.city }}</div>
-
-                            <div class="location-secondary">
-                                {{ customer.state }}
-
-                                <span *ngIf="customer.postalCode">
-                                    - {{ customer.postalCode }}
-                                </span>
-                            </div>
-                        </td>
-
-                        <td>
-                            <span class="status-badge" [class.status-active]="customer.isActive"
-                                [class.status-inactive]="!customer.isActive">
-                                {{ customer.isActive ? 'Active' : 'Inactive' }}
-                            </span>
-                        </td>
-
-                        <td>
-                            {{ customer.createdAt | date:'dd MMM yyyy' }}
-                        </td>
-
-                        <td>
-                            <div class="actions">
-
-                                <a [routerLink]="['/customers', customer.id]" class="action-link">
-                                    View
-                                </a>
-
-                                <a [routerLink]="['/customers', customer.id, 'edit']" class="action-link">
-                                    Edit
-                                </a>
-
+                            <div class="row-actions">
+                                <a [routerLink]="['/customers', customer.id]" class="action-link">View</a>
+                                <a [routerLink]="['/customers', customer.id, 'edit']" class="action-link">Edit</a>
                                 <button type="button" class="action-link delete-link" (click)="deleteCustomer(customer)"
                                     [disabled]="isDeletingCustomerId !== null">
-                                    {{
-                                    isDeletingCustomerId === customer.id
-                                    ? 'Deleting...'
-                                    : 'Delete'
-                                    }}
+                                    {{ isDeletingCustomerId === customer.id ? 'Deleting…' : 'Delete' }}
                                 </button>
-
                             </div>
                         </td>
-
                     </tr>
-
-                    <!-- Empty State -->
-                    <tr *ngIf="filteredCustomers.length === 0">
-
-                        <td colspan="7" class="empty-state">
-                            <div>
-                                <strong>
-                                    {{
-                                    customers.length === 0
-                                    ? 'No customers yet'
-                                    : 'No customers found'
-                                    }}
-                                </strong>
-
-                                <p>
-                                    {{
-                                    customers.length === 0
-                                    ? 'Add your first customer to get started.'
-                                    : 'Try changing your search or filters.'
-                                    }}
-                                </p>
-                            </div>
-                        </td>
-
-                    </tr>
-
                 </tbody>
             </table>
-
         </div>
 
-    </section>
+        <!-- Mobile card layout -->
+        <div class="mobile-customer-list" *ngIf="filteredCustomers.length > 0">
+            <article class="mobile-customer-card" *ngFor="let customer of paginatedCustomers">
+                <div class="mobile-customer-top">
+                    <div class="customer-cell">
+                        <div class="customer-avatar">{{ (customer.name || 'C').charAt(0).toUpperCase() }}</div>
+                        <div class="customer-details">
+                            <strong>{{ customer.name }}</strong>
+                            <span>{{ customer.code }}</span>
+                        </div>
+                    </div>
+                    <span class="status-badge" [class.status-valid]="customer.isActive"
+                        [class.status-muted]="!customer.isActive">
+                        <span class="status-dot"></span>{{ customer.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
 
+                <div class="mobile-customer-details">
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Email</span>
+                        <span class="mobile-detail-value">{{ customer.email || '—' }}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Phone</span>
+                        <span class="mobile-detail-value">{{ customer.phone || '—' }}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Location</span>
+                        <span class="mobile-detail-value">
+                            {{ customer.city || '—' }}{{ customer.state ? ', ' + customer.state : '' }}
+                            {{ customer.postalCode || '' }}
+                        </span>
+                    </div>
+                    <div class="mobile-detail-row" *ngIf="customer.taxNumber">
+                        <span class="mobile-detail-label">Tax number</span>
+                        <span class="mobile-detail-value">{{ customer.taxNumber }}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Created</span>
+                        <span class="mobile-detail-value">{{ customer.createdAt | date:'dd MMM yyyy' }}</span>
+                    </div>
+                </div>
+
+                <div class="mobile-customer-actions">
+                    <a [routerLink]="['/customers', customer.id]" class="mobile-action mobile-view">View</a>
+                    <a [routerLink]="['/customers', customer.id, 'edit']" class="mobile-action mobile-edit">Edit</a>
+                    <button type="button" class="mobile-action mobile-delete" (click)="deleteCustomer(customer)"
+                        [disabled]="isDeletingCustomerId !== null">
+                        {{ isDeletingCustomerId === customer.id ? 'Deleting…' : 'Delete' }}
+                    </button>
+                </div>
+            </article>
+        </div>
+
+        <div *ngIf="filteredCustomers.length === 0" class="empty-state">
+            <strong>{{ customers.length === 0 ? 'No customers yet' : 'No customers found' }}</strong>
+            <p>{{ customers.length === 0
+                ? 'Add your first customer or import a CSV file.'
+                : 'Try another search term or clear your filters.' }}</p>
+        </div>
+
+        <footer class="pagination-bar" *ngIf="filteredCustomers.length > 0">
+            <div class="page-size-control">
+                <label for="pageSize">Rows per page</label>
+                <select id="pageSize" [ngModel]="pageSize" (ngModelChange)="changePageSize($event)">
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+                </select>
+            </div>
+            <div class="pagination-controls">
+                <button type="button" class="page-button" aria-label="Previous page" (click)="goToPage(currentPage - 1)"
+                    [disabled]="currentPage === 1">‹</button>
+                <button type="button" class="page-button" *ngFor="let page of pageNumbers"
+                    [class.page-active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" (click)="goToPage(page)">{{ page
+                    }}</button>
+                <button type="button" class="page-button" aria-label="Next page" (click)="goToPage(currentPage + 1)"
+                    [disabled]="currentPage === totalPages">›</button>
+            </div>
+        </footer>
+    </section>
 </div>

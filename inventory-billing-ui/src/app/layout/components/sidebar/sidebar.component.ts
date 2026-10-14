@@ -14,19 +14,12 @@ import {
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
-
-import {
-  SIDEBAR_ITEMS,
-  SidebarItem,
-} from './sidebar-items';
+import { SIDEBAR_ITEMS, SidebarItem } from './sidebar-items';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,12 +27,10 @@ import {
 export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-
-  @Input()
-  isOpen = true;
-
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly expandedMenus = new Set<string>();
+
+  @Input() isOpen = true;
 
   readonly sidebarItems: readonly SidebarItem[] = SIDEBAR_ITEMS;
 
@@ -48,25 +39,23 @@ export class SidebarComponent {
 
     this.router.events
       .pipe(
-        filter(
-          (event): event is NavigationEnd =>
-            event instanceof NavigationEnd,
-        ),
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event) => {
         this.expandParentForCurrentRoute(event.urlAfterRedirects);
-        this.changeDetectorRef.markForCheck();
+        this.cdr.markForCheck();
       });
   }
 
   toggleMenu(label: string): void {
     if (this.expandedMenus.has(label)) {
       this.expandedMenus.delete(label);
-      return;
+    } else {
+      this.expandedMenus.add(label);
     }
 
-    this.expandedMenus.add(label);
+    this.cdr.markForCheck();
   }
 
   isMenuExpanded(label: string): boolean {
@@ -77,10 +66,18 @@ export class SidebarComponent {
     return !!item.children?.length;
   }
 
+  isItemActive(item: SidebarItem): boolean {
+    if (item.route) {
+      return this.isRouteMatch(this.router.url, item.route);
+    }
+
+    return !!item.children?.some(
+      (child) => !!child.route && this.isRouteMatch(this.router.url, child.route),
+    );
+  }
+
   private expandParentForCurrentRoute(url: string): void {
-    const cleanUrl = url
-      .split('?')[0]
-      .split('#')[0];
+    const currentUrl = this.normalizeUrl(url);
 
     for (const item of this.sidebarItems) {
       if (!item.children?.length) {
@@ -88,9 +85,7 @@ export class SidebarComponent {
       }
 
       const hasActiveChild = item.children.some(
-        (child) =>
-          !!child.route &&
-          this.isRouteMatch(cleanUrl, child.route),
+        (child) => !!child.route && this.isRouteMatch(currentUrl, child.route),
       );
 
       if (hasActiveChild) {
@@ -99,13 +94,16 @@ export class SidebarComponent {
     }
   }
 
-  private isRouteMatch(
-    currentUrl: string,
-    route: string,
-  ): boolean {
-    return (
-      currentUrl === route ||
-      currentUrl.startsWith(`${route}/`)
-    );
+  private isRouteMatch(currentUrl: string, route: string): boolean {
+    const current = this.normalizeUrl(currentUrl);
+    const target = this.normalizeUrl(route);
+
+    return current === target || current.startsWith(`${target}/`);
+  }
+
+  private normalizeUrl(url: string): string {
+    const path = url.split(/[?#]/)[0];
+    const normalized = `/${path.split('/').filter(Boolean).join('/')}`;
+    return normalized.length > 1 ? normalized.replace(/\/+$/, '') : '/';
   }
 }

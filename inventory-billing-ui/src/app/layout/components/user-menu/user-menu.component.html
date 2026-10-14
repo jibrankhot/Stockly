@@ -1,19 +1,11 @@
 <div class="user-menu">
-    <!-- User Button -->
-    <button type="button" class="user-button" aria-label="Open user menu" [attr.aria-expanded]="isMenuOpen"
-        [attr.aria-haspopup]="true" (click)="toggleMenu()">
-        <span class="avatar" aria-hidden="true">
-            {{ initials }}
-        </span>
+    <button type="button" class="user-button" aria-label="Open user menu" aria-controls="stockly-user-dropdown"
+        [attr.aria-expanded]="isMenuOpen" aria-haspopup="menu" (click)="toggleMenu()">
+        <span class="avatar" aria-hidden="true">{{ initials }}</span>
 
         <span class="user-info">
-            <span class="user-name">
-                {{ displayName }}
-            </span>
-
-            <span class="user-role">
-                {{ roleName }}
-            </span>
+            <span class="user-name">{{ displayName }}</span>
+            <span class="user-role">{{ roleName }}</span>
         </span>
 
         <span class="dropdown-arrow" [class.open]="isMenuOpen" aria-hidden="true">
@@ -21,50 +13,30 @@
         </span>
     </button>
 
-    <!-- User Dropdown -->
     @if (isMenuOpen) {
-    <div class="user-dropdown" role="menu" aria-label="User menu">
-        <!-- User Information -->
+    <div id="stockly-user-dropdown" class="user-dropdown" role="menu" aria-label="User menu">
         <div class="dropdown-header">
-            <span class="dropdown-avatar" aria-hidden="true">
-                {{ initials }}
-            </span>
+            <span class="dropdown-avatar" aria-hidden="true">{{ initials }}</span>
 
             <div class="dropdown-user-info">
-                <strong>
-                    {{ displayName }}
-                </strong>
-
-                <span>
-                    {{ currentUser?.email || 'No email available' }}
-                </span>
+                <strong>{{ displayName }}</strong>
+                <span>{{ currentUser?.email || 'No email available' }}</span>
+                <span class="dropdown-role">{{ roleName }}</span>
             </div>
         </div>
 
         <div class="dropdown-divider"></div>
 
-        <!-- Company Profile -->
         <button type="button" class="dropdown-item" role="menuitem" (click)="goToProfile()">
-            <span class="item-icon" aria-hidden="true">
-                ◉
-            </span>
-
-            <span>
-                Company Profile
-            </span>
+            <span class="item-icon" aria-hidden="true">◉</span>
+            <span>Company Profile</span>
         </button>
 
         <div class="dropdown-divider"></div>
 
-        <!-- Logout -->
         <button type="button" class="dropdown-item logout-item" role="menuitem" (click)="logout()">
-            <span class="item-icon" aria-hidden="true">
-                ↪
-            </span>
-
-            <span>
-                Logout
-            </span>
+            <span class="item-icon" aria-hidden="true">↪</span>
+            <span>Log out</span>
         </button>
     </div>
     }

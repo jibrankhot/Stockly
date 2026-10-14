@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
@@ -13,13 +12,12 @@ import {
 import { ApiClientService } from '../../http/services/api-client.service';
 import { ApiResponse } from '../../models/api-response';
 import { StorageService } from '../../services/storage.service';
-
 import { AuthUser } from '../models/auth-user';
+import { LoginRequest } from '../models/login-request';
 import {
   BackendAuthUser,
   LoginResponse,
 } from '../models/login-response';
-
 import { TokenService } from './token.service';
 
 @Injectable({
@@ -40,10 +38,6 @@ export class AuthService {
   ) {
     this.loadStoredUser();
   }
-
-  /**
-   * Validate a saved session against the backend during application startup.
-   */
 
   initializeSession(): Observable<void> {
     if (!this.tokenService.hasAccessToken()) {
@@ -75,24 +69,22 @@ export class AuthService {
       );
   }
 
-
-  login(request: {
-    username: string;
-    password: string;
-  }): Observable<LoginResponse> {
+  login(request: LoginRequest): Observable<LoginResponse> {
     return this.apiClient
       .post<LoginResponse>('/auth/login', request)
       .pipe(
         tap((response) => {
-          if (!response.success) {
-            throw new Error(response.message || 'Login failed.');
+          if (
+            !response?.success ||
+            !response.data?.token ||
+            !response.data.user
+          ) {
+            throw new Error(response?.message || 'Login failed.');
           }
 
           const backendUser = response.data.user;
 
           if (!backendUser.is_active) {
-            this.logout();
-
             throw new Error(
               'Your account is inactive. Please contact your administrator.',
             );
@@ -123,10 +115,7 @@ export class AuthService {
   ): Observable<ApiResponse<null>> {
     return this.apiClient.post<ApiResponse<null>>(
       '/auth/reset-password',
-      {
-        token,
-        newPassword,
-      },
+      { token, newPassword },
     );
   }
 
@@ -145,12 +134,11 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    const user = this.getCurrentUser();
-    return user ? user.roles.includes(role) : false;
+    return this.currentUserSubject.value?.roles.includes(role) ?? false;
   }
 
   hasAnyRole(roles: string[]): boolean {
-    const user = this.getCurrentUser();
+    const user = this.currentUserSubject.value;
 
     return user
       ? roles.some((role) => user.roles.includes(role))
@@ -158,11 +146,10 @@ export class AuthService {
   }
 
   hasPermission(permission: string): boolean {
-    const user = this.getCurrentUser();
-
-    return user
-      ? user.permissions.includes(permission)
-      : false;
+    return (
+      this.currentUserSubject.value?.permissions.includes(permission) ??
+      false
+    );
   }
 
   private setCurrentUser(user: AuthUser): void {
@@ -185,7 +172,7 @@ export class AuthService {
   }
 
   private mapBackendUser(user: BackendAuthUser): AuthUser {
-    const nameParts = user.full_name?.trim().split(/\s+/) ?? [];
+    const nameParts = user.full_name.trim().split(/\s+/);
 
     return {
       id: user.id,

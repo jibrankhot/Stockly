@@ -1,15 +1,10 @@
-
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class StorageService {
   private get storage(): Storage | null {
     try {
-      return typeof localStorage !== 'undefined'
-        ? localStorage
-        : null;
+      return typeof localStorage !== 'undefined' ? localStorage : null;
     } catch {
       return null;
     }
@@ -25,10 +20,7 @@ export class StorageService {
     try {
       storage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error(
-        `Failed to store data for key "${key}".`,
-        error,
-      );
+      console.error(`Failed to store data for key "${key}".`, error);
     }
   }
 
@@ -41,18 +33,9 @@ export class StorageService {
 
     try {
       const value = storage.getItem(key);
-
-      if (value === null) {
-        return null;
-      }
-
-      return JSON.parse(value) as T;
+      return value === null ? null : JSON.parse(value) as T;
     } catch (error) {
-      console.error(
-        `Failed to retrieve storage data for key "${key}".`,
-        error,
-      );
-
+      console.error(`Failed to retrieve data for key "${key}".`, error);
       return null;
     }
   }
@@ -67,10 +50,7 @@ export class StorageService {
     try {
       storage.removeItem(key);
     } catch (error) {
-      console.error(
-        `Failed to remove storage key "${key}".`,
-        error,
-      );
+      console.error(`Failed to remove data for key "${key}".`, error);
     }
   }
 
@@ -96,10 +76,7 @@ export class StorageService {
         storage.removeItem(key);
       }
     } catch (error) {
-      console.error(
-        'Failed to clear Stockly local storage.',
-        error,
-      );
+      console.error('Failed to clear Stockly storage.', error);
     }
   }
 
@@ -113,11 +90,7 @@ export class StorageService {
     try {
       return storage.getItem(key) !== null;
     } catch (error) {
-      console.error(
-        `Failed to check storage key "${key}".`,
-        error,
-      );
-
+      console.error(`Failed to check storage key "${key}".`, error);
       return false;
     }
   }

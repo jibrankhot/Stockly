@@ -37,7 +37,17 @@ export class LoginComponent {
     });
 
     onSubmit(): void {
+        if (this.isSubmitting) {
+            return;
+        }
+
         this.errorMessage = '';
+
+        const usernameControl = this.loginForm.controls.username;
+        const username = usernameControl.value.trim();
+
+        usernameControl.setValue(username);
+        usernameControl.updateValueAndValidity();
 
         if (this.loginForm.invalid) {
             this.loginForm.markAllAsTouched();
@@ -46,14 +56,10 @@ export class LoginComponent {
 
         this.isSubmitting = true;
 
-        const { username, password } =
-            this.loginForm.getRawValue();
+        const { password } = this.loginForm.getRawValue();
 
         this.authService
-            .login({
-                username,
-                password,
-            })
+            .login({ username, password })
             .pipe(
                 finalize(() => {
                     this.isSubmitting = false;
@@ -64,19 +70,18 @@ export class LoginComponent {
                 next: () => {
                     void this.router.navigate(['/dashboard']);
                 },
-
                 error: () => {
-                    this.errorMessage =
-                        'Invalid username or password.';
-
+                    this.errorMessage = 'Invalid username or password.';
                     this.changeDetectorRef.markForCheck();
                 },
             });
     }
 
     goToForgotPassword(): void {
-        void this.router.navigate([
-            '/auth/forgot-password',
-        ]);
+        if (this.isSubmitting) {
+            return;
+        }
+
+        void this.router.navigate(['/auth/forgot-password']);
     }
 }

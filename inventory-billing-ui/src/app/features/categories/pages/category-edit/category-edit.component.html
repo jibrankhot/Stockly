@@ -1,80 +1,118 @@
 <div class="category-edit-page">
-
     @if (isLoading) {
-
-    <div class="loading-state" role="status" aria-live="polite">
-
-        <div class="loading-indicator" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-
-        <h2>
-            Loading category...
-        </h2>
-
-        <p>
-            Please wait while the category is being loaded.
-        </p>
-
-    </div>
-
+    <section class="state-container loading-state" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading category</h2>
+        <p>Please wait while we load the category details.</p>
+    </section>
     } @else if (category) {
-
     <header class="page-header">
-
-        <div class="page-header-content">
-
-            <button type="button" class="back-button" (click)="onCancel()" [disabled]="isSubmitting">
-                <span aria-hidden="true">
-                    ←
-                </span>
-
-                <span>
-                    Back to Category
-                </span>
+        <div class="page-heading">
+            <button type="button" class="back-button" (click)="onCancel()" [disabled]="isSubmitting"
+                aria-label="Back to category details">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span>Category details</span>
             </button>
 
-            <h1>
-                Edit Category
-            </h1>
+            <div class="title-row">
+                <div class="title-copy">
+                    <h1>Edit category</h1>
+                    <p>
+                        Update the information for
+                        <strong>{{ category.name }}</strong>.
+                    </p>
+                </div>
 
-            <p>
-                Update the information for
-                <strong>{{ category.name }}</strong>.
-            </p>
-
+                <span class="edit-indicator">
+                    <span class="indicator-dot" aria-hidden="true"></span>
+                    Editing
+                </span>
+            </div>
         </div>
-
     </header>
 
-    <app-category-form [category]="category" [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
-        (cancel)="onCancel()" />
+    <main class="edit-card">
+        <section class="category-overview" aria-label="Category summary">
+            <div class="category-identity">
+                <div class="category-avatar" aria-hidden="true">
+                    {{ category.name?.charAt(0)?.toUpperCase() || '?' }}
+                </div>
 
+                <div class="category-summary">
+                    <span class="eyebrow">PRODUCT CATEGORY</span>
+                    <h2>{{ category.name }}</h2>
+
+                    <span class="status-line" [class.active]="category.isActive" [class.inactive]="!category.isActive">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        {{ category.isActive ? 'Active category' : 'Inactive category' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="summary-meta" aria-label="Products assigned">
+                <span class="summary-label">Products</span>
+                <strong>{{ category.productCount ?? 0 }}</strong>
+                <span class="summary-caption">products assigned</span>
+            </div>
+        </section>
+
+        <section class="edit-form-content" aria-labelledby="edit-section-title">
+            <div class="form-section-heading">
+                <div>
+                    <h3 id="edit-section-title">Category information</h3>
+                    <p>Make changes to the details below.</p>
+                </div>
+
+                <span class="required-note">
+                    <span aria-hidden="true">*</span>
+                    Required fields
+                </span>
+            </div>
+
+            <div class="form-host">
+                <app-category-form [category]="category" [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
+                    (cancel)="onCancel()" />
+            </div>
+        </section>
+
+        <footer class="edit-card-footer">
+            <span class="footer-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7" />
+                    <path d="M12 11v5M12 8h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+            </span>
+
+            <p>Changes will apply when you save this category.</p>
+        </footer>
+    </main>
     } @else {
-
-    <div class="not-found">
-
-        <div class="not-found-icon" aria-hidden="true">
-            ?
+    <section class="state-container error-state" role="alert">
+        <div class="state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 8v5m0 3h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.1a2 2 0 0 0-3.4 0Z"
+                    stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </div>
 
-        <h2>
-            Category Not Found
-        </h2>
-
+        <h2>Unable to load category</h2>
         <p>
-            The category you're trying to edit
-            doesn't exist or could not be loaded.
+            The category could not be found or its details could not be loaded.
+            Please try again.
         </p>
 
-        <button type="button" class="btn btn-secondary" (click)="goBack()">
-            Back to Categories
-        </button>
+        <div class="state-actions">
+            <button type="button" class="secondary-button" (click)="goBack()">
+                Back to categories
+            </button>
 
-    </div>
-
+            <button type="button" class="primary-button" (click)="loadCategoryFromCurrentRoute()">
+                Try again
+            </button>
+        </div>
+    </section>
     }
-
 </div>

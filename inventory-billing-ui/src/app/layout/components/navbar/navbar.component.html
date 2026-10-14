@@ -1,5 +1,4 @@
 <header class="navbar">
-  <!-- Left Section -->
   <div class="navbar-left">
     <button type="button" class="menu-button" aria-label="Toggle sidebar" title="Toggle sidebar"
       (click)="onMenuToggle()">
@@ -9,31 +8,79 @@
     </button>
   </div>
 
-  <!-- Global Search -->
   <div class="navbar-search">
     <span class="search-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round">
         <circle cx="11" cy="11" r="7" />
-
         <path d="m20 20-4-4" />
       </svg>
     </span>
-
     <input type="search" [value]="searchQuery" placeholder="Search products, customers, or invoices..."
       aria-label="Search products, customers, or invoices" autocomplete="off"
       (input)="onSearchInput($any($event.target).value)" (keyup.enter)="onSearch()" />
-
     @if (searchQuery) {
-    <button type="button" class="search-clear" aria-label="Clear search" title="Clear search" (click)="clearSearch()">
-      ×
-    </button>
+    <button type="button" class="search-clear" aria-label="Clear search" title="Clear search"
+      (click)="clearSearch()">×</button>
     }
   </div>
 
-  <!-- Right Section -->
   <div class="navbar-right">
-    <!-- Notifications -->
+    <div class="theme-picker">
+      <button type="button" class="theme-trigger" aria-label="Choose accent theme" title="Choose accent theme"
+        [attr.aria-expanded]="themeMenuOpen" aria-haspopup="true" (click)="toggleThemeMenu()">
+        <svg class="palette-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path
+            d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.8 1.8 0 0 1 1.4-3h1.1A3.8 3.8 0 0 0 21 10.9 8.9 8.9 0 0 0 12 3Z" />
+          <circle cx="7.5" cy="10" r="1" />
+          <circle cx="10" cy="6.8" r="1" />
+          <circle cx="14.5" cy="7.5" r="1" />
+        </svg>
+        <span class="current-theme-swatch" [class.current-theme-swatch--green]="currentTheme === 'green'"
+          [class.current-theme-swatch--blue]="currentTheme === 'blue'" aria-hidden="true"></span>
+        <span class="theme-trigger-label">Theme</span>
+        <svg class="theme-chevron" [class.theme-chevron--open]="themeMenuOpen" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m7 10 5 5 5-5" />
+        </svg>
+      </button>
+
+      @if (themeMenuOpen) {
+      <div class="theme-dropdown" role="group" aria-label="Accent theme options">
+        <div class="theme-dropdown-heading">Appearance</div>
+        <button type="button" class="theme-option" [class.theme-option--active]="currentTheme === 'green'"
+          [attr.aria-pressed]="currentTheme === 'green'" (click)="setTheme('green')">
+          <span class="theme-swatch theme-swatch--green" aria-hidden="true"></span>
+          <span class="theme-option-copy">
+            <span class="theme-option-title">Green</span>
+            <span class="theme-option-description">Fresh and natural</span>
+          </span>
+          @if (currentTheme === 'green') {
+          <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m5 12 4 4L19 6" />
+          </svg>
+          }
+        </button>
+        <button type="button" class="theme-option" [class.theme-option--active]="currentTheme === 'blue'"
+          [attr.aria-pressed]="currentTheme === 'blue'" (click)="setTheme('blue')">
+          <span class="theme-swatch theme-swatch--blue" aria-hidden="true"></span>
+          <span class="theme-option-copy">
+            <span class="theme-option-title">Blue</span>
+            <span class="theme-option-description">Clean and professional</span>
+          </span>
+          @if (currentTheme === 'blue') {
+          <svg class="theme-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m5 12 4 4L19 6" />
+          </svg>
+          }
+        </button>
+      </div>
+      }
+    </div>
+
     <button type="button" class="notification-button" aria-label="Notifications" title="Notifications"
       (click)="onNotificationsClick()">
       <span class="notification-icon" aria-hidden="true">
@@ -43,17 +90,12 @@
           <path d="M10 21h4" />
         </svg>
       </span>
-
       @if (notificationCount > 0) {
-      <span class="notification-badge" [attr.aria-label]="
-            notificationCount + ' unread notifications'
-          ">
-        {{ notificationCount }}
-      </span>
+      <span class="notification-badge" [attr.aria-label]="notificationCount + ' unread notifications'">{{
+        notificationCount }}</span>
       }
     </button>
 
-    <!-- User Menu -->
     <app-user-menu />
   </div>
 </header>

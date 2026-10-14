@@ -1,448 +1,251 @@
 :host {
-  display: block;
   position: relative;
+  display: block;
+  min-width: 0;
 }
-
 .user-menu {
   position: relative;
+  min-width: 0;
 }
-
-/* =========================================================
-   USER BUTTON
-   ========================================================= */
-
 .user-button {
   position: relative;
-
-  min-width: 190px;
-
   display: flex;
   align-items: center;
-
-  gap: var(--space-3);
-
+  gap: 10px;
+  min-width: 156px;
+  max-width: 240px;
   padding: 5px 8px 5px 6px;
-
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-
   background: transparent;
   color: var(--color-text-primary);
-
-  cursor: pointer;
+  font: inherit;
   text-align: left;
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
-
-.user-button:hover {
+.user-button:hover,
+.user-button[aria-expanded='true'] {
   background: var(--color-surface-muted);
   border-color: var(--color-border);
 }
-
-.user-button:active {
-  transform: scale(0.99);
-}
-
 .user-button:focus-visible {
   outline: none;
-
   border-color: var(--color-primary-500);
   box-shadow: var(--shadow-focus);
 }
-
-/* =========================================================
-   AVATAR
-   ========================================================= */
-
 .avatar,
 .dropdown-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
-
   border-radius: 50%;
-
-  background:
-    linear-gradient(
-      145deg,
-      var(--color-primary-700),
-      var(--color-primary-800)
-    );
-
-  color: #ffffff;
+  background: linear-gradient(145deg, var(--color-primary-600), var(--color-primary-800));
+  color: #fff;
   font-weight: 700;
-
-  box-shadow:
-    0 3px 8px rgba(15, 118, 110, 0.18);
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--color-primary-700) 22%, transparent);
 }
-
 .avatar {
   width: 38px;
   height: 38px;
-
   font-size: 13px;
-
-  transition:
-    transform var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+  transition: transform var(--duration-fast) var(--ease-standard);
 }
-
 .user-button:hover .avatar {
   transform: translateY(-1px);
-
-  box-shadow:
-    0 5px 12px rgba(15, 118, 110, 0.24);
 }
-
-/* =========================================================
-   USER INFORMATION
-   ========================================================= */
-
 .user-info {
-  min-width: 0;
-  flex: 1;
-
   display: flex;
+  flex: 1;
   flex-direction: column;
-
   gap: 2px;
+  min-width: 0;
 }
-
-.user-name {
+.user-name,
+.user-role {
   overflow: hidden;
-
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.user-name {
   color: var(--color-text-primary);
-
   font-size: 13px;
   font-weight: 650;
   line-height: 1.3;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
 .user-role {
-  overflow: hidden;
-
   color: var(--color-text-muted);
-
   font-size: 11px;
   font-weight: 500;
   line-height: 1.3;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
-/* =========================================================
-   DROPDOWN ARROW
-   ========================================================= */
-
 .dropdown-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 20px;
-  height: 20px;
-
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
-
   color: var(--color-text-muted);
-
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1;
-
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
 }
-
 .dropdown-arrow.open {
   color: var(--color-primary-700);
   transform: rotate(180deg);
 }
-
-/* =========================================================
-   DROPDOWN
-   ========================================================= */
-
 .user-dropdown {
   position: absolute;
-
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
-
   z-index: var(--z-dropdown, 1000);
-
   width: 280px;
-
+  max-width: calc(100vw - 24px);
   overflow: hidden;
-
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-
   background: var(--color-surface);
   box-shadow: var(--shadow-dialog);
-
-  animation:
-    stockly-dropdown-in
-    var(--duration-fast)
-    var(--ease-emphasized)
-    both;
-
   transform-origin: top right;
+  animation: stockly-dropdown-in var(--duration-fast) var(--ease-emphasized) both;
 }
-
-/* =========================================================
-   DROPDOWN HEADER
-   ========================================================= */
-
 .dropdown-header {
   display: flex;
   align-items: center;
-
-  gap: var(--space-3);
-
-  padding: var(--space-4);
+  gap: 12px;
+  padding: 16px;
 }
-
 .dropdown-avatar {
   width: 42px;
   height: 42px;
-
   font-size: 14px;
 }
-
 .dropdown-user-info {
-  min-width: 0;
-  flex: 1;
-
   display: flex;
+  flex: 1;
   flex-direction: column;
-
   gap: 4px;
+  min-width: 0;
 }
-
-.dropdown-user-info strong {
+.dropdown-user-info strong,
+.dropdown-user-info span {
   overflow: hidden;
-
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropdown-user-info strong {
   color: var(--color-text-primary);
-
   font-size: 13px;
   font-weight: 700;
   line-height: 1.3;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
 .dropdown-user-info span {
-  overflow: hidden;
-
   color: var(--color-text-muted);
-
   font-size: 12px;
   line-height: 1.3;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
-/* =========================================================
-   DIVIDER
-   ========================================================= */
-
+.dropdown-user-info .dropdown-role {
+  color: var(--color-primary-700);
+  font-size: 11px;
+  font-weight: 600;
+}
 .dropdown-divider {
   height: 1px;
-
   background: var(--color-border);
 }
-
-/* =========================================================
-   DROPDOWN ITEM
-   ========================================================= */
-
 .dropdown-item {
   position: relative;
-
-  width: 100%;
-
   display: flex;
   align-items: center;
-
-  gap: var(--space-3);
-
-  padding: 12px var(--space-4);
-
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 16px;
   border: 0;
-
   background: transparent;
   color: var(--color-text-secondary);
-
   font: inherit;
   font-size: 13px;
   font-weight: 550;
-
   text-align: left;
-
   cursor: pointer;
-
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    padding-left var(--duration-fast) var(--ease-standard);
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
 }
-
-.dropdown-item:hover {
-  background: var(--color-primary-50);
-  color: var(--color-primary-700);
-
-  padding-left: calc(var(--space-4) + 2px);
-}
-
+.dropdown-item:hover,
 .dropdown-item:focus-visible {
   outline: none;
-
   background: var(--color-primary-50);
   color: var(--color-primary-700);
-
-  box-shadow:
-    inset 3px 0 0 var(--color-primary-600);
 }
-
-/* =========================================================
-   ITEM ICON
-   ========================================================= */
-
+.dropdown-item:focus-visible {
+  box-shadow: inset 3px 0 0 var(--color-primary-600);
+}
 .item-icon {
-  width: 20px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
+  width: 20px;
   flex-shrink: 0;
-
-  color: var(--color-text-muted);
-
-  font-size: 14px;
-
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  color: currentColor;
+  font-size: 15px;
 }
-
-.dropdown-item:hover .item-icon {
-  color: var(--color-primary-700);
-  transform: translateX(1px);
-}
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
 .logout-item {
   color: var(--color-danger);
 }
-
-.logout-item:hover {
-  background: var(--color-danger-light);
-  color: var(--color-danger);
-}
-
+.logout-item:hover,
 .logout-item:focus-visible {
   background: var(--color-danger-light);
   color: var(--color-danger);
-
-  box-shadow:
-    inset 3px 0 0 var(--color-danger);
 }
-
-.logout-item .item-icon {
-  color: var(--color-danger);
+.logout-item:focus-visible {
+  box-shadow: inset 3px 0 0 var(--color-danger);
 }
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 767px) {
   .user-button {
-    min-width: auto;
+    min-width: 0;
+    max-width: 48px;
     padding: 4px;
   }
-
   .user-info,
   .dropdown-arrow {
     display: none;
   }
-
   .avatar {
     width: 36px;
     height: 36px;
-
     font-size: 12px;
   }
-
   .user-dropdown {
     top: calc(100% + 8px);
-
-    width: min(
-      280px,
-      calc(100vw - 32px)
-    );
+    right: -4px;
+    width: min(280px, calc(100vw - 24px));
   }
 }
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
 @media (max-width: 479px) {
   .avatar {
     width: 34px;
     height: 34px;
   }
-
   .user-dropdown {
     right: -4px;
-
-    width: min(
-      270px,
-      calc(100vw - 24px)
-    );
+    width: min(270px, calc(100vw - 20px));
   }
-
   .dropdown-header {
-    padding: var(--space-3);
+    padding: 12px;
   }
-
   .dropdown-item {
-    padding: 11px var(--space-3);
+    padding: 11px 12px;
   }
 }
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
   .user-button,
   .avatar,
   .dropdown-arrow,
-  .dropdown-item,
-  .item-icon {
+  .dropdown-item {
     transition: none;
   }
-
   .user-dropdown {
     animation: none;
   }

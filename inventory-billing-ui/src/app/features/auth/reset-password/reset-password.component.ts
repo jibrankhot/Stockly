@@ -1,13 +1,15 @@
-
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    DestroyRef,
     inject,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 
@@ -20,18 +22,19 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent {
-    private readonly fb = inject(FormBuilder);
+    private readonly formBuilder = inject(FormBuilder);
     private readonly authService = inject(AuthService);
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
-    private readonly cdr = inject(ChangeDetectorRef);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly destroyRef = inject(DestroyRef);
 
-    token = this.route.snapshot.queryParamMap.get('token') ?? '';
+    token = '';
     isSubmitting = false;
     isSubmitted = false;
     errorMessage = '';
 
-    readonly resetPasswordForm = this.fb.nonNullable.group({
+    readonly resetPasswordForm = this.formBuilder.nonNullable.group({
         newPassword: [
             '',
             [
@@ -43,7 +46,30 @@ export class ResetPasswordComponent {
         confirmPassword: ['', Validators.required],
     });
 
+    constructor() {
+        this.route.queryParamMap
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((params) => {
+                this.token = params.get('token') ?? '';
+                this.errorMessage = '';
+                this.changeDetectorRef.markForCheck();
+            });
+    }
+
+    get passwordsDoNotMatch(): boolean {
+        const controls = this.resetPasswordForm.controls;
+
+        return (
+            controls.confirmPassword.touched &&
+            controls.confirmPassword.value !== controls.newPassword.value
+        );
+    }
+
     onSubmit(): void {
+        if (this.isSubmitting || this.isSubmitted) {
+            return;
+        }
+
         this.errorMessage = '';
 
         if (!/^[a-f\d]{64}$/i.test(this.token)) {
@@ -78,7 +104,7 @@ export class ResetPasswordComponent {
             .pipe(
                 finalize(() => {
                     this.isSubmitting = false;
-                    this.cdr.markForCheck();
+                    this.changeDetectorRef.markForCheck();
                 }),
             )
             .subscribe({
@@ -86,7 +112,7 @@ export class ResetPasswordComponent {
                     if (!response.success) {
                         this.errorMessage =
                             response.message || 'Unable to reset your password.';
-                        this.cdr.markForCheck();
+                        this.changeDetectorRef.markForCheck();
                         return;
                     }
 
@@ -100,13 +126,13 @@ export class ResetPasswordComponent {
                         replaceUrl: true,
                     });
 
-                    this.cdr.markForCheck();
+                    this.changeDetectorRef.markForCheck();
                 },
                 error: (error) => {
                     this.errorMessage =
                         error?.error?.message ||
                         'This reset link is invalid, expired, or already used. Please request a new one.';
-                    this.cdr.markForCheck();
+                    this.changeDetectorRef.markForCheck();
                 },
             });
     }

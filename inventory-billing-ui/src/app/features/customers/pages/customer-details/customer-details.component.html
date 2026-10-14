@@ -1,293 +1,208 @@
-<div class="page-container">
+<div class="customer-details-page">
 
-    <!-- Header -->
-    <div class="page-header">
-
-        <div>
-            <h1>Customer Details</h1>
-
-            <p *ngIf="customer">
-                {{ customer.code }}
-            </p>
+    <!-- Page header -->
+    <header class="page-header">
+        <div class="page-heading">
+            <span class="eyebrow">CUSTOMER MANAGEMENT</span>
+            <h1>Customer details</h1>
+            <p>View customer information, contact details and account activity.</p>
         </div>
 
-        <div class="header-actions">
 
-            <a routerLink="/customers" class="btn btn-outline">
-                Back to Customers
-            </a>
-
-            <a *ngIf="customer" [routerLink]="['/customers', customer.id, 'edit']" class="btn btn-primary">
-                Edit Customer
-            </a>
-
-        </div>
-
-    </div>
-
+    </header>
 
     <!-- Loading -->
-    <div *ngIf="isLoading" class="state-card">
-        Loading customer...
-    </div>
-
+    <section *ngIf="isLoading" class="state-card" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <p>Loading customer details…</p>
+    </section>
 
     <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-state">
-
+    <section *ngIf="!isLoading && errorMessage && !customer" class="state-card error-state" role="alert">
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>Unable to display customer</h2>
         <p>{{ errorMessage }}</p>
-
-        <a routerLink="/customers" class="btn btn-outline">
-            Back to Customers
+        <a routerLink="/customers" class="btn btn-primary">
+            Return to customers
         </a>
+    </section>
 
-    </div>
+    <!-- Customer content -->
+    <main *ngIf="!isLoading && customer" class="customer-content">
 
+        <!-- Overview -->
+        <section class="card overview-card">
+            <div class="overview-header">
+                <div class="customer-identity">
+                    <div class="customer-avatar" aria-hidden="true">
+                        {{ customer.name?.charAt(0)?.toUpperCase() || 'C' }}
+                    </div>
 
-    <!-- Customer -->
-    <div *ngIf="!isLoading && customer" class="customer-content">
+                    <div class="identity-copy">
+                        <h2>{{ customer.name }}</h2>
 
-
-        <!-- Customer Overview -->
-        <section class="card">
-
-            <div class="card-header">
-
-                <div>
-                    <h2>
-                        {{ customer.name }}
-                    </h2>
-
-                    <span class="customer-code">
-                        {{ customer.code }}
-                    </span>
+                        <div class="identity-meta">
+                            <span class="customer-code">{{ customer.code }}</span>
+                            <span class="meta-separator" aria-hidden="true">·</span>
+                            <span class="muted-text">Customer ID: {{ customer.id }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <span class="status-badge" [class.status-active]="customer.isActive"
                     [class.status-inactive]="!customer.isActive">
-
+                    <span class="status-dot" aria-hidden="true"></span>
                     {{ customer.isActive ? 'Active' : 'Inactive' }}
-
                 </span>
-
             </div>
 
-
-            <div class="overview-grid">
-
-                <div class="overview-item">
-
-                    <span class="label">
-                        Customer ID
-                    </span>
-
-                    <strong>
-                        {{ customer.id }}
-                    </strong>
-
+            <div class="overview-stats">
+                <div class="stat-item">
+                    <span class="label">Customer code</span>
+                    <strong>{{ customer.code || '—' }}</strong>
                 </div>
 
-
-                <div class="overview-item">
-
-                    <span class="label">
-                        Customer Code
-                    </span>
-
-                    <strong>
-                        {{ customer.code }}
-                    </strong>
-
+                <div class="stat-item">
+                    <span class="label">Account status</span>
+                    <strong>{{ customer.isActive ? 'Active account' : 'Inactive account' }}</strong>
                 </div>
 
-
-                <div class="overview-item">
-
-                    <span class="label">
-                        Status
-                    </span>
-
+                <div class="stat-item">
+                    <span class="label">Customer since</span>
                     <strong>
-                        {{ customer.isActive ? 'Active' : 'Inactive' }}
+                        {{ customer.createdAt ? (customer.createdAt | date:'dd MMM yyyy') : '—' }}
                     </strong>
-
                 </div>
-
-
-                <div class="overview-item">
-
-                    <span class="label">
-                        Created
-                    </span>
-
-                    <strong>
-                        {{ customer.createdAt | date:'dd MMM yyyy' }}
-                    </strong>
-
-                </div>
-
             </div>
-
         </section>
 
-
-        <!-- Contact Information -->
+        <!-- Contact information -->
         <section class="card">
-
-            <div class="card-header">
-                <h2>Contact Information</h2>
+            <div class="section-header">
+                <div class="section-icon contact-icon" aria-hidden="true">✉</div>
+                <div>
+                    <h2>Contact information</h2>
+                    <p>Ways to reach this customer.</p>
+                </div>
             </div>
 
-            <div class="info-grid">
-
-                <div class="info-item">
-
-                    <span class="label">
-                        Email
-                    </span>
-
-                    <span class="value">
-                        {{ customer.email || '—' }}
-                    </span>
-
+            <div class="details-grid contact-grid">
+                <div class="detail-item">
+                    <span class="label">Email address</span>
+                    <ng-container *ngIf="customer.email; else noEmail">
+                        <a class="detail-value detail-link" [href]="'mailto:' + customer.email">
+                            {{ customer.email }}
+                        </a>
+                    </ng-container>
+                    <ng-template #noEmail>
+                        <span class="detail-value empty-value">Not provided</span>
+                    </ng-template>
                 </div>
 
-
-                <div class="info-item">
-
-                    <span class="label">
-                        Phone
-                    </span>
-
-                    <span class="value">
-                        {{ customer.phone || '—' }}
-                    </span>
-
+                <div class="detail-item">
+                    <span class="label">Phone number</span>
+                    <ng-container *ngIf="customer.phone; else noPhone">
+                        <a class="detail-value detail-link" [href]="'tel:' + customer.phone">
+                            {{ customer.phone }}
+                        </a>
+                    </ng-container>
+                    <ng-template #noPhone>
+                        <span class="detail-value empty-value">Not provided</span>
+                    </ng-template>
                 </div>
 
-
-                <div class="info-item">
-
-                    <span class="label">
-                        Tax Number
+                <div class="detail-item">
+                    <span class="label">Tax number</span>
+                    <span class="detail-value">
+                        {{ customer.taxNumber || 'Not provided' }}
                     </span>
-
-                    <span class="value">
-                        {{ customer.taxNumber || '—' }}
-                    </span>
-
                 </div>
-
             </div>
-
         </section>
-
 
         <!-- Address -->
         <section class="card">
-
-            <div class="card-header">
-                <h2>Address</h2>
+            <div class="section-header">
+                <div class="section-icon address-icon" aria-hidden="true">⌖</div>
+                <div>
+                    <h2>Address</h2>
+                    <p>Customer billing and location details.</p>
+                </div>
             </div>
 
-            <div class="address-content">
-
-                <div class="address-line">
-                    {{ customer.address || 'No address provided.' }}
+            <div class="address-body">
+                <div class="detail-item address-street">
+                    <span class="label">Street address</span>
+                    <span class="detail-value">
+                        {{ customer.address || 'No street address provided' }}
+                    </span>
                 </div>
 
-                <div *ngIf="
-            customer.city ||
-            customer.state ||
-            customer.postalCode
-          " class="location">
+                <div class="details-grid location-grid">
+                    <div class="detail-item">
+                        <span class="label">City</span>
+                        <span class="detail-value">{{ customer.city || '—' }}</span>
+                    </div>
 
-                    <span *ngIf="customer.city">
-                        {{ customer.city }}
-                    </span>
+                    <div class="detail-item">
+                        <span class="label">State / region</span>
+                        <span class="detail-value">{{ customer.state || '—' }}</span>
+                    </div>
 
-                    <span *ngIf="
-              customer.city &&
-              customer.state
-            ">
-                        ,
-                    </span>
-
-                    <span *ngIf="customer.state">
-                        {{ customer.state }}
-                    </span>
-
-                    <span *ngIf="customer.postalCode">
-                        - {{ customer.postalCode }}
-                    </span>
-
+                    <div class="detail-item">
+                        <span class="label">Postal code</span>
+                        <span class="detail-value">{{ customer.postalCode || '—' }}</span>
+                    </div>
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- Record Information -->
+        <!-- Record information -->
         <section class="card">
-
-            <div class="card-header">
-                <h2>Record Information</h2>
+            <div class="section-header">
+                <div class="section-icon record-icon" aria-hidden="true">◷</div>
+                <div>
+                    <h2>Record information</h2>
+                    <p>Customer record timestamps.</p>
+                </div>
             </div>
 
-            <div class="info-grid">
-
-                <div class="info-item">
-
-                    <span class="label">
-                        Created At
+            <div class="details-grid record-grid">
+                <div class="detail-item">
+                    <span class="label">Created on</span>
+                    <span class="detail-value">
+                        {{ customer.createdAt ? (customer.createdAt | date:'dd MMM yyyy, h:mm a') : '—' }}
                     </span>
-
-                    <span class="value">
-                        {{ customer.createdAt | date:'dd MMM yyyy, hh:mm a' }}
-                    </span>
-
                 </div>
 
-
-                <div class="info-item">
-
-                    <span class="label">
-                        Last Updated
+                <div class="detail-item">
+                    <span class="label">Last updated</span>
+                    <span class="detail-value">
+                        {{ customer.updatedAt ? (customer.updatedAt | date:'dd MMM yyyy, h:mm a') : '—' }}
                     </span>
-
-                    <span class="value">
-                        {{ customer.updatedAt | date:'dd MMM yyyy, hh:mm a' }}
-                    </span>
-
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- Actions -->
-        <div class="bottom-actions">
-
-            <a routerLink="/customers" class="btn btn-outline">
-                Back to Customers
-            </a>
+        <!-- Bottom actions -->
+        <footer class="bottom-actions">
+            <p class="footer-note">Customer record · {{ customer.code }}</p>
 
             <div class="action-group">
-
-                <button type="button" class="btn btn-danger" (click)="deleteCustomer()">
-                    Delete Customer
+                <button type="button" class="btn btn-danger" [disabled]="isDeleting" (click)="deleteCustomer()">
+                    <span *ngIf="!isDeleting">Delete customer</span>
+                    <span *ngIf="isDeleting">Deleting…</span>
                 </button>
 
                 <a [routerLink]="['/customers', customer.id, 'edit']" class="btn btn-primary">
-                    Edit Customer
+                    Edit customer
                 </a>
-
             </div>
+        </footer>
 
+        <div *ngIf="errorMessage" class="inline-error" role="alert">
+            {{ errorMessage }}
         </div>
 
-    </div>
-
+    </main>
 </div>

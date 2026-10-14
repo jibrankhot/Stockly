@@ -155,6 +155,48 @@
   --z-loader: 1300;
 }
 
+
+/* =========================================================
+   THEME VARIANTS
+   Default theme: green and white.
+   Apply data-theme="blue" to <html> or <body> for blue and white.
+   ========================================================= */
+
+:root,
+:root[data-theme="green"] {
+  color-scheme: light;
+}
+
+/* Blue-and-white theme. Layout and component styles remain shared. */
+:root[data-theme="blue"] {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  --color-background: #f7faff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5fb;
+  --color-surface-hover: #f5f9ff;
+
+  --color-border: #dfe7f2;
+  --color-border-light: #edf2f9;
+  --color-border-focus: var(--color-primary-500);
+
+  --sidebar-active-background: #2563eb;
+  --sidebar-active-hover: #1d4ed8;
+  --sidebar-active-text: #ffffff;
+
+  --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.20);
+  color-scheme: light;
+}
+
 /* =========================================================
    2. RESET
    ========================================================= */

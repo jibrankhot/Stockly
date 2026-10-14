@@ -1,5 +1,5 @@
 <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-item breadcrumb-home" routerLink="/dashboard">
+    <a class="breadcrumb-item breadcrumb-home" routerLink="/dashboard" aria-label="Home" title="Home">
         <span class="home-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -8,27 +8,14 @@
                 <path d="M9.5 21v-6h5v6" />
             </svg>
         </span>
-
         <span class="home-label">Home</span>
     </a>
-
-    @for (
-    breadcrumb of breadcrumbs;
-    track breadcrumb.url;
-    let last = $last
-    ) {
-    <span class="breadcrumb-separator" aria-hidden="true">
-        /
-    </span>
-
-    @if (last) {
-    <span class="breadcrumb-item current" aria-current="page">
-        {{ breadcrumb.label }}
-    </span>
+    @for (breadcrumb of breadcrumbs; track breadcrumb.url) {
+    <span class="breadcrumb-separator" aria-hidden="true">/</span>
+    @if (breadcrumb.active) {
+    <span class="breadcrumb-item current" aria-current="page" [title]="breadcrumb.label">{{ breadcrumb.label }}</span>
     } @else {
-    <a class="breadcrumb-item" [routerLink]="breadcrumb.url">
-        {{ breadcrumb.label }}
-    </a>
+    <a class="breadcrumb-item" [routerLink]="breadcrumb.url" [title]="breadcrumb.label">{{ breadcrumb.label }}</a>
     }
     }
 </nav>

@@ -1,230 +1,132 @@
 :host {
   display: block;
-
-  /*
-   * Keep breadcrumb aligned with the page content.
-   * The page content uses the same horizontal spacing.
-   */
-  padding:
-    var(--space-6)
-    var(--space-6)
-    0;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-6) var(--space-6) 0;
 }
-
-/* =========================================================
-   BREADCRUMB
-   ========================================================= */
-
 .breadcrumb {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 6px;
-
+  min-width: 0;
   min-height: 24px;
   margin-bottom: var(--space-5);
-
   font-size: 13px;
-
-  animation:
-    stockly-fade-in
-    var(--duration-fast)
-    var(--ease-standard)
-    both;
+  animation: stockly-fade-in var(--duration-fast) var(--ease-standard) both;
 }
-
-/* =========================================================
-   BREADCRUMB ITEM
-   ========================================================= */
-
 .breadcrumb-item {
   display: inline-flex;
   align-items: center;
-
+  min-width: 0;
   max-width: 240px;
-
   overflow: hidden;
-
   color: var(--color-text-muted);
-
   font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
-
+  line-height: 1.5;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-
   border-radius: var(--radius-sm);
-
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    background var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
 }
-
 .breadcrumb-item:hover {
   color: var(--color-primary-700);
   background: var(--color-primary-50);
 }
-
-/* =========================================================
-   HOME
-   ========================================================= */
-
+.breadcrumb-item:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
 .breadcrumb-home {
+  flex: 0 0 auto;
   gap: 5px;
 }
-
 .home-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   width: 16px;
   height: 16px;
-
+  flex: 0 0 16px;
   color: var(--color-text-muted);
-
-  transition:
-    color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard);
 }
-
 .home-icon svg {
   width: 100%;
   height: 100%;
 }
-
 .breadcrumb-home:hover .home-icon {
   color: var(--color-primary-700);
 }
-
-/* =========================================================
-   SEPARATOR
-   ========================================================= */
-
 .breadcrumb-separator {
   display: inline-flex;
   align-items: center;
-
+  flex: 0 0 auto;
   color: var(--color-text-muted);
-
   font-size: 13px;
-
   user-select: none;
 }
-
-/* =========================================================
-   CURRENT PAGE
-   ========================================================= */
-
 .breadcrumb-item.current {
   color: var(--color-text-primary);
-
   font-weight: 650;
-
   cursor: default;
-
   background: transparent;
 }
-
 .breadcrumb-item.current:hover {
   color: var(--color-text-primary);
   background: transparent;
 }
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
 @media (max-width: 1024px) {
   :host {
-    padding:
-      var(--space-5)
-      var(--space-5)
-      0;
+    padding: var(--space-5) var(--space-5) 0;
   }
-
   .breadcrumb {
     margin-bottom: var(--space-4);
   }
 }
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 767px) {
   :host {
-    padding:
-      var(--space-4)
-      var(--space-4)
-      0;
+    padding: var(--space-4) var(--space-4) 0;
   }
-
   .breadcrumb {
     gap: 5px;
-
     margin-bottom: var(--space-4);
-
     font-size: 12px;
   }
-
   .breadcrumb-item {
     max-width: 180px;
-
     font-size: 12px;
   }
-
   .breadcrumb-separator {
     font-size: 12px;
   }
-
   .home-icon {
     width: 15px;
     height: 15px;
+    flex-basis: 15px;
   }
 }
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
 @media (max-width: 479px) {
   :host {
-    padding:
-      var(--space-3)
-      var(--space-3)
-      0;
+    padding: var(--space-3) var(--space-3) 0;
   }
-
   .breadcrumb {
     gap: 4px;
   }
-
   .breadcrumb-item {
-    max-width: 120px;
+    max-width: min(120px, 35vw);
   }
-
-  /*
-   * Hide Home text on very small screens.
-   * Keep the home icon visible.
-   */
-
   .home-label {
     display: none;
   }
 }
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
   .breadcrumb {
     animation: none;
   }
-
   .breadcrumb-item,
   .home-icon {
     transition: none;

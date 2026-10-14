@@ -1,58 +1,47 @@
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-  ReplaySubject,
-} from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 
-export type ModalVariant = 'default' | 'danger';
+export type ModalVariant = 'default' | 'danger' | 'warning' | 'success';
 
 export interface ModalState {
   isOpen: boolean;
-  title: string;
-  message: string;
-  confirmText: string;
-  cancelText: string;
-  variant: ModalVariant;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: ModalVariant;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ModalService {
-  private readonly defaultState: ModalState = {
+  private readonly modalSubject = new BehaviorSubject<ModalState>({
     isOpen: false,
-    title: '',
-    message: '',
-    confirmText: 'Confirm',
-    cancelText: 'Cancel',
-    variant: 'default',
-  };
+  });
 
-  private readonly modalSubject =
-    new BehaviorSubject<ModalState>(
-      this.defaultState,
-    );
+  private resultSubject = new ReplaySubject<boolean>(1);
 
-  readonly modal$ =
-    this.modalSubject.asObservable();
+  readonly modal$ = this.modalSubject.asObservable();
 
-  private resultSubject: ReplaySubject<boolean> | null =
-    null;
+  get state(): ModalState {
+    return this.modalSubject.value;
+  }
+
+  getState(): ModalState {
+    return this.modalSubject.value;
+  }
 
   open(
-    title: string,
-    message: string,
+    title?: string,
+    message?: string,
     confirmText = 'Confirm',
     cancelText = 'Cancel',
     variant: ModalVariant = 'default',
   ): Observable<boolean> {
-    if (this.resultSubject) {
+    if (this.modalSubject.value.isOpen) {
       this.finish(false);
     }
 
-    this.resultSubject =
-      new ReplaySubject<boolean>(1);
+    this.resultSubject = new ReplaySubject<boolean>(1);
 
     this.modalSubject.next({
       isOpen: true,
@@ -67,34 +56,20 @@ export class ModalService {
   }
 
   confirm(): void {
-    this.finish(true);
+    if (this.modalSubject.value.isOpen) {
+      this.finish(true);
+    }
   }
 
   close(): void {
-    this.finish(false);
-  }
-
-  getState(): ModalState {
-    return this.modalSubject.value;
+    if (this.modalSubject.value.isOpen) {
+      this.finish(false);
+    }
   }
 
   private finish(result: boolean): void {
-    const subject = this.resultSubject;
-
-    if (!subject) {
-      this.modalSubject.next({
-        ...this.defaultState,
-      });
-      return;
-    }
-
-    this.resultSubject = null;
-
-    this.modalSubject.next({
-      ...this.defaultState,
-    });
-
-    subject.next(result);
-    subject.complete();
+    this.modalSubject.next({ isOpen: false });
+    this.resultSubject.next(result);
+    this.resultSubject.complete();
   }
 }

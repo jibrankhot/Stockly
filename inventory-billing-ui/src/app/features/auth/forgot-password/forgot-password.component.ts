@@ -1,4 +1,3 @@
-
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -48,6 +47,12 @@ export class ForgotPasswordComponent {
       return;
     }
 
+    const emailControl = this.forgotPasswordForm.controls.email;
+    const email = emailControl.value.trim();
+
+    emailControl.setValue(email);
+    emailControl.updateValueAndValidity();
+
     if (this.forgotPasswordForm.invalid) {
       this.forgotPasswordForm.markAllAsTouched();
       return;
@@ -55,8 +60,6 @@ export class ForgotPasswordComponent {
 
     this.errorMessage = '';
     this.isSubmitting = true;
-
-    const email = this.forgotPasswordForm.controls.email.value.trim();
 
     this.authService
       .requestPasswordReset(email)

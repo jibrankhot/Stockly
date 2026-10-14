@@ -1,11 +1,13 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  ActivatedRouteSnapshot,
   NavigationEnd,
   Router,
   RouterLink,
@@ -29,72 +31,103 @@ interface BreadcrumbItem {
 export class BreadcrumbComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   breadcrumbs: readonly BreadcrumbItem[] = [];
 
   constructor() {
     this.router.events
       .pipe(
-        filter(
-          (event): event is NavigationEnd =>
-            event instanceof NavigationEnd,
-        ),
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((event) => {
-        this.buildBreadcrumbs(event.urlAfterRedirects);
-      });
+      .subscribe(() => this.updateBreadcrumbs());
 
-    this.buildBreadcrumbs(this.router.url);
+    this.updateBreadcrumbs();
   }
 
-  private buildBreadcrumbs(url: string): void {
-    const cleanUrl = url
-      .split('?')[0]
-      .split('#')[0];
-
-    const segments = cleanUrl
-      .split('/')
-      .filter(Boolean);
-
-    const breadcrumbs: BreadcrumbItem[] = [];
-
+  private updateBreadcrumbs(): void {
+    const items: BreadcrumbItem[] = [];
     let currentUrl = '';
+    const routes = this.getPrimaryRoutes(this.router.routerState.snapshot.root);
 
-    for (const [index, segment] of segments.entries()) {
-      currentUrl += `/${segment}`;
+    for (const route of routes) {
+      const configuredLabel = route.data['breadcrumb'];
+      const routeSegments = route.url;
 
-      // Auth is a routing/layout segment, not a user-facing breadcrumb.
-      if (segment === 'auth') {
+      for (const segment of routeSegments) {
+        currentUrl += `/${segment.path}`;
+      }
+
+      if (configuredLabel === false) {
         continue;
       }
 
-      breadcrumbs.push({
-        label: this.formatLabel(segment),
-        url: currentUrl,
-        active: index === segments.length - 1,
-      });
+      if (routeSegments.length > 0) {
+        const path = routeSegments.map((segment) => segment.path).join('/');
+        const label =
+          typeof configuredLabel === 'string'
+            ? configuredLabel
+            : this.formatLabel(path);
+
+        if (label.trim() && path.toLowerCase() !== 'auth') {
+          items.push({
+            label,
+            url: currentUrl || '/',
+            active: false,
+          });
+        }
+      } else if (
+        typeof configuredLabel === 'string' &&
+        configuredLabel.trim() &&
+        configuredLabel !== 'Home' &&
+        configuredLabel !== items.at(-1)?.label
+      ) {
+        items.push({
+          label: configuredLabel,
+          url: currentUrl || '/',
+          active: false,
+        });
+      }
     }
 
-    this.breadcrumbs = breadcrumbs;
+    if (items.length > 0) {
+      items[items.length - 1] = {
+        ...items[items.length - 1],
+        active: true,
+      };
+    }
+
+    this.breadcrumbs = items;
+    this.cdr.markForCheck();
   }
 
-  private formatLabel(segment: string): string {
-    let decodedSegment: string;
+  private getPrimaryRoutes(root: ActivatedRouteSnapshot): ActivatedRouteSnapshot[] {
+    const routes: ActivatedRouteSnapshot[] = [];
+    let current: ActivatedRouteSnapshot | undefined = root;
 
-    try {
-      decodedSegment = decodeURIComponent(segment);
-    } catch {
-      decodedSegment = segment;
+    while (current) {
+      routes.push(current);
+      current = current.children.find((child) => child.outlet === 'primary');
     }
 
-    // Example:
-    // /products/25 → Details
-    if (/^\d+$/.test(decodedSegment)) {
+    return routes;
+  }
+
+  private formatLabel(path: string): string {
+    let decoded: string;
+
+    try {
+      decoded = decodeURIComponent(path);
+    } catch {
+      decoded = path;
+    }
+
+    if (/^\d+$/.test(decoded)) {
       return 'Details';
     }
 
-    return decodedSegment
+    return decoded
       .replace(/[-_]+/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
