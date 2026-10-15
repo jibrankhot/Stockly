@@ -34,7 +34,7 @@
     <section class="details-card" aria-labelledby="category-name">
         <div class="category-overview">
             <div class="category-avatar" aria-hidden="true">
-                {{ category.name?.charAt(0)?.toUpperCase() || '?' }}
+                {{ category.name.charAt(0).toUpperCase() || '?' }}
             </div>
 
             <div class="category-heading-info">
@@ -47,7 +47,7 @@
 
             <div class="overview-count">
                 <span class="count-label">Products</span>
-                <strong>{{ category.productCount ?? 0 }}</strong>
+                <strong>{{ category.productCount }}</strong>
             </div>
         </div>
 

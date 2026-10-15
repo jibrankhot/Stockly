@@ -20,14 +20,13 @@
     <form *ngIf="!isLoading && customer" [formGroup]="customerForm" (ngSubmit)="saveCustomer()" novalidate>
 
         <!-- Page heading: no breadcrumbs or back buttons -->
-        <header class="page-heading">
-            <div class="heading-copy">
-                <p class="eyebrow">Customer management</p>
+        <header class="page-header">
+            <div class="page-heading">
+                <span class="eyebrow">CUSTOMER MANAGEMENT</span>
                 <h1>Edit customer</h1>
-                <p class="page-description">
-                    Update customer details, contact information and account status.
-                </p>
+                <p>Update customer details here.</p>
             </div>
+
         </header>
 
         <!-- Save/load error -->

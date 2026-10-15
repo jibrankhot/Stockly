@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -30,31 +31,23 @@ import { ModalService } from '../../../../core/services/modal.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductListComponent implements OnInit {
-
-  private readonly productService =
-    inject(ProductService);
-
-  private readonly categoryService =
-    inject(CategoryService);
-
-  private readonly router =
-    inject(Router);
-
-  private readonly modalService =
-    inject(ModalService);
-
-  private readonly changeDetectorRef =
-    inject(ChangeDetectorRef);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly router = inject(Router);
+  private readonly modalService = inject(ModalService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   products: Product[] = [];
   categories: Category[] = [];
 
   searchTerm = '';
   selectedCategoryId: number | null = null;
-  selectedStatus = 'all';
+  selectedStatus: 'all' | 'active' | 'inactive' = 'all';
 
   isLoading = false;
   isLoadingCategories = false;
+
+  private readonly deletingProductIds = new Set<number>();
 
   ngOnInit(): void {
     this.loadProducts();
@@ -62,47 +55,32 @@ export class ProductListComponent implements OnInit {
   }
 
   get filteredProducts(): Product[] {
-    const search =
-      this.searchTerm
-        .trim()
-        .toLowerCase();
+    const search = this.searchTerm.trim().toLowerCase();
 
     return this.products.filter((product) => {
-
       const matchesSearch =
         !search ||
-        product.name
-          .toLowerCase()
-          .includes(search) ||
-        product.sku
-          .toLowerCase()
-          .includes(search);
+        (product.name ?? '').toLowerCase().includes(search) ||
+        (product.sku ?? '').toLowerCase().includes(search);
 
       const matchesCategory =
         this.selectedCategoryId === null ||
-        product.categoryId ===
-        this.selectedCategoryId;
+        product.categoryId === this.selectedCategoryId;
 
       const matchesStatus =
         this.selectedStatus === 'all' ||
-        (
-          this.selectedStatus === 'active' &&
-          product.isActive
-        ) ||
-        (
-          this.selectedStatus === 'inactive' &&
-          !product.isActive
-        );
+        (this.selectedStatus === 'active' && product.isActive) ||
+        (this.selectedStatus === 'inactive' && !product.isActive);
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesStatus
-      );
+      return matchesSearch && matchesCategory && matchesStatus;
     });
   }
 
   loadProducts(): void {
+    if (this.isLoading) {
+      return;
+    }
+
     this.isLoading = true;
 
     this.productService
@@ -115,13 +93,11 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe({
         next: (products) => {
-          this.products = products;
+          this.products = Array.isArray(products) ? products : [];
           this.changeDetectorRef.markForCheck();
         },
-
         error: () => {
-          // HTTP error interceptor handles
-          // the error notification.
+          // The HTTP error interceptor handles notifications.
         },
       });
   }
@@ -139,37 +115,30 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe({
         next: (categories) => {
-          this.categories =
-            categories.filter(
-              (category) => category.isActive
-            );
+          this.categories = (Array.isArray(categories) ? categories : [])
+            .filter((category) => category.isActive);
 
           this.changeDetectorRef.markForCheck();
         },
-
         error: () => {
-          // HTTP error interceptor handles
-          // the error notification.
+          // The HTTP error interceptor handles notifications.
         },
       });
   }
 
   viewProduct(product: Product): void {
-    void this.router.navigate([
-      '/products',
-      product.id,
-    ]);
+    void this.router.navigate(['/products', product.id]);
   }
 
   editProduct(product: Product): void {
-    void this.router.navigate([
-      '/products',
-      product.id,
-      'edit',
-    ]);
+    void this.router.navigate(['/products', product.id, 'edit']);
   }
 
   deleteProduct(product: Product): void {
+    if (this.deletingProductIds.has(product.id)) {
+      return;
+    }
+
     this.modalService
       .open(
         'Delete Product?',
@@ -179,45 +148,48 @@ export class ProductListComponent implements OnInit {
         'danger'
       )
       .subscribe((confirmed) => {
-
-        if (!confirmed) {
+        if (!confirmed || this.deletingProductIds.has(product.id)) {
           return;
         }
 
+        this.deletingProductIds.add(product.id);
+        this.changeDetectorRef.markForCheck();
+
         this.productService
           .deleteProduct(product.id)
+          .pipe(
+            finalize(() => {
+              this.deletingProductIds.delete(product.id);
+              this.changeDetectorRef.markForCheck();
+            })
+          )
           .subscribe({
             next: () => {
-              this.products =
-                this.products.filter(
-                  (item) =>
-                    item.id !== product.id
-                );
+              this.products = this.products.filter(
+                (item) => item.id !== product.id
+              );
 
-              this.changeDetectorRef
-                .markForCheck();
+              this.changeDetectorRef.markForCheck();
             },
-
             error: () => {
-              // HTTP error interceptor handles
-              // the error notification.
+              // The HTTP error interceptor handles notifications.
             },
           });
       });
   }
 
+  isDeleting(product: Product): boolean {
+    return this.deletingProductIds.has(product.id);
+  }
+
   isLowStock(product: Product): boolean {
-    return (
-      product.currentStock <=
-      product.minimumStock
-    );
+    return product.currentStock <= product.minimumStock;
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedCategoryId = null;
     this.selectedStatus = 'all';
-
     this.changeDetectorRef.markForCheck();
   }
 }

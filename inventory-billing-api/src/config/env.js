@@ -103,8 +103,16 @@ const frontendUrl = parseHttpUrl(
   'FRONTEND_URL',
 );
 
+const corsOriginValue = process.env.CORS_ORIGIN?.trim();
+
+if (!corsOriginValue && nodeEnv === 'production') {
+  throw new Error(
+    'Missing required environment variable: CORS_ORIGIN',
+  );
+}
+
 const corsOrigin = parseHttpUrl(
-  process.env.CORS_ORIGIN?.trim() || 'http://localhost:4200',
+  corsOriginValue || 'http://localhost:4200',
   'CORS_ORIGIN',
 );
 

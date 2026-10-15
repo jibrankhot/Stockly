@@ -1,4 +1,3 @@
-
 const allowedFields = new Set([
     'sku',
     'name',
@@ -29,6 +28,14 @@ const numericLimits = {
     minimumStock: 9999999999.99
 };
 
+const decimalPattern = /^\d+(\.\d{1,2})?$/;
+
+const sendValidationError = (res, message) =>
+    res.status(422).json({
+        success: false,
+        message
+    });
+
 const validateProductId = (req, res, next) => {
     const id = Number(req.params.id);
 
@@ -50,20 +57,22 @@ const validateProduct = (req, res, next) => {
         typeof body !== 'object' ||
         Array.isArray(body)
     ) {
-        return res.status(422).json({
-            success: false,
-            message: 'Request body must be a JSON object'
-        });
+        return sendValidationError(
+            res,
+            'Request body must be a JSON object'
+        );
     }
 
     const isCreateRequest = req.method === 'POST';
     const fields = Object.keys(body);
 
-    if (!isCreateRequest && fields.length === 0) {
-        return res.status(422).json({
-            success: false,
-            message: 'Provide at least one field to update'
-        });
+    if (fields.length === 0) {
+        return sendValidationError(
+            res,
+            isCreateRequest
+                ? 'Request body must not be empty'
+                : 'Provide at least one field to update'
+        );
     }
 
     const unknownFields = fields.filter(
@@ -71,28 +80,28 @@ const validateProduct = (req, res, next) => {
     );
 
     if (unknownFields.length > 0) {
-        return res.status(422).json({
-            success: false,
-            message: `Unsupported field: ${unknownFields[0]}`
-        });
+        return sendValidationError(
+            res,
+            `Unsupported field: ${unknownFields[0]}`
+        );
     }
 
     if (isCreateRequest) {
-        const requiredFields = ['sku', 'name', 'categoryId'];
+        for (const field of ['sku', 'name', 'categoryId']) {
+            const value = body[field];
 
-        for (const field of requiredFields) {
             if (
-                body[field] === undefined ||
-                body[field] === null ||
+                value === undefined ||
+                value === null ||
                 (
-                    typeof body[field] === 'string' &&
-                    body[field].trim() === ''
+                    typeof value === 'string' &&
+                    value.trim() === ''
                 )
             ) {
-                return res.status(422).json({
-                    success: false,
-                    message: `${field} is required`
-                });
+                return sendValidationError(
+                    res,
+                    `${field} is required`
+                );
             }
         }
     }
@@ -107,29 +116,22 @@ const validateProduct = (req, res, next) => {
     for (const rule of stringRules) {
         const value = body[rule.field];
 
-        if (value === undefined || value === null) {
-            if (
-                rule.field === 'description' &&
-                value === null
-            ) {
-                continue;
-            }
+        if (value === undefined) {
+            continue;
+        }
 
-            if (value === null) {
-                return res.status(422).json({
-                    success: false,
-                    message: `${rule.label} must be a string`
-                });
-            }
-
+        if (
+            value === null &&
+            rule.field === 'description'
+        ) {
             continue;
         }
 
         if (typeof value !== 'string') {
-            return res.status(422).json({
-                success: false,
-                message: `${rule.label} must be a string`
-            });
+            return sendValidationError(
+                res,
+                `${rule.label} must be a string`
+            );
         }
 
         const normalizedValue = value.trim();
@@ -138,31 +140,38 @@ const validateProduct = (req, res, next) => {
             rule.field !== 'description' &&
             normalizedValue.length === 0
         ) {
-            return res.status(422).json({
-                success: false,
-                message: `${rule.label} must not be empty`
-            });
+            return sendValidationError(
+                res,
+                `${rule.label} must not be empty`
+            );
         }
 
         if (normalizedValue.length > rule.max) {
-            return res.status(422).json({
-                success: false,
-                message: `${rule.label} must not exceed ${rule.max} characters`
-            });
+            return sendValidationError(
+                res,
+                `${rule.label} must not exceed ${rule.max} characters`
+            );
         }
     }
 
     if (body.categoryId !== undefined) {
-        const categoryId = Number(body.categoryId);
+        const categoryId = body.categoryId;
 
         if (
-            !Number.isSafeInteger(categoryId) ||
-            categoryId <= 0
+            !(
+                typeof categoryId === 'number' ||
+                (
+                    typeof categoryId === 'string' &&
+                    /^\d+$/.test(categoryId.trim())
+                )
+            ) ||
+            !Number.isSafeInteger(Number(categoryId)) ||
+            Number(categoryId) <= 0
         ) {
-            return res.status(422).json({
-                success: false,
-                message: 'categoryId must be a valid positive integer'
-            });
+            return sendValidationError(
+                res,
+                'categoryId must be a valid positive integer'
+            );
         }
     }
 
@@ -175,13 +184,26 @@ const validateProduct = (req, res, next) => {
 
         if (
             value === null ||
-            value === '' ||
-            !['number', 'string'].includes(typeof value)
+            !['number', 'string'].includes(typeof value) ||
+            (
+                typeof value === 'string' &&
+                value.trim() === ''
+            )
         ) {
-            return res.status(422).json({
-                success: false,
-                message: `${field} must be a valid non-negative number`
-            });
+            return sendValidationError(
+                res,
+                `${field} must be a valid non-negative number`
+            );
+        }
+
+        if (
+            typeof value === 'string' &&
+            !decimalPattern.test(value.trim())
+        ) {
+            return sendValidationError(
+                res,
+                `${field} must be a non-negative number with no more than two decimal places`
+            );
         }
 
         const numberValue = Number(value);
@@ -191,30 +213,20 @@ const validateProduct = (req, res, next) => {
             numberValue < 0 ||
             numberValue > numericLimits[field]
         ) {
-            return res.status(422).json({
-                success: false,
-                message: `${field} is outside the allowed range`
-            });
-        }
-
-        if (
-            typeof value === 'string' &&
-            !/^\d+(\.\d{1,2})?$/.test(value.trim())
-        ) {
-            return res.status(422).json({
-                success: false,
-                message: `${field} must have no more than two decimal places`
-            });
+            return sendValidationError(
+                res,
+                `${field} is outside the allowed range`
+            );
         }
 
         if (
             typeof value === 'number' &&
             Math.round(value * 100) !== value * 100
         ) {
-            return res.status(422).json({
-                success: false,
-                message: `${field} must have no more than two decimal places`
-            });
+            return sendValidationError(
+                res,
+                `${field} must have no more than two decimal places`
+            );
         }
     }
 
@@ -222,10 +234,10 @@ const validateProduct = (req, res, next) => {
         body.isActive !== undefined &&
         typeof body.isActive !== 'boolean'
     ) {
-        return res.status(422).json({
-            success: false,
-            message: 'isActive must be a boolean'
-        });
+        return sendValidationError(
+            res,
+            'isActive must be a boolean'
+        );
     }
 
     next();
