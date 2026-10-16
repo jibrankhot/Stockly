@@ -1,22 +1,16 @@
 <div class="product-details-page">
 
     @if (isLoading) {
-
-    <div class="not-found">
-        <h2>Loading product...</h2>
+    <div class="state-card" role="status" aria-live="polite">
+        <div class="state-icon loading-icon">...</div>
+        <h2>Loading product</h2>
         <p>Please wait while the product details are being loaded.</p>
     </div>
-
     } @else if (hasLoadError) {
-
-    <div class="not-found">
-        <div class="not-found-icon">!</div>
-
-        <h2>Unable to Load Product</h2>
-
-        <p>
-            Something went wrong while loading this product.
-        </p>
+    <div class="state-card" role="alert">
+        <div class="state-icon error-icon">!</div>
+        <h2>Unable to load product</h2>
+        <p>Something went wrong while loading this product. Please try again later.</p>
 
         <div class="bottom-actions">
             <button type="button" class="btn btn-secondary" (click)="goBack()">
@@ -24,119 +18,110 @@
             </button>
         </div>
     </div>
-
     } @else if (product) {
 
-    <!-- Page Header -->
-    <div class="page-header">
-
+    <!-- Product heading -->
+    <header class="page-header">
         <div class="page-header-left">
-
-            <button type="button" class="back-button" (click)="goBack()">
-                ← Back to Products
-            </button>
+            <div class="page-eyebrow">
+                <span class="eyebrow-dot"></span>
+                PRODUCT DETAILS
+            </div>
 
             <div class="title-row">
-
-                <div class="product-avatar">
-                    {{ product.name.charAt(0).toUpperCase() }}
+                <div class="product-avatar" aria-hidden="true">
+                    {{ product.name?.charAt(0)?.toUpperCase() || '?' }}
                 </div>
 
-                <div>
+                <div class="product-heading-content">
                     <div class="title-with-status">
-
                         <h1>{{ product.name }}</h1>
 
                         <span class="status-badge" [class.active]="product.isActive"
                             [class.inactive]="!product.isActive">
+                            <span class="status-dot"></span>
                             {{ product.isActive ? 'Active' : 'Inactive' }}
                         </span>
-
                     </div>
 
-                    <p>SKU: {{ product.sku }}</p>
+                    <div class="product-reference">
+                        <span class="reference-label">SKU</span>
+                        <span class="reference-value">{{ product.sku }}</span>
+                    </div>
                 </div>
-
             </div>
-
         </div>
+    </header>
 
-        <button type="button" class="btn btn-primary" (click)="editProduct()">
-            Edit Product
-        </button>
-
-    </div>
-
-    <!-- Product Information -->
-    <div class="details-grid">
+    <!-- Product information cards -->
+    <main class="details-grid">
 
         <!-- Basic Information -->
-        <section class="details-card">
-
+        <section class="details-card" aria-labelledby="basic-info-title">
             <div class="card-header">
-                <div>
+                <div class="section-icon" aria-hidden="true">i</div>
+
+                <div class="section-heading">
                     <h2>Basic Information</h2>
                     <p>Product identification and classification.</p>
                 </div>
             </div>
 
             <div class="details-content">
-
                 <div class="detail-item">
                     <span class="detail-label">Product Name</span>
-                    <strong>{{ product.name }}</strong>
+                    <strong>{{ product.name || '—' }}</strong>
                 </div>
 
                 <div class="detail-item">
-                    <span class="detail-label">SKU</span>
-                    <strong class="sku">{{ product.sku }}</strong>
+                    <span class="detail-label">SKU / Product Code</span>
+                    <strong class="sku">{{ product.sku || '—' }}</strong>
                 </div>
 
                 <div class="detail-item">
                     <span class="detail-label">Category</span>
-                    <strong>{{ product.categoryName }}</strong>
+                    <strong>{{ product.categoryName || 'Uncategorized' }}</strong>
                 </div>
 
                 <div class="detail-item">
-                    <span class="detail-label">Unit</span>
-                    <strong>{{ product.unit }}</strong>
+                    <span class="detail-label">Unit of Measurement</span>
+                    <strong>{{ product.unit || '—' }}</strong>
                 </div>
 
-                <div class="detail-item full-width">
-                    <span class="detail-label">Description</span>
-
+                <div class="detail-item full-width description-item">
+                    <span class="detail-label">Product Description</span>
                     <p class="description">
-                        {{ product.description || 'No description available.' }}
+                        {{ product.description || 'No description has been added for this product.' }}
                     </p>
                 </div>
-
             </div>
         </section>
 
-        <!-- Pricing -->
-        <section class="details-card">
-
+        <!-- Pricing and Tax -->
+        <section class="details-card" aria-labelledby="pricing-title">
             <div class="card-header">
-                <div>
-                    <h2>Pricing & Tax</h2>
-                    <p>Product pricing information.</p>
+                <div class="card-heading-icon" aria-hidden="true">₹</div>
+                <div class="card-heading-copy">
+                    <h2 id="pricing-title">Pricing &amp; Tax</h2>
+                    <p>Purchase cost, selling price, and estimated profit.</p>
                 </div>
             </div>
 
             <div class="details-content">
-
-                <div class="detail-item">
+                <div class="detail-item price-item">
                     <span class="detail-label">Purchase Price</span>
                     <strong class="price">
                         ₹{{ product.purchasePrice | number:'1.2-2' }}
                     </strong>
+                    <span class="detail-hint">Cost per {{ product.unit || 'unit' }}</span>
                 </div>
 
-                <div class="detail-item">
+                <div class="detail-item price-item">
                     <span class="detail-label">Selling Price</span>
                     <strong class="price">
                         ₹{{ product.sellingPrice | number:'1.2-2' }}
                     </strong>
+                    <span class="detail-hint">Sale price per {{ product.unit || 'unit' }}</span>
                 </div>
 
                 <div class="detail-item">
@@ -144,142 +129,136 @@
                     <strong>{{ product.taxRate }}%</strong>
                 </div>
 
-                <div class="detail-item">
+                <div class="detail-item profit-item">
                     <span class="detail-label">Profit per Unit</span>
-                    <strong class="profit">
+                    <strong class="profit" [class.negative-profit]="product.sellingPrice < product.purchasePrice">
                         ₹{{ product.sellingPrice - product.purchasePrice | number:'1.2-2' }}
                     </strong>
+                    <span class="detail-hint">Selling price − purchase price</span>
                 </div>
-
             </div>
         </section>
 
         <!-- Inventory -->
-        <section class="details-card inventory-card">
-
+        <section class="details-card inventory-card" aria-labelledby="inventory-title">
             <div class="card-header">
-                <div>
-                    <h2>Inventory</h2>
-                    <p>Current stock information.</p>
+                <div class="card-heading-icon" aria-hidden="true">#</div>
+                <div class="card-heading-copy">
+                    <h2 id="inventory-title">Inventory</h2>
+                    <p>Available quantity and stock threshold.</p>
                 </div>
 
                 @if (isLowStock()) {
                 <span class="low-stock-badge">Low Stock</span>
+                } @else {
+                <span class="stock-ok-badge">Stock OK</span>
                 }
             </div>
 
-            <div class="details-content">
-
+            <div class="details-content inventory-content">
                 <div class="stock-overview">
-
-                    <div>
+                    <div class="stock-metric current-stock-metric">
                         <span class="detail-label">Current Stock</span>
-                        <strong class="stock-value">
-                            {{ product.currentStock }}
-                        </strong>
-                        <span class="stock-unit">{{ product.unit }}</span>
-                    </div>
-
-                    <div>
-                        <span class="detail-label">Minimum Stock</span>
-                        <strong>{{ product.minimumStock }}</strong>
-                    </div>
-
-                </div>
-
-                <div class="stock-progress-wrapper">
-
-                    <div class="stock-progress-header">
-                        <span>Stock Level</span>
-
-                        <span>
-                            {{ getStockPercentage() | number:'1.0-0' }}%
+                        <strong class="stock-value">{{ product.currentStock }}</strong>
+                        <span class="stock-unit">
+                            {{ product.unit || 'units' }} available
                         </span>
                     </div>
 
-                    <div class="stock-bar">
+                    <div class="stock-metric">
+                        <span class="detail-label">Minimum Stock</span>
+                        <strong class="minimum-stock-value">{{ product.minimumStock }}</strong>
+                        <span class="stock-unit">Reorder threshold</span>
+                    </div>
+                </div>
+
+                <div class="stock-progress-wrapper">
+                    <div class="stock-progress-header">
+                        <span>Stock Level</span>
+                        <strong>{{ getStockPercentage() | number:'1.0-0' }}%</strong>
+                    </div>
+
+                    <div class="stock-bar" role="progressbar"
+                        aria-label="Stock level relative to twice the minimum stock"
+                        [attr.aria-valuenow]="getStockPercentage()" aria-valuemin="0" aria-valuemax="100">
                         <div class="stock-progress" [class.low]="isLowStock()" [style.width.%]="getStockPercentage()">
                         </div>
                     </div>
 
+                    <p class="stock-caption">
+                        @if (isLowStock()) {
+                        Stock has reached or fallen below the minimum threshold.
+                        } @else {
+                        Current stock is above the minimum threshold.
+                        }
+                    </p>
                 </div>
-
             </div>
         </section>
 
         <!-- System Information -->
-        <section class="details-card">
-
+        <section class="details-card" aria-labelledby="system-info-title">
             <div class="card-header">
-                <div>
-                    <h2>System Information</h2>
-                    <p>Product record information.</p>
+                <div class="card-heading-icon" aria-hidden="true">⌘</div>
+                <div class="card-heading-copy">
+                    <h2 id="system-info-title">System Information</h2>
+                    <p>Record identification and audit dates.</p>
                 </div>
             </div>
 
             <div class="details-content">
-
                 <div class="detail-item">
                     <span class="detail-label">Product ID</span>
-                    <strong>#{{ product.id }}</strong>
+                    <strong class="record-id">#{{ product.id }}</strong>
                 </div>
 
                 <div class="detail-item">
-                    <span class="detail-label">Created</span>
+                    <span class="detail-label">Record Status</span>
+                    <strong>{{ product.isActive ? 'Active' : 'Inactive' }}</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Date Created</span>
                     <strong>
-                        {{ product.createdAt | date:'dd MMM yyyy' }}
+                        {{ product.createdAt ? (product.createdAt | date:'dd MMM yyyy') : '—' }}
                     </strong>
                 </div>
 
                 <div class="detail-item">
                     <span class="detail-label">Last Updated</span>
                     <strong>
-                        {{ product.updatedAt | date:'dd MMM yyyy' }}
+                        {{ product.updatedAt ? (product.updatedAt | date:'dd MMM yyyy') : '—' }}
                     </strong>
                 </div>
-
-                <div class="detail-item">
-                    <span class="detail-label">Status</span>
-                    <strong>
-                        {{ product.isActive ? 'Active' : 'Inactive' }}
-                    </strong>
-                </div>
-
             </div>
         </section>
 
-    </div>
+    </main>
 
-    <!-- Bottom Actions -->
-    <div class="bottom-actions">
-
+    <!-- Page actions -->
+    <footer class="bottom-actions">
         <button type="button" class="btn btn-secondary" (click)="goBack()">
             Back to Products
         </button>
 
         <button type="button" class="btn btn-primary" (click)="editProduct()">
             Edit Product
+            <span aria-hidden="true">→</span>
         </button>
-
-    </div>
+    </footer>
 
     } @else {
-
-    <!-- Not Found -->
-    <div class="not-found">
-
-        <div class="not-found-icon">?</div>
-
+    <div class="state-card">
+        <div class="state-icon">?</div>
         <h2>Product Not Found</h2>
+        <p>The product you're looking for doesn't exist or is no longer available.</p>
 
-        <p>The product you're looking for doesn't exist.</p>
-
-        <button type="button" class="btn btn-secondary" (click)="goBack()">
-            Back to Products
-        </button>
-
+        <div class="bottom-actions">
+            <button type="button" class="btn btn-secondary" (click)="goBack()">
+                Back to Products
+            </button>
+        </div>
     </div>
-
     }
 
 </div>

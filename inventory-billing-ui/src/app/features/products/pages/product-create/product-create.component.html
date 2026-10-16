@@ -1,10 +1,38 @@
 <div class="product-create-page">
-    <div class="page-header">
+    <header class="page-header">
         <div class="page-header-content">
-            <h1>Create Product</h1>
-            <p>Add a new product to your inventory.</p>
+            <div class="page-heading">
+                <span class="eyebrow">INVENTORY MANAGEMENT</span>
+                <h1>Create Product</h1>
+                <p>
+                    Add a new product to your inventory and manage its pricing and stock.
+                </p>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <app-product-form [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)" (cancel)="onCancel()" />
+    <section class="form-section" aria-label="Create product form">
+        <div class="section-heading">
+            <div class="section-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+                    <path d="m3 8 9 5 9-5" />
+                    <path d="M3 8v9l9 5 9-5V8" />
+                    <path d="M12 13v9" />
+                </svg>
+            </div>
+
+            <div class="section-heading-text">
+                <h2>Product details</h2>
+                <p>
+                    Enter product information, pricing, tax, and inventory details.
+                </p>
+            </div>
+        </div>
+
+        <div class="form-content">
+            <app-product-form [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)" (cancel)="onCancel()" />
+        </div>
+    </section>
 </div>

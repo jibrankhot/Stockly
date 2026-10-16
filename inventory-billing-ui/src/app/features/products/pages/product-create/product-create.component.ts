@@ -1,5 +1,10 @@
 
-import { Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -13,16 +18,16 @@ import { ProductService } from '../../services/product.service';
   standalone: true,
   imports: [ProductFormComponent],
   templateUrl: './product-create.component.html',
-  styleUrl: './product-create.component.scss'
+  styleUrl: './product-create.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCreateComponent {
-  isSubmitting = false;
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-  constructor(
-    private readonly productService: ProductService,
-    private readonly router: Router,
-    private readonly notificationService: NotificationService
-  ) { }
+  isSubmitting = false;
 
   onSubmit(productData: Partial<Product>): void {
     if (this.isSubmitting) {
@@ -36,10 +41,11 @@ export class ProductCreateComponent {
       .pipe(
         finalize(() => {
           this.isSubmitting = false;
+          this.changeDetectorRef.markForCheck();
         })
       )
       .subscribe({
-        next: product => {
+        next: (product) => {
           if (!product) {
             this.notificationService.error(
               'Product could not be created. Please try again.'
@@ -53,13 +59,12 @@ export class ProductCreateComponent {
 
           void this.router.navigate(['/products']);
         },
-        error: error => {
-          console.error('Failed to create product:', error);
 
+        error: () => {
           this.notificationService.error(
             'Failed to create product. Please check your details and try again.'
           );
-        }
+        },
       });
   }
 
