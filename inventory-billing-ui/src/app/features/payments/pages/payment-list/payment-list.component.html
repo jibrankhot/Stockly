@@ -1,173 +1,143 @@
-<div class="page-container">
+<div class="payment-list-page">
 
-  <!-- Header -->
-  <div class="page-header">
-
-    <div>
+  <header class="page-header">
+    <div class="page-header-content">
+      <span class="eyebrow">FINANCE / PAYMENTS</span>
       <h1>Payments</h1>
-
-      <p>
-        Track customer payments received against invoices.
-      </p>
+      <p>Track and manage customer payments received against invoices.</p>
     </div>
 
     <a routerLink="/payments/create" class="btn btn-primary">
-      + Record Payment
+      <span class="btn-icon" aria-hidden="true">+</span>
+      <span>Record Payment</span>
     </a>
-
-  </div>
-
+  </header>
 
   <!-- Summary -->
-  <div class="summary-grid">
+  <section class="summary-grid" aria-label="Payment summary">
 
-    <div class="summary-card">
+    <article class="summary-card">
+      <div class="summary-icon summary-icon-blue" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="3.5" y="5" width="17" height="14" rx="2.5" />
+          <path d="M3.5 9h17M7.5 14h3" />
+        </svg>
+      </div>
+      <div class="summary-copy">
+        <span class="summary-label">Total payments</span>
+        <strong>{{ totalPayments }}</strong>
+        <span class="summary-hint">Payments recorded</span>
+      </div>
+    </article>
 
-      <span class="summary-label">
-        Total Payments
-      </span>
+    <article class="summary-card">
+      <div class="summary-icon summary-icon-green" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v18M17 7.5c0-1.7-2.1-3-5-3s-5 1.3-5 3 1.7 2.5 5 3 5 1.3 5 3-2.1 3-5 3-5-1.3-5-3" />
+        </svg>
+      </div>
+      <div class="summary-copy">
+        <span class="summary-label">Total received</span>
+        <strong>₹{{ totalPaymentAmount | number:'1.2-2' }}</strong>
+        <span class="summary-hint">Across all recorded payments</span>
+      </div>
+    </article>
 
-      <strong>
-        {{ totalPayments }}
-      </strong>
-
-    </div>
-
-
-    <div class="summary-card">
-
-      <span class="summary-label">
-        Total Received
-      </span>
-
-      <strong>
-        ₹{{ totalPaymentAmount | number:'1.2-2' }}
-      </strong>
-
-    </div>
-
-
-    <div class="summary-card">
-
-      <span class="summary-label">
-        Average Payment
-      </span>
-
-      <strong>
-        ₹{{ averagePayment | number:'1.2-2' }}
-      </strong>
-
-    </div>
-
-  </div>
-
-
-  <!-- Filters -->
-  <section class="filter-card">
-
-    <div class="filter-group search-group">
-
-      <label for="search">
-        Search
-      </label>
-
-      <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
-        placeholder="Payment, invoice, customer or reference">
-
-    </div>
-
-
-    <div class="filter-group">
-
-      <label for="method">
-        Payment Method
-      </label>
-
-      <select id="method" [(ngModel)]="methodFilter" (ngModelChange)="applyFilters()">
-
-        <option value="all">
-          All Methods
-        </option>
-
-        <option value="cash">
-          Cash
-        </option>
-
-        <option value="bank-transfer">
-          Bank Transfer
-        </option>
-
-        <option value="upi">
-          UPI
-        </option>
-
-        <option value="card">
-          Card
-        </option>
-
-        <option value="cheque">
-          Cheque
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <button type="button" class="btn btn-outline" (click)="clearFilters()">
-
-      Clear
-
-    </button>
+    <article class="summary-card">
+      <div class="summary-icon summary-icon-purple" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 19V5M4 19h16M7 15l4-4 3 2 5-6" />
+        </svg>
+      </div>
+      <div class="summary-copy">
+        <span class="summary-label">Average payment</span>
+        <strong>₹{{ averagePayment | number:'1.2-2' }}</strong>
+        <span class="summary-hint">Average amount per payment</span>
+      </div>
+    </article>
 
   </section>
 
+  <!-- Filters -->
+  <section class="filter-card" aria-label="Filter payments">
+    <div class="filter-heading">
+      <div>
+        <h2>Payment history</h2>
+        <p>Search payments and narrow results by method.</p>
+      </div>
+      <button *ngIf="hasActiveFilters" type="button" class="clear-filters" (click)="clearFilters()">
+        Clear filters
+      </button>
+    </div>
+
+    <div class="filter-controls">
+      <div class="filter-group search-group">
+        <label for="payment-search">Search payments</label>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="10.8" cy="10.8" r="6.8" />
+            <path d="m16 16 4.2 4.2" />
+          </svg>
+          <input id="payment-search" type="search" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
+            placeholder="Payment, invoice, customer or reference" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="filter-group method-filter">
+        <label for="payment-method">Payment method</label>
+        <select id="payment-method" [(ngModel)]="methodFilter" (ngModelChange)="applyFilters()">
+          <option value="all">All methods</option>
+          <option value="cash">Cash</option>
+          <option value="bank-transfer">Bank transfer</option>
+          <option value="upi">UPI</option>
+          <option value="card">Card</option>
+          <option value="cheque">Cheque</option>
+        </select>
+      </div>
+
+      <button *ngIf="hasActiveFilters" type="button" class="btn btn-outline clear-button" (click)="clearFilters()">
+        Reset
+      </button>
+    </div>
+  </section>
 
   <!-- Loading -->
-  <div *ngIf="isLoading" class="state-card">
-
-    Loading payments...
-
-  </div>
-
+  <section *ngIf="isLoading" class="state-card" aria-live="polite">
+    <span class="loading-spinner" aria-hidden="true"></span>
+    <strong>Loading payments</strong>
+    <p>Please wait while your payment history loads.</p>
+  </section>
 
   <!-- Error -->
-  <div *ngIf="!isLoading && errorMessage" class="error-message">
+  <section *ngIf="!isLoading && errorMessage" class="state-card error-state" role="alert">
+    <div class="state-icon" aria-hidden="true">!</div>
+    <strong>Unable to load payments</strong>
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn btn-outline" (click)="loadPayments()">
+      Try again
+    </button>
+  </section>
 
-    {{ errorMessage }}
-
-  </div>
-
-
-  <!-- Table -->
+  <!-- Results -->
   <section *ngIf="!isLoading && !errorMessage" class="table-card">
 
     <div class="table-header">
-
       <div>
-
-        <h2>
-          Payment History
-        </h2>
-
-        <span>
-          {{ filteredPayments.length }}
-          {{ filteredPayments.length === 1
-          ? 'payment'
-          : 'payments' }}
-        </span>
-
+        <h2>All payments</h2>
+        <p>
+          Showing <strong>{{ filteredPayments.length }}</strong>
+          of <strong>{{ totalPayments }}</strong>
+          {{ totalPayments === 1 ? 'payment' : 'payments' }}
+        </p>
       </div>
-
+      <span class="results-indicator">
+        {{ filteredPayments.length }} results
+      </span>
     </div>
 
-
     <div class="table-wrapper">
-
       <table>
-
         <thead>
-
           <tr>
             <th>Payment</th>
             <th>Date</th>
@@ -175,124 +145,84 @@
             <th>Customer</th>
             <th>Method</th>
             <th>Reference</th>
-
-            <th class="text-right">
-              Amount
-            </th>
-
-            <th>Actions</th>
+            <th class="text-right">Amount</th>
+            <th class="actions-heading">Actions</th>
           </tr>
-
         </thead>
 
-
         <tbody>
+          <tr *ngFor="let payment of filteredPayments; trackBy: trackByPaymentId">
 
-          <tr *ngFor="let payment of filteredPayments">
-
-            <td>
-
-              <span class="payment-number">
-                {{ payment.paymentNumber }}
-              </span>
-
+            <td data-label="Payment">
+              <span class="payment-number">{{ payment.paymentNumber }}</span>
             </td>
 
-
-            <td>
+            <td data-label="Date" class="secondary-cell">
               {{ payment.paymentDate | date:'dd MMM yyyy' }}
             </td>
 
-
-            <td>
-
-              <span class="invoice-number">
-                {{ payment.invoiceNumber }}
-              </span>
-
+            <td data-label="Invoice">
+              <span class="invoice-number">{{ payment.invoiceNumber || '—' }}</span>
             </td>
 
-
-            <td>
-
-              <span class="customer-name">
-                {{ payment.customerName }}
-              </span>
-
+            <td data-label="Customer">
+              <span class="customer-name">{{ payment.customerName || '—' }}</span>
             </td>
 
-
-            <td>
-
+            <td data-label="Method">
               <span class="method-badge" [ngClass]="getMethodClass(payment.paymentMethod)">
-
                 {{ getMethodLabel(payment.paymentMethod) }}
-
               </span>
-
             </td>
 
-
-            <td>
+            <td data-label="Reference" class="reference-cell">
               {{ payment.referenceNumber || '—' }}
             </td>
 
-
-            <td class="text-right">
-
-              <span class="amount">
-                ₹{{ payment.amount | number:'1.2-2' }}
-              </span>
-
+            <td data-label="Amount" class="text-right amount-cell">
+              ₹{{ payment.amount | number:'1.2-2' }}
             </td>
 
-
-            <td>
-
+            <td data-label="Actions" class="actions-cell">
               <div class="actions">
-
-                <a [routerLink]="['/payments', payment.id]" class="action-link">
-
+                <a [routerLink]="['/payments', payment.id]" class="action-button">
                   View
-
                 </a>
-
-                <button type="button" class="action-link delete-action" (click)="deletePayment(payment)">
-
-                  Delete
-
+                <button type="button" class="action-button delete-action" [disabled]="isDeleting"
+                  (click)="deletePayment(payment)">
+                  {{ deletingPaymentId === payment.id ? 'Deleting…' : 'Delete' }}
                 </button>
-
               </div>
-
             </td>
-
           </tr>
 
-
-          <!-- Empty -->
           <tr *ngIf="filteredPayments.length === 0">
-
-            <td colspan="8" class="empty-state">
-
-              <strong>
-                No payments found
-              </strong>
-
-              <p>
-                Try changing your search or filter.
-              </p>
-
+            <td colspan="8" class="empty-cell">
+              <div class="empty-state">
+                <div class="empty-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="10.8" cy="10.8" r="6.8" />
+                    <path d="m16 16 4.2 4.2" />
+                  </svg>
+                </div>
+                <h3>No payments found</h3>
+                <p>
+                  {{ hasActiveFilters
+                  ? 'Try adjusting your search or filters.'
+                  : 'Record your first payment to see it listed here.' }}
+                </p>
+                <button *ngIf="hasActiveFilters" type="button" class="btn btn-outline" (click)="clearFilters()">
+                  Clear filters
+                </button>
+                <a *ngIf="!hasActiveFilters" routerLink="/payments/create" class="btn btn-primary">
+                  Record payment
+                </a>
+              </div>
             </td>
-
           </tr>
-
         </tbody>
-
       </table>
-
     </div>
 
   </section>
-
 </div>

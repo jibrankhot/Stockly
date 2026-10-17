@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
@@ -7,7 +8,6 @@ import { Payment } from '../../../shared/models/payment';
     providedIn: 'root'
 })
 export class PaymentService {
-
     private payments: Payment[] = [
         {
             id: 1,
@@ -51,35 +51,23 @@ export class PaymentService {
     ];
 
     getPayments(): Observable<Payment[]> {
-        return of([...this.payments]);
+        return of(this.payments.map(payment => ({ ...payment })));
     }
 
-    getPaymentById(
-        id: number
-    ): Observable<Payment | undefined> {
+    getPaymentById(id: number): Observable<Payment | undefined> {
+        const payment = this.payments.find(item => item.id === id);
+        return of(payment ? { ...payment } : undefined);
+    }
 
-        const payment = this.payments.find(
-            item => item.id === id
+    getPaymentsByInvoiceId(invoiceId: number): Observable<Payment[]> {
+        return of(
+            this.payments
+                .filter(payment => payment.invoiceId === invoiceId)
+                .map(payment => ({ ...payment }))
         );
-
-        return of(payment);
     }
 
-    getPaymentsByInvoiceId(
-        invoiceId: number
-    ): Observable<Payment[]> {
-
-        const payments = this.payments.filter(
-            payment => payment.invoiceId === invoiceId
-        );
-
-        return of([...payments]);
-    }
-
-    createPayment(
-        paymentData: Partial<Payment>
-    ): Observable<Payment> {
-
+    createPayment(paymentData: Partial<Payment>): Observable<Payment> {
         const id = this.getNextId();
 
         const payment: Payment = {
@@ -87,25 +75,17 @@ export class PaymentService {
             paymentNumber:
                 paymentData.paymentNumber ??
                 `PAY-2026-${String(id).padStart(3, '0')}`,
-            invoiceId:
-                paymentData.invoiceId ?? 0,
-            invoiceNumber:
-                paymentData.invoiceNumber ?? '',
-            customerName:
-                paymentData.customerName ?? '',
+            invoiceId: paymentData.invoiceId ?? 0,
+            invoiceNumber: paymentData.invoiceNumber ?? '',
+            customerName: paymentData.customerName ?? '',
             paymentDate:
                 paymentData.paymentDate ??
-                new Date().toISOString().split('T')[0],
-            amount:
-                paymentData.amount ?? 0,
-            paymentMethod:
-                paymentData.paymentMethod ?? 'cash',
-            referenceNumber:
-                paymentData.referenceNumber ?? '',
-            notes:
-                paymentData.notes ?? '',
-            createdAt:
-                new Date().toISOString()
+                new Date().toISOString().slice(0, 10),
+            amount: paymentData.amount ?? 0,
+            paymentMethod: paymentData.paymentMethod ?? 'cash',
+            referenceNumber: paymentData.referenceNumber ?? '',
+            notes: paymentData.notes ?? '',
+            createdAt: new Date().toISOString()
         };
 
         this.payments.push(payment);
@@ -113,30 +93,21 @@ export class PaymentService {
         return of({ ...payment });
     }
 
-    deletePayment(
-        id: number
-    ): Observable<boolean> {
+    deletePayment(id: number): Observable<boolean> {
+        const index = this.payments.findIndex(payment => payment.id === id);
 
-        const index = this.payments.findIndex(
-            payment => payment.id === id
-        );
-
-        if (index === -1) {
+        if (index < 0) {
             return of(false);
         }
 
         this.payments.splice(index, 1);
-
         return of(true);
     }
 
     private getNextId(): number {
-        return this.payments.length > 0
-            ? Math.max(
-                ...this.payments.map(
-                    payment => payment.id
-                )
-            ) + 1
-            : 1;
+        return this.payments.reduce(
+            (maxId, payment) => Math.max(maxId, payment.id),
+            0
+        ) + 1;
     }
 }
