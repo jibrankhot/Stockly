@@ -1,4 +1,13 @@
 
+/* =========================================================
+   STOCKLY — PAYMENT LIST
+   Responsive desktop, tablet and mobile stylesheet
+   ========================================================= */
+
+/* =========================================================
+   THEME VARIABLES
+   ========================================================= */
+
 :host {
   display: block;
   width: 100%;
@@ -48,16 +57,31 @@
   --payment-border: var(--border);
   --payment-surface: var(--surface);
   --payment-subtle: var(--soft-bg);
-  --payment-radius: 12px;
+  --payment-radius: 13px;
 }
 
-/* Header */
+.payment-list-page *,
+.payment-list-page *::before,
+.payment-list-page *::after {
+  box-sizing: border-box;
+}
+
+.payment-list-page h1,
+.payment-list-page h2,
+.payment-list-page h3,
+.payment-list-page p {
+  overflow-wrap: break-word;
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
 
 .page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0 20px;
   margin-bottom: 24px;
 }
 
@@ -72,39 +96,52 @@
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
+  line-height: 1.4;
 }
 
 .page-header h1 {
   margin: 0;
   color: var(--payment-text);
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 750;
   line-height: 1.3;
   letter-spacing: -0.035em;
 }
 
-.page-header p {
+.page-header p,
+.page-description {
+  grid-column: 1 / -1;
   margin: 7px 0 0;
   color: var(--payment-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
-/* Buttons */
+.page-header > .btn {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
 
 .btn {
-  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-height: 40px;
+  min-width: 0;
   padding: 0 15px;
-  box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: 9px;
   font: inherit;
   font-size: 13px;
   font-weight: 650;
+  line-height: 1.3;
+  text-align: center;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -114,52 +151,60 @@
     color 160ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
+}
 
-  &:focus-visible {
-    outline: 3px solid var(--accent-border);
-    outline-offset: 2px;
-  }
+.btn:focus-visible,
+.action-button:focus-visible,
+.clear-filters:focus-visible {
+  outline: 3px solid var(--accent-border);
+  outline-offset: 2px;
+}
 
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
+.btn:disabled,
+.action-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .btn-primary {
   border-color: var(--payment-primary);
   background: var(--payment-primary);
-  color: #fff;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgb(15 23 42 / 7%);
+}
 
-  &:hover:not(:disabled) {
-    border-color: var(--payment-primary-hover);
-    background: var(--payment-primary-hover);
-    color: #fff;
-  }
+.btn-primary:hover:not(:disabled) {
+  border-color: var(--payment-primary-hover);
+  background: var(--payment-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgb(15 23 42 / 10%);
+}
 
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .btn-outline {
   border-color: var(--payment-border);
   background: var(--payment-surface);
   color: var(--payment-text);
+}
 
-  &:hover:not(:disabled) {
-    border-color: var(--payment-primary);
-    background: var(--payment-subtle);
-  }
+.btn-outline:hover:not(:disabled) {
+  border-color: var(--payment-primary);
+  background: var(--payment-subtle);
 }
 
 .btn-icon {
+  flex: 0 0 auto;
   font-size: 20px;
   font-weight: 400;
   line-height: 1;
 }
 
-/* Summary cards */
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
 
 .summary-grid {
   display: grid;
@@ -170,7 +215,7 @@
 
 .summary-card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   min-width: 0;
   padding: 20px;
@@ -178,24 +223,35 @@
   border-radius: var(--payment-radius);
   background: var(--payment-surface);
   box-shadow: 0 2px 5px rgb(15 23 42 / 2%);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.summary-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: 0 5px 16px rgb(15 23 42 / 5%);
+  transform: translateY(-1px);
 }
 
 .summary-icon {
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
   width: 42px;
   height: 42px;
-  flex: 0 0 42px;
-  display: grid;
-  place-items: center;
   border-radius: 12px;
+}
 
-  svg {
-    width: 21px;
-    height: 21px;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+.summary-icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .summary-icon-blue {
@@ -215,6 +271,7 @@
 
 .summary-copy {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 5px;
   min-width: 0;
@@ -224,16 +281,17 @@
   color: var(--payment-muted);
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .summary-copy strong {
-  overflow-wrap: anywhere;
   color: var(--payment-text);
   font-size: clamp(19px, 2vw, 25px);
   font-weight: 750;
   line-height: 1.3;
   letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
 .summary-hint {
@@ -242,16 +300,21 @@
   line-height: 1.5;
 }
 
-/* Filters */
+/* =========================================================
+   FILTER CARD
+   ========================================================= */
 
 .filter-card,
 .table-card,
 .state-card {
-  overflow: hidden;
+  min-width: 0;
   border: 1px solid var(--payment-border);
   border-radius: var(--payment-radius);
   background: var(--payment-surface);
   box-shadow: 0 2px 5px rgb(15 23 42 / 2%);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .filter-card {
@@ -271,6 +334,11 @@
   margin-bottom: 18px;
 }
 
+.filter-heading > div,
+.table-header > div {
+  min-width: 0;
+}
+
 .filter-heading h2,
 .table-header h2 {
   margin: 0;
@@ -285,12 +353,12 @@
   margin: 5px 0 0;
   color: var(--payment-muted);
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .filter-controls {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(170px, 230px) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 230px) auto;
   align-items: end;
   gap: 14px;
 }
@@ -310,28 +378,26 @@
 
 .input-wrapper {
   position: relative;
+  width: 100%;
   min-width: 0;
+}
 
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 12px;
-    width: 17px;
-    height: 17px;
-    transform: translateY(-50%);
-    pointer-events: none;
-    stroke: var(--muted);
-    stroke-width: 1.8;
-    stroke-linecap: round;
-  }
-
-  input {
-    padding-left: 38px;
-  }
+.input-wrapper svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 17px;
+  height: 17px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  stroke: var(--muted);
+  stroke-width: 1.8;
+  stroke-linecap: round;
 }
 
 .filter-group input,
 .filter-group select {
+  display: block;
   width: 100%;
   min-width: 0;
   min-height: 42px;
@@ -343,20 +409,35 @@
   font: inherit;
   font-size: 12px;
   outline: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
 
-  &:focus {
-    border-color: var(--payment-primary);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
+.input-wrapper input {
+  padding-left: 38px;
+}
 
-  &::placeholder {
-    color: var(--muted);
-  }
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: var(--payment-primary);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.filter-group input:focus-visible,
+.filter-group select:focus-visible {
+  outline: 2px solid var(--payment-primary);
+  outline-offset: 2px;
+}
+
+.filter-group input::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }
 
 .clear-filters {
-  padding: 4px 0;
+  flex-shrink: 0;
+  padding: 5px 0;
   border: 0;
   background: transparent;
   color: var(--payment-primary);
@@ -364,17 +445,19 @@
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
+}
 
-  &:hover {
-    text-decoration: underline;
-  }
+.clear-filters:hover {
+  text-decoration: underline;
 }
 
 .clear-button {
   min-height: 42px;
 }
 
-/* Table heading */
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
 
 .table-header {
   align-items: center;
@@ -389,7 +472,9 @@
 
 .results-indicator {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
+  justify-content: center;
   min-height: 27px;
   padding: 0 10px;
   border: 1px solid var(--payment-border);
@@ -401,17 +486,26 @@
   white-space: nowrap;
 }
 
-/* Table */
+/* =========================================================
+   DESKTOP TABLE
+   ========================================================= */
+
+.table-card {
+  overflow: hidden;
+}
 
 .table-wrapper {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 table {
   width: 100%;
-  min-width: 1050px;
+  min-width: 980px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -440,14 +534,14 @@ th {
 
 tbody tr {
   transition: background-color 140ms ease;
+}
 
-  &:hover {
-    background: var(--payment-subtle);
-  }
+tbody tr:hover {
+  background: var(--payment-subtle);
+}
 
-  &:last-child td {
-    border-bottom: 0;
-  }
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 td {
@@ -495,18 +589,22 @@ td {
   white-space: nowrap;
 }
 
-/* Payment method badges */
+/* =========================================================
+   PAYMENT METHOD BADGES
+   ========================================================= */
 
 .method-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 25px;
+  max-width: 100%;
   padding: 3px 9px;
   border: 1px solid transparent;
   border-radius: 7px;
   font-size: 10px;
   font-weight: 750;
+  line-height: 1.4;
   white-space: nowrap;
 }
 
@@ -534,13 +632,16 @@ td {
   color: #92400e;
 }
 
-.method-cheque {
+.method-cheque,
+.method-other {
   border-color: #e2e8f0;
   background: #f8fafc;
   color: #475569;
 }
 
-/* Actions */
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
 
 .actions-heading,
 .actions-cell {
@@ -556,11 +657,11 @@ td {
 }
 
 .action-button {
-  min-height: 31px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 9px;
+  min-height: 30px;
+  padding: 0 10px;
   border: 1px solid var(--payment-border);
   border-radius: 7px;
   background: var(--payment-surface);
@@ -568,43 +669,39 @@ td {
   font: inherit;
   font-size: 11px;
   font-weight: 650;
+  line-height: 1.3;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 140ms ease, border-color 140ms ease;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
 
-  &:hover:not(:disabled) {
-    border-color: var(--payment-primary);
-    background: var(--payment-subtle);
-  }
-
-  &:focus-visible {
-    outline: 3px solid var(--accent-border);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
-  }
+.action-button:hover:not(:disabled) {
+  border-color: var(--payment-primary);
+  background: var(--payment-subtle);
 }
 
 .delete-action {
   border-color: var(--danger-border);
   color: var(--danger);
-
-  &:hover:not(:disabled) {
-    border-color: var(--danger);
-    background: var(--danger-soft);
-    color: var(--danger-hover);
-  }
 }
 
-/* Loading, error and empty states */
+.delete-action:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger-hover);
+}
+
+/* =========================================================
+   LOADING, ERROR AND EMPTY STATES
+   ========================================================= */
 
 .state-card {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
   gap: 9px;
   padding: 48px 20px;
   text-align: center;
@@ -645,10 +742,10 @@ td {
 }
 
 .state-icon {
-  width: 36px;
-  height: 36px;
   display: grid;
   place-items: center;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--danger-soft);
   color: var(--danger);
@@ -662,30 +759,31 @@ td {
 
 .empty-state {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
   padding: 48px 20px;
   text-align: center;
 }
 
 .empty-icon {
-  width: 46px;
-  height: 46px;
   display: grid;
   place-items: center;
+  width: 46px;
+  height: 46px;
   margin-bottom: 14px;
   border: 1px solid var(--payment-border);
   border-radius: 13px;
   background: var(--payment-subtle);
   color: var(--payment-muted);
+}
 
-  svg {
-    width: 21px;
-    height: 21px;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-  }
+.empty-icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
 }
 
 .empty-state h3 {
@@ -703,7 +801,9 @@ td {
   line-height: 1.6;
 }
 
-/* Tablet */
+/* =========================================================
+   TABLET
+   ========================================================= */
 
 @media (max-width: 1000px) {
   .summary-grid {
@@ -712,17 +812,17 @@ td {
 
   .summary-card {
     gap: 10px;
-    padding: 16px;
+    padding: 15px;
   }
 
   .summary-icon {
+    flex-basis: 36px;
     width: 36px;
     height: 36px;
-    flex-basis: 36px;
   }
 
   .filter-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(160px, 210px);
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 210px);
   }
 
   .clear-button {
@@ -731,92 +831,219 @@ td {
   }
 }
 
-/* Mobile */
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 680px) {
-  .payment-list-page {
-    padding: 0;
-  }
+  /* Header: title left, button right */
 
   .page-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    margin-bottom: 20px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0 10px;
+    margin-bottom: 17px;
+  }
+
+  .page-header-content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .eyebrow {
+    margin-bottom: 5px;
+    font-size: 9px;
   }
 
   .page-header h1 {
     font-size: 22px;
-  }
-
-  .page-header p {
-    max-width: 430px;
-    font-size: 13px;
+    line-height: 1.2;
   }
 
   .page-header > .btn {
-    align-self: flex-start;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    min-height: 38px;
+    gap: 5px;
+    padding: 0 10px;
+    border-radius: 8px;
+    font-size: 11px;
   }
 
+  .btn-icon {
+    font-size: 17px;
+  }
+
+  .page-header p,
+  .page-description {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 9px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* Summary: two cards on the first row */
+
   .summary-grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin-bottom: 16px;
   }
 
   .summary-card {
-    align-items: center;
-    padding: 15px;
+    align-items: flex-start;
+    gap: 9px;
+    min-width: 0;
+    padding: 13px 11px;
+    border-radius: 11px;
   }
 
   .summary-icon {
-    width: 40px;
-    height: 40px;
-    flex-basis: 40px;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+
+  .summary-icon svg {
+    width: 17px;
+    height: 17px;
   }
 
   .summary-copy {
-    flex: 1;
+    gap: 4px;
+  }
+
+  .summary-label {
+    font-size: 10px;
+    line-height: 1.4;
   }
 
   .summary-copy strong {
-    font-size: 21px;
+    font-size: clamp(15px, 4.1vw, 20px);
+    line-height: 1.3;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
   }
 
+  .summary-hint {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  /* Average payment takes the full second row */
+
+  .summary-card:last-child {
+    grid-column: 1 / -1;
+    align-items: center;
+    padding: 13px 14px;
+  }
+
+  .summary-card:last-child .summary-icon {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .summary-card:last-child .summary-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 3px 10px;
+  }
+
+  .summary-card:last-child .summary-label {
+    grid-column: 1;
+  }
+
+  .summary-card:last-child .summary-copy strong {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 19px;
+    text-align: right;
+  }
+
+  .summary-card:last-child .summary-hint {
+    grid-column: 1;
+  }
+
+  /* Filters */
+
   .filter-card {
-    padding: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 12px;
   }
 
   .filter-heading {
+    align-items: flex-start;
     gap: 10px;
+    margin-bottom: 15px;
   }
 
-  .filter-heading h2 {
+  .filter-heading > div {
+    min-width: 0;
+  }
+
+  .filter-heading h2,
+  .table-header h2 {
     font-size: 15px;
   }
 
   .filter-heading p {
-    max-width: 250px;
+    max-width: 100%;
+    font-size: 11px;
+  }
+
+  .clear-filters {
+    font-size: 11px;
   }
 
   .filter-controls {
     grid-template-columns: minmax(0, 1fr);
-    gap: 13px;
+    gap: 12px;
+  }
+
+  .filter-group label {
+    font-size: 11px;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    min-height: 43px;
+    font-size: 12px;
   }
 
   .clear-button {
     grid-column: auto;
     justify-self: stretch;
+    width: 100%;
   }
 
+  /* Payment history heading */
+
   .table-header {
-    padding: 16px;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 15px;
+  }
+
+  .table-header p {
+    font-size: 11px;
   }
 
   .results-indicator {
     display: none;
   }
+
+  .table-card {
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  /* Convert table rows into payment cards */
 
   .table-wrapper {
     overflow: visible;
@@ -824,8 +1051,9 @@ td {
 
   table {
     display: block;
-    min-width: 0;
     width: 100%;
+    min-width: 0;
+    border-collapse: separate;
   }
 
   thead {
@@ -833,24 +1061,17 @@ td {
   }
 
   tbody {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 9px;
-  }
-
-  tbody tr:not(:last-child) {
-    margin-bottom: 10px;
-  }
-
-  tbody tr:has(.empty-state) {
-    margin: 0;
-    border: 0;
-    background: transparent;
   }
 
   tbody tr {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0 12px;
+    width: 100%;
     min-width: 0;
     padding: 12px;
     border: 1px solid var(--payment-border);
@@ -864,110 +1085,386 @@ td {
 
   tbody tr td {
     display: flex;
-    align-items: flex-start;
     flex-direction: column;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 5px;
+    width: 100%;
     min-width: 0;
-    padding: 10px 2px;
+    padding: 9px 0;
     border: 0;
+    text-align: left;
     font-size: 11px;
     overflow-wrap: anywhere;
   }
 
   tbody tr td::before {
     content: attr(data-label);
+    display: block;
     color: var(--payment-muted);
     font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
     text-transform: uppercase;
   }
 
-  tbody tr td:first-child {
+  /* Payment number */
+
+  tbody tr td.payment-cell {
     grid-column: 1 / -1;
-    padding-top: 2px;
-    padding-bottom: 12px;
-    margin-bottom: 3px;
+    grid-row: 1;
+    padding: 2px 0 11px;
+    margin-bottom: 2px;
     border-bottom: 1px solid var(--divider);
   }
 
-  tbody tr td:first-child .payment-number {
+  .payment-number {
     font-size: 13px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
   }
 
-  tbody tr td:nth-child(2),
-  tbody tr td:nth-child(4),
-  tbody tr td:nth-child(6) {
+  /* Explicit, stable field positions */
+
+  tbody tr td.date-cell {
     grid-column: 1;
+    grid-row: 2;
   }
 
-  tbody tr td:nth-child(3),
-  tbody tr td:nth-child(5),
-  tbody tr td:nth-child(7) {
+  tbody tr td.invoice-cell {
     grid-column: 2;
+    grid-row: 2;
   }
 
-  tbody tr td:nth-child(7) {
+  tbody tr td.customer-cell {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  tbody tr td.method-cell {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  tbody tr td.reference-cell {
+    grid-column: 1;
+    grid-row: 4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  tbody tr td.amount-cell {
+    grid-column: 2;
+    grid-row: 4;
     align-items: flex-start;
+    color: var(--success-text);
+    font-size: 12px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
     text-align: left;
-  }
-
-  tbody tr td:last-child {
-    grid-column: 1 / -1;
-    padding-top: 12px;
-    margin-top: 4px;
-    border-top: 1px solid var(--divider);
-  }
-
-  tbody tr td:last-child::before {
-    margin-bottom: 3px;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .customer-name {
+    display: block;
     max-width: 100%;
+    overflow: visible;
+    line-height: 1.45;
+    text-overflow: clip;
     white-space: normal;
     overflow-wrap: anywhere;
   }
 
-  .reference-cell {
+  .invoice-number {
     white-space: normal;
     overflow-wrap: anywhere;
+  }
+
+  .method-badge {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  /* Actions */
+
+  tbody tr td.actions-cell {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 12px 0 0;
+    margin-top: 4px;
+    border-top: 1px solid var(--divider);
   }
 
   .actions {
     justify-content: flex-start;
     flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
   }
 
   .action-button {
-    min-height: 34px;
+    min-width: 64px;
+    min-height: 36px;
     padding: 0 12px;
+    font-size: 11px;
   }
 
-  .empty-cell {
-    display: block !important;
-    grid-column: 1 / -1;
-    padding: 0 !important;
-    border: 0 !important;
+  /* Empty state */
+
+  tbody tr:has(.empty-state) {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
   }
 
-  .empty-cell::before {
+  tbody tr td.empty-cell {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+  }
+
+  tbody tr td.empty-cell::before {
     display: none;
   }
 
   .empty-state {
-    padding: 38px 12px;
+    padding: 34px 12px;
+  }
+
+  .state-card {
+    padding: 36px 18px;
   }
 }
 
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+  .page-header {
+    column-gap: 6px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .page-header > .btn {
+    gap: 4px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .page-header p,
+  .page-description {
+    font-size: 11px;
+  }
+
+  .summary-grid {
+    gap: 8px;
+  }
+
+  .summary-card {
+    gap: 7px;
+    padding: 11px 9px;
+  }
+
+  .summary-icon {
+    flex-basis: 29px;
+    width: 29px;
+    height: 29px;
+  }
+
+  .summary-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .summary-label {
+    font-size: 9px;
+  }
+
+  .summary-copy strong {
+    font-size: 15px;
+  }
+
+  .summary-hint {
+    font-size: 8px;
+  }
+
+  .summary-card:last-child .summary-copy strong {
+    font-size: 17px;
+  }
+
+  .filter-card {
+    padding: 12px;
+  }
+
+  .table-header {
+    padding: 13px;
+  }
+
+  tbody {
+    padding: 7px;
+  }
+
+  tbody tr {
+    gap: 0 9px;
+    padding: 10px;
+  }
+
+  tbody tr td {
+    font-size: 10px;
+  }
+
+  .action-button {
+    min-width: 58px;
+    padding: 0 9px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .summary-card,
+  .filter-card,
+  .table-card,
+  .state-card,
+  .btn,
+  .action-button {
+    transition: none;
+  }
+
+  .summary-card:hover {
+    transform: none;
+  }
+
+  .loading-spinner {
+    animation-duration: 1.5s;
+  }
+}
+
+/* =========================================================
+   MOBILE SUMMARY CARD REFINEMENTS
+   ========================================================= */
+
+@media (max-width: 680px) {
+  /* Make the Record Payment button slightly shorter */
+  .page-header > .btn {
+    min-height: 30px;
+    padding: 0 9px;
+    gap: 5px;
+    font-size: 10px;
+    border-radius: 8px;
+  }
+
+  .page-header > .btn .btn-icon {
+    font-size: 16px;
+  }
+
+  /* Keep all three summary cards visually consistent */
+  .summary-card {
+    align-items: center;
+    gap: 9px;
+    padding: 13px 11px;
+  }
+
+  .summary-icon {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .summary-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .summary-label {
+    font-size: 10px;
+  }
+
+  .summary-copy strong {
+    font-size: clamp(15px, 4vw, 19px);
+    line-height: 1.3;
+  }
+
+  .summary-hint {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  /* Average payment: same layout as the other cards */
+  .summary-card:last-child {
+    grid-column: 1 / -1;
+    align-items: center;
+    padding: 13px 11px;
+  }
+
+  .summary-card:last-child .summary-icon {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .summary-card:last-child .summary-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .summary-card:last-child .summary-label,
+  .summary-card:last-child .summary-copy strong,
+  .summary-card:last-child .summary-hint {
+    grid-column: auto;
+    grid-row: auto;
+    text-align: left;
+  }
+}
+
+/* Extra-small phones */
+@media (max-width: 380px) {
+  .page-header > .btn {
+    min-height: 30px;
+    padding: 0 7px;
+    font-size: 9px;
+  }
+
+  .summary-card {
+    gap: 7px;
+    padding: 11px 9px;
+  }
+
+  .summary-icon,
+  .summary-card:last-child .summary-icon {
+    flex-basis: 29px;
+    width: 29px;
+    height: 29px;
+  }
+
+  .summary-label {
+    font-size: 9px;
+  }
+
+  .summary-copy strong,
+  .summary-card:last-child .summary-copy strong {
+    font-size: 15px;
+  }
+
+  .summary-hint {
+    font-size: 8px;
   }
 }

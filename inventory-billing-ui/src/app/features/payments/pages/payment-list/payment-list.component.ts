@@ -7,6 +7,7 @@ import {
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import {
   Payment,
@@ -34,12 +35,21 @@ export class PaymentListComponent implements OnInit {
   filteredPayments: Payment[] = [];
 
   searchTerm = '';
-  methodFilter = 'all';
+  methodFilter: PaymentMethod | 'all' = 'all';
 
   isLoading = true;
   isDeleting = false;
   deletingPaymentId: number | null = null;
   errorMessage = '';
+
+  readonly paymentMethods: PaymentMethod[] = [
+    'Cash',
+    'Card',
+    'UPI',
+    'Bank Transfer',
+    'Cheque',
+    'Other'
+  ];
 
   constructor(
     private readonly paymentService: PaymentService,
@@ -57,23 +67,28 @@ export class PaymentListComponent implements OnInit {
 
     this.paymentService.getPayments().subscribe({
       next: payments => {
-        this.payments = [...payments].sort((a, b) =>
-          b.paymentDate.localeCompare(a.paymentDate)
-        );
+        this.payments = [...payments].sort((a, b) => {
+          const dateComparison =
+            b.paymentDate.localeCompare(a.paymentDate);
+
+          return dateComparison !== 0
+            ? dateComparison
+            : b.id - a.id;
+        });
 
         this.applyFilters();
         this.isLoading = false;
       },
       error: error => {
         console.error('Failed to load payments:', error);
+
         this.errorMessage =
+          error?.error?.message ||
           'Unable to load payments. Please try again.';
 
         this.isLoading = false;
 
-        this.notificationService.error(
-          error?.error?.message || this.errorMessage
-        );
+        this.notificationService.error(this.errorMessage);
       }
     });
   }
@@ -88,13 +103,14 @@ export class PaymentListComponent implements OnInit {
         payment.customerName,
         payment.referenceNumber,
         payment.paymentMethod,
-        this.getMethodLabel(payment.paymentMethod)
+        this.getMethodLabel(payment.paymentMethod),
+        payment.notes
       ];
 
       const matchesSearch =
         !search ||
         searchableValues.some(value =>
-          (value ?? '').toLowerCase().includes(search)
+          String(value ?? '').toLowerCase().includes(search)
         );
 
       const matchesMethod =
@@ -118,6 +134,9 @@ export class PaymentListComponent implements OnInit {
     );
   }
 
+
+
+  // Replace deletePayment() with this method.
   deletePayment(payment: Payment): void {
     if (this.isDeleting) {
       return;
@@ -126,7 +145,7 @@ export class PaymentListComponent implements OnInit {
     this.modalService
       .open(
         'Delete Payment?',
-        `Are you sure you want to delete payment "${payment.paymentNumber}"?`,
+        `Are you sure you want to delete payment "${payment.paymentNumber}"? This will also recalculate the related invoice balance.`,
         'Delete Payment',
         'Cancel',
         'danger'
@@ -139,55 +158,70 @@ export class PaymentListComponent implements OnInit {
         this.isDeleting = true;
         this.deletingPaymentId = payment.id;
 
-        this.paymentService.deletePayment(payment.id).subscribe({
-          next: deleted => {
-            if (!deleted) {
-              this.notificationService.error(
-                'Payment could not be deleted.'
+        this.paymentService
+          .deletePayment(payment.id)
+          .pipe(
+            finalize(() => {
+              this.isDeleting = false;
+              this.deletingPaymentId = null;
+            })
+          )
+          .subscribe({
+            next: deleted => {
+              if (!deleted) {
+                this.notificationService.error(
+                  'Payment could not be deleted.'
+                );
+                return;
+              }
+
+              this.payments = this.payments.filter(
+                item => item.id !== payment.id
               );
-              return;
+
+              this.applyFilters();
+
+              this.notificationService.success(
+                `Payment "${payment.paymentNumber}" deleted successfully.`
+              );
+            },
+            error: error => {
+              console.error('Failed to delete payment:', error);
+
+              this.notificationService.error(
+                error?.error?.message ||
+                'Failed to delete payment. Please try again.'
+              );
             }
-
-            this.payments = this.payments.filter(
-              item => item.id !== payment.id
-            );
-
-            this.applyFilters();
-
-            this.notificationService.success(
-              `Payment "${payment.paymentNumber}" deleted successfully.`
-            );
-          },
-          error: error => {
-            console.error('Failed to delete payment:', error);
-
-            this.notificationService.error(
-              error?.error?.message ||
-              'Failed to delete payment. Please try again.'
-            );
-          },
-          complete: () => {
-            this.isDeleting = false;
-            this.deletingPaymentId = null;
-          }
-        });
+          });
       });
   }
 
+
   getMethodLabel(method: PaymentMethod): string {
     const labels: Record<PaymentMethod, string> = {
-      cash: 'Cash',
-      'bank-transfer': 'Bank Transfer',
-      upi: 'UPI',
-      card: 'Card',
-      cheque: 'Cheque'
+      Cash: 'Cash',
+      Card: 'Card',
+      UPI: 'UPI',
+      'Bank Transfer': 'Bank Transfer',
+      Cheque: 'Cheque',
+      Other: 'Other'
     };
 
     return labels[method] ?? method;
   }
 
   getMethodClass(method: PaymentMethod): string {
-    return `method-${method}`;
+    const classes: Record<PaymentMethod, string> = {
+      Cash: 'method-cash',
+      Card: 'method-card',
+      UPI: 'method-upi',
+      'Bank Transfer': 'method-bank-transfer',
+      Cheque: 'method-cheque',
+      Other: 'method-other'
+    };
+
+    return classes[method] ?? 'method-other';
   }
 
   get totalPaymentAmount(): number {

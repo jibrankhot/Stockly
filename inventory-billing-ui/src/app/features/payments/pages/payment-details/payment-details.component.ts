@@ -7,7 +7,8 @@ import {
 
 import {
   Component,
-  OnInit
+  OnInit,
+  inject
 } from '@angular/core';
 
 import {
@@ -36,17 +37,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
   styleUrl: './payment-details.component.scss'
 })
 export class PaymentDetailsComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly paymentService = inject(PaymentService);
+  private readonly notificationService = inject(NotificationService);
 
-  payment: Payment | undefined;
+  payment: Payment | null = null;
 
   isLoading = true;
   errorMessage = '';
-
-  constructor(
-    private route: ActivatedRoute,
-    private paymentService: PaymentService,
-    private notificationService: NotificationService
-  ) { }
 
   ngOnInit(): void {
     this.loadPayment();
@@ -55,75 +53,71 @@ export class PaymentDetailsComponent implements OnInit {
   loadPayment(): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.payment = null;
 
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = Number(idParam);
 
-    if (!idParam || Number.isNaN(id) || id <= 0) {
+    if (
+      !idParam ||
+      !Number.isSafeInteger(id) ||
+      id <= 0
+    ) {
       this.errorMessage = 'Invalid payment ID.';
       this.isLoading = false;
 
-      this.notificationService.error(
-        'Invalid payment ID.'
-      );
-
+      this.notificationService.error(this.errorMessage);
       return;
     }
 
-    this.paymentService
-      .getPaymentById(id)
-      .subscribe({
-        next: payment => {
+    this.paymentService.getPaymentById(id).subscribe({
+      next: payment => {
+        if (!payment) {
+          this.errorMessage = 'Payment not found.';
+          this.notificationService.error(this.errorMessage);
+        } else {
           this.payment = payment;
-
-          if (!payment) {
-            this.errorMessage = 'Payment not found.';
-
-            this.notificationService.error(
-              'Payment not found.'
-            );
-          }
-
-          this.isLoading = false;
-        },
-
-        error: error => {
-          this.errorMessage = 'Unable to load payment.';
-          this.isLoading = false;
-
-          console.error('Failed to load payment:', error);
-
-          this.notificationService.error(
-            error?.error?.message ||
-            'Unable to load payment. Please try again.'
-          );
         }
-      });
+
+        this.isLoading = false;
+      },
+
+      error: error => {
+        console.error('Failed to load payment:', error);
+
+        this.errorMessage =
+          error?.error?.message ||
+          'Unable to load payment. Please try again.';
+
+        this.isLoading = false;
+        this.notificationService.error(this.errorMessage);
+      }
+    });
   }
 
   getMethodLabel(method: PaymentMethod): string {
-    switch (method) {
-      case 'cash':
-        return 'Cash';
+    const labels: Record<PaymentMethod, string> = {
+      Cash: 'Cash',
+      Card: 'Card',
+      UPI: 'UPI',
+      'Bank Transfer': 'Bank Transfer',
+      Cheque: 'Cheque',
+      Other: 'Other'
+    };
 
-      case 'bank-transfer':
-        return 'Bank Transfer';
-
-      case 'upi':
-        return 'UPI';
-
-      case 'card':
-        return 'Card';
-
-      case 'cheque':
-        return 'Cheque';
-
-      default:
-        return method;
-    }
+    return labels[method] ?? method;
   }
 
   getMethodClass(method: PaymentMethod): string {
-    return `method-${method}`;
+    const classes: Record<PaymentMethod, string> = {
+      Cash: 'method-cash',
+      Card: 'method-card',
+      UPI: 'method-upi',
+      'Bank Transfer': 'method-bank-transfer',
+      Cheque: 'method-cheque',
+      Other: 'method-other'
+    };
+
+    return classes[method] ?? 'method-other';
   }
 }

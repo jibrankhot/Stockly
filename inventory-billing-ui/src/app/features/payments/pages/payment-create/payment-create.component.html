@@ -1,386 +1,320 @@
-<div class="page-container">
+<div class="payment-create-page">
 
-    <!-- Header -->
-    <div class="page-header">
-
-        <div>
-
+    <header class="page-header">
+        <div class="page-heading">
+            <span class="eyebrow">FINANCE / PAYMENTS</span>
             <h1>Record Payment</h1>
-
-            <p>
-                Record a customer payment against an invoice.
-            </p>
-
+            <p>Record a customer payment against an invoice.</p>
         </div>
 
-        <a routerLink="/payments" class="btn btn-outline">
-
+        <a routerLink="/payments" class="btn back-button">
+            <span aria-hidden="true">←</span>
             Back to Payments
-
         </a>
+    </header>
 
-    </div>
+    <section *ngIf="isLoading" class="state-card" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading invoices</h2>
+        <p>Please wait while available invoices are loaded.</p>
+    </section>
 
+    <section *ngIf="!isLoading && errorMessage && !invoices.length" class="state-card error-state" role="alert">
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>Unable to load invoices</h2>
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="btn btn-primary" (click)="loadInvoices()">
+            Try again
+        </button>
+    </section>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="state-card">
+    <form *ngIf="!isLoading && invoices.length" [formGroup]="paymentForm" (ngSubmit)="savePayment()"
+        class="payment-form">
+        <div class="create-layout">
 
-        Loading invoices...
+            <div class="form-column">
 
-    </div>
+                <!-- Invoice details -->
+                <section class="card">
+                    <div class="card-header">
+                        <div class="section-icon" aria-hidden="true">▤</div>
 
-
-    <!-- Form -->
-    <form *ngIf="!isLoading" [formGroup]="paymentForm" (ngSubmit)="savePayment()">
-
-
-        <!-- Invoice Selection -->
-        <section class="card">
-
-            <div class="card-header">
-
-                <h2>
-                    Invoice Details
-                </h2>
-
-            </div>
-
-
-            <div class="form-content">
-
-
-                <!-- Invoice -->
-                <div class="form-group full-width">
-
-                    <label for="invoiceId">
-
-                        Invoice <span>*</span>
-
-                    </label>
-
-                    <select id="invoiceId" formControlName="invoiceId" (change)="onInvoiceChange()">
-
-                        <option value="">
-                            Select an invoice
-                        </option>
-
-                        <option *ngFor="let invoice of invoices" [value]="invoice.id">
-
-                            {{ invoice.invoiceNumber }}
-                            —
-                            {{ invoice.customerName }}
-                            —
-                            ₹{{ invoice.totalAmount | number:'1.2-2' }}
-
-                        </option>
-
-                    </select>
-
-                    <small *ngIf="
-              paymentForm.get('invoiceId')?.touched &&
-              paymentForm.get('invoiceId')?.hasError('required')
-            ">
-
-                        Please select an invoice.
-
-                    </small>
-
-                </div>
-
-
-                <!-- Selected Invoice Summary -->
-                <div *ngIf="selectedInvoice" class="invoice-summary">
-
-
-                    <div class="summary-item">
-
-                        <span>
-                            Invoice Number
-                        </span>
-
-                        <strong>
-                            {{ selectedInvoice.invoiceNumber }}
-                        </strong>
-
+                        <div class="section-heading">
+                            <h2>Invoice details</h2>
+                            <p>Select the invoice receiving this payment.</p>
+                        </div>
                     </div>
 
+                    <div class="form-content">
+                        <div class="form-group full-width">
+                            <label for="invoiceId">
+                                Invoice <span>*</span>
+                            </label>
 
-                    <div class="summary-item">
+                            <select id="invoiceId" formControlName="invoiceId" (change)="onInvoiceChange()"
+                                [attr.aria-invalid]="
+                  paymentForm.get('invoiceId')?.touched &&
+                  paymentForm.get('invoiceId')?.invalid
+                ">
+                                <option value="">Select an invoice</option>
 
-                        <span>
-                            Customer
-                        </span>
+                                <option *ngFor="let invoice of invoices" [value]="invoice.id">
+                                    {{ invoice.invoiceNumber }} — {{ invoice.customerName }}
+                                    — ₹{{ invoice.totalAmount | number:'1.2-2' }}
+                                </option>
+                            </select>
 
-                        <strong>
-                            {{ selectedInvoice.customerName }}
-                        </strong>
+                            <small *ngIf="
+                  paymentForm.get('invoiceId')?.touched &&
+                  paymentForm.get('invoiceId')?.hasError('required')
+                ">
+                                Please select an invoice.
+                            </small>
+                        </div>
 
+                        <div *ngIf="selectedInvoice" class="invoice-summary">
+                            <div class="invoice-summary-item">
+                                <span class="mini-icon" aria-hidden="true">▤</span>
+                                <div>
+                                    <span class="summary-label">Invoice number</span>
+                                    <strong>{{ selectedInvoice.invoiceNumber }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="invoice-summary-item">
+                                <span class="mini-icon" aria-hidden="true">♙</span>
+                                <div>
+                                    <span class="summary-label">Customer</span>
+                                    <strong>{{ selectedInvoice.customerName }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="invoice-summary-item">
+                                <span class="mini-icon" aria-hidden="true">₹</span>
+                                <div>
+                                    <span class="summary-label">Outstanding balance</span>
+                                    <strong class="balance-highlight">
+                                        ₹{{ invoiceTotal | number:'1.2-2' }}
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="invoice-summary-item">
+                                <span class="mini-icon" aria-hidden="true">✓</span>
+                                <div>
+                                    <span class="summary-label">Invoice status</span>
+                                    <strong class="status-badge">
+                                        {{ selectedInvoice.status.replace('-', ' ') | titlecase }}
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Payment details -->
+                <section class="card">
+                    <div class="card-header">
+                        <div class="section-icon money-icon" aria-hidden="true">₹</div>
+
+                        <div class="section-heading">
+                            <h2>Payment details</h2>
+                            <p>Enter the amount and transaction information.</p>
+                        </div>
                     </div>
 
+                    <div class="form-content">
 
-                    <div class="summary-item">
+                        <div class="form-group">
+                            <label for="paymentDate">
+                                Payment date <span>*</span>
+                            </label>
 
-                        <span>
-                            Invoice Total
-                        </span>
+                            <input id="paymentDate" type="date" formControlName="paymentDate" />
 
-                        <strong>
-                            ₹{{ selectedInvoice.totalAmount
-                            | number:'1.2-2' }}
-                        </strong>
+                            <small *ngIf="
+                  paymentForm.get('paymentDate')?.touched &&
+                  paymentForm.get('paymentDate')?.hasError('required')
+                ">
+                                Payment date is required.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amount">
+                                Payment amount <span>*</span>
+                            </label>
+
+                            <div class="amount-input">
+                                <span aria-hidden="true">₹</span>
+                                <input id="amount" type="number" min="0.01" step="0.01" formControlName="amount"
+                                    placeholder="0.00" [attr.aria-invalid]="
+                    paymentForm.get('amount')?.touched &&
+                    paymentForm.get('amount')?.invalid
+                  " />
+                            </div>
+
+                            <small *ngIf="
+                  paymentForm.get('amount')?.touched &&
+                  paymentForm.get('amount')?.hasError('required')
+                ">
+                                Payment amount is required.
+                            </small>
+
+                            <small *ngIf="
+                  paymentForm.get('amount')?.touched &&
+                  paymentForm.get('amount')?.hasError('min')
+                ">
+                                Payment amount must be greater than zero.
+                            </small>
+
+                            <small *ngIf="selectedInvoice && paymentAmount > invoiceTotal">
+                                Amount cannot exceed the outstanding balance of
+                                ₹{{ invoiceTotal | number:'1.2-2' }}.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentMethod">
+                                Payment method <span>*</span>
+                            </label>
+
+                            <select id="paymentMethod" formControlName="paymentMethod">
+                                <option *ngFor="let method of paymentMethods" [value]="method.value">
+                                    {{ method.label }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="referenceNumber">Reference number</label>
+
+                            <input id="referenceNumber" type="text" formControlName="referenceNumber"
+                                placeholder="Transaction or cheque reference" />
+
+                            <small *ngIf="
+                  paymentForm.get('referenceNumber')?.touched &&
+                  paymentForm.get('referenceNumber')?.hasError('maxlength')
+                ">
+                                Reference number cannot exceed 100 characters.
+                            </small>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="notes">
+                                Notes <span class="optional-label">Optional</span>
+                            </label>
+
+                            <textarea id="notes" rows="4" formControlName="notes" maxlength="250"
+                                placeholder="Add any additional payment information"></textarea>
+
+                            <div class="field-footer">
+                                <small *ngIf="
+                    paymentForm.get('notes')?.touched &&
+                    paymentForm.get('notes')?.hasError('maxlength')
+                  ">
+                                    Notes cannot exceed 250 characters.
+                                </small>
+
+                                <span>
+                                    {{ paymentForm.get('notes')?.value?.length || 0 }}/250
+                                </span>
+                            </div>
+                        </div>
 
                     </div>
+                </section>
 
+            </div>
 
-                    <div class="summary-item">
+            <!-- Payment summary -->
+            <aside class="payment-summary">
+                <div class="summary-heading">
+                    <div class="section-icon summary-icon" aria-hidden="true">▥</div>
 
-                        <span>
-                            Status
-                        </span>
+                    <div class="section-heading">
+                        <h2>Payment summary</h2>
+                        <p>Review the balance before recording the payment.</p>
+                    </div>
+                </div>
 
-                        <strong class="status-badge">
+                <div class="summary-panel">
 
-                            {{
-                            selectedInvoice.status
-                            .replace('-', ' ')
-                            | titlecase
-                            }}
+                    <div class="total-row">
+                        <div>
+                            <span>Outstanding balance</span>
+                            <strong>
+                                ₹{{ invoiceTotal | number:'1.2-2' }}
+                            </strong>
+                        </div>
+                        <span class="total-icon" aria-hidden="true">▤</span>
+                    </div>
 
-                        </strong>
+                    <div class="total-row">
+                        <div>
+                            <span>Payment amount</span>
+                            <strong class="payment-value">
+                                ₹{{ paymentAmount | number:'1.2-2' }}
+                            </strong>
+                        </div>
+                        <span class="total-icon payment-icon" aria-hidden="true">₹</span>
+                    </div>
 
+                    <div class="total-row">
+                        <div>
+                            <span>Balance after payment</span>
+                            <strong [class.balance-zero]="remainingAfterPayment === 0"
+                                [class.balance-warning]="paymentAmount > invoiceTotal">
+                                ₹{{ remainingAfterPayment | number:'1.2-2' }}
+                            </strong>
+                        </div>
+                        <span class="total-icon" aria-hidden="true">▦</span>
                     </div>
 
                 </div>
 
-            </div>
-
-        </section>
-
-
-        <!-- Payment Details -->
-        <section class="card">
-
-            <div class="card-header">
-
-                <h2>
-                    Payment Details
-                </h2>
-
-            </div>
-
-
-            <div class="form-content">
-
-
-                <!-- Payment Date -->
-                <div class="form-group">
-
-                    <label for="paymentDate">
-
-                        Payment Date <span>*</span>
-
-                    </label>
-
-                    <input id="paymentDate" type="date" formControlName="paymentDate">
-
-                    <small *ngIf="
-              paymentForm.get('paymentDate')?.touched &&
-              paymentForm.get('paymentDate')?.hasError('required')
-            ">
-
-                        Payment date is required.
-
-                    </small>
-
-                </div>
-
-
-                <!-- Amount -->
-                <div class="form-group">
-
-                    <label for="amount">
-
-                        Amount <span>*</span>
-
-                    </label>
-
-                    <div class="amount-input">
-
-                        <span>₹</span>
-
-                        <input id="amount" type="number" min="0.01" step="0.01" formControlName="amount">
-
+                <div class="important-note">
+                    <span class="note-icon" aria-hidden="true">i</span>
+                    <div>
+                        <strong>Important</strong>
+                        <p>Payment amount cannot exceed the outstanding balance.</p>
                     </div>
+                </div>
 
-                    <small *ngIf="
-              paymentForm.get('amount')?.touched &&
-              paymentForm.get('amount')?.hasError('required')
+                <div *ngIf="errorMessage && invoices.length" class="error-message" role="alert">
+                    <span aria-hidden="true">!</span>
+                    <p>{{ errorMessage }}</p>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline cancel-button" (click)="cancel()"
+                        [disabled]="isSaving">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary submit-button" [disabled]="
+              isSaving ||
+              !selectedInvoice ||
+              paymentAmount <= 0 ||
+              paymentAmount > invoiceTotal ||
+              paymentForm.invalid
             ">
-
-                        Payment amount is required.
-
-                    </small>
-
-                    <small *ngIf="
-              paymentForm.get('amount')?.touched &&
-              paymentForm.get('amount')?.hasError('min')
-            ">
-
-                        Payment amount must be greater than zero.
-
-                    </small>
-
-                    <small *ngIf="
-              selectedInvoice &&
-              paymentAmount > invoiceTotal
-            ">
-
-                        Payment cannot exceed the invoice total.
-
-                    </small>
-
+                        <span *ngIf="!isSaving" aria-hidden="true">✓</span>
+                        {{ isSaving ? 'Saving payment…' : 'Record Payment' }}
+                    </button>
                 </div>
-
-
-                <!-- Payment Method -->
-                <div class="form-group">
-
-                    <label for="paymentMethod">
-
-                        Payment Method <span>*</span>
-
-                    </label>
-
-                    <select id="paymentMethod" formControlName="paymentMethod">
-
-                        <option *ngFor="let method of paymentMethods" [value]="method.value">
-
-                            {{ method.label }}
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- Reference -->
-                <div class="form-group">
-
-                    <label for="referenceNumber">
-
-                        Reference Number
-
-                    </label>
-
-                    <input id="referenceNumber" type="text" formControlName="referenceNumber"
-                        placeholder="Transaction / cheque reference">
-
-                </div>
-
-
-                <!-- Notes -->
-                <div class="form-group full-width">
-
-                    <label for="notes">
-
-                        Notes
-
-                    </label>
-
-                    <textarea id="notes" rows="4" formControlName="notes" placeholder="Additional payment notes">
-          </textarea>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- Payment Summary -->
-        <section *ngIf="selectedInvoice" class="payment-summary">
-
-            <div>
-
-                <span>
-                    Invoice Total
-                </span>
-
-                <strong>
-                    ₹{{ invoiceTotal | number:'1.2-2' }}
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Payment Amount
-                </span>
-
-                <strong class="payment-value">
-                    ₹{{ paymentAmount | number:'1.2-2' }}
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <span>
-                    Remaining Balance
-                </span>
-
-                <strong [class.balance-zero]="
-            remainingAfterPayment === 0
-          ">
-
-                    ₹{{ remainingAfterPayment
-                    | number:'1.2-2' }}
-
-                </strong>
-
-            </div>
-
-        </section>
-
-
-        <!-- Error -->
-        <div *ngIf="errorMessage" class="error-message">
-
-            {{ errorMessage }}
+            </aside>
 
         </div>
-
-
-        <!-- Actions -->
-        <div class="form-actions">
-
-            <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="isSaving">
-
-                Cancel
-
-            </button>
-
-
-            <button type="submit" class="btn btn-primary" [disabled]="
-          isSaving ||
-          !selectedInvoice ||
-          paymentAmount > invoiceTotal
-        ">
-
-                {{
-                isSaving
-                ? 'Saving...'
-                : 'Record Payment'
-                }}
-
-            </button>
-
-        </div>
-
     </form>
+
+    <section *ngIf="!isLoading && !invoices.length && !errorMessage" class="state-card">
+        <div class="state-icon empty-icon" aria-hidden="true">▤</div>
+        <h2>No invoices available</h2>
+        <p>There are no outstanding invoices available for payment.</p>
+        <a routerLink="/sales/invoices" class="btn btn-primary">
+            View invoices
+        </a>
+    </section>
 
 </div>

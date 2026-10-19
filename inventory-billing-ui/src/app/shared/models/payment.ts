@@ -1,20 +1,25 @@
+
 export interface Payment {
     id: number;
     paymentNumber: string;
     invoiceId: number;
     invoiceNumber: string;
+    customerId: number | null;
     customerName: string;
     paymentDate: string;
     amount: number;
     paymentMethod: PaymentMethod;
     referenceNumber: string | null;
     notes: string | null;
+    createdBy: number | null;
     createdAt: string;
+    updatedAt: string;
 }
 
 export type PaymentMethod =
-    | 'cash'
-    | 'bank-transfer'
-    | 'upi'
-    | 'card'
-    | 'cheque';
+    | 'Cash'
+    | 'Card'
+    | 'UPI'
+    | 'Bank Transfer'
+    | 'Cheque'
+    | 'Other';

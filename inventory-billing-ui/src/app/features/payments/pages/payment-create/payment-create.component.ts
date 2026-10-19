@@ -10,10 +10,15 @@ import {
 import { Router, RouterLink } from '@angular/router';
 
 import { Invoice } from '../../../../shared/models/invoice';
-import { PaymentMethod } from '../../../../shared/models/payment';
+import {
+  PaymentMethod
+} from '../../../../shared/models/payment';
 
 import { InvoiceService } from '../../../sales/invoices/services/invoice.service';
-import { PaymentService } from '../../services/payment.service';
+import {
+  PaymentService,
+  CreatePaymentRequest
+} from '../../services/payment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
@@ -30,33 +35,32 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class PaymentCreateComponent implements OnInit {
 
   invoices: Invoice[] = [];
-
   selectedInvoice: Invoice | null = null;
 
   paymentForm: FormGroup;
 
-  paymentMethods: {
+  readonly paymentMethods: {
     value: PaymentMethod;
     label: string;
   }[] = [
-      { value: 'cash', label: 'Cash' },
-      { value: 'bank-transfer', label: 'Bank Transfer' },
-      { value: 'upi', label: 'UPI' },
-      { value: 'card', label: 'Card' },
-      { value: 'cheque', label: 'Cheque' }
+      { value: 'Cash', label: 'Cash' },
+      { value: 'Bank Transfer', label: 'Bank Transfer' },
+      { value: 'UPI', label: 'UPI' },
+      { value: 'Card', label: 'Card' },
+      { value: 'Cheque', label: 'Cheque' },
+      { value: 'Other', label: 'Other' }
     ];
 
   isLoading = true;
   isSaving = false;
-
   errorMessage = '';
 
   constructor(
-    private fb: FormBuilder,
-    private invoiceService: InvoiceService,
-    private paymentService: PaymentService,
-    private notificationService: NotificationService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly invoiceService: InvoiceService,
+    private readonly paymentService: PaymentService,
+    private readonly notificationService: NotificationService,
+    private readonly router: Router
   ) {
     this.paymentForm = this.fb.group({
       invoiceId: ['', Validators.required],
@@ -68,7 +72,7 @@ export class PaymentCreateComponent implements OnInit {
           Validators.min(0.01)
         ]
       ],
-      paymentMethod: ['cash', Validators.required],
+      paymentMethod: ['Cash', Validators.required],
       referenceNumber: ['', Validators.maxLength(100)],
       notes: ['', Validators.maxLength(250)]
     });
@@ -82,29 +86,31 @@ export class PaymentCreateComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.invoiceService
-      .getInvoices()
-      .subscribe({
-        next: invoices => {
-          this.invoices = invoices.filter(
-            invoice => invoice.status !== 'cancelled'
-          );
+    this.invoiceService.getInvoices().subscribe({
+      next: invoices => {
+        this.invoices = invoices.filter(invoice => {
+          const status = String(invoice.status).toLowerCase();
 
-          this.isLoading = false;
-        },
+          return status !== 'cancelled' &&
+            status !== 'paid' &&
+            Number(invoice.totalAmount) > 0;
+        });
 
-        error: error => {
-          this.errorMessage = 'Unable to load invoices.';
-          this.isLoading = false;
+        this.isLoading = false;
+      },
 
-          console.error('Failed to load invoices:', error);
+      error: error => {
+        console.error('Failed to load invoices:', error);
 
-          this.notificationService.error(
-            error?.error?.message ||
-            'Unable to load invoices. Please try again.'
-          );
-        }
-      });
+        this.errorMessage =
+          error?.error?.message ||
+          'Unable to load invoices. Please try again.';
+
+        this.isLoading = false;
+
+        this.notificationService.error(this.errorMessage);
+      }
+    });
   }
 
   onInvoiceChange(): void {
@@ -112,38 +118,48 @@ export class PaymentCreateComponent implements OnInit {
       this.paymentForm.get('invoiceId')?.value
     );
 
-    this.selectedInvoice = this.invoices.find(
-      invoice => invoice.id === invoiceId
-    ) ?? null;
+    this.selectedInvoice =
+      this.invoices.find(invoice => invoice.id === invoiceId) ?? null;
 
     if (this.selectedInvoice) {
       this.paymentForm.patchValue({
-        amount: this.selectedInvoice.totalAmount
+        amount: this.getInvoiceBalance(this.selectedInvoice)
       });
     } else {
-      this.paymentForm.patchValue({
-        amount: 0
-      });
+      this.paymentForm.patchValue({ amount: 0 });
     }
+
+    this.errorMessage = '';
+  }
+
+  getInvoiceBalance(invoice: Invoice): number {
+    const total = Number(invoice.totalAmount) || 0;
+    const paid = Number(
+      (invoice as Invoice & { paidAmount?: number }).paidAmount
+    ) || 0;
+
+    return Math.max(total - paid, 0);
   }
 
   get paymentAmount(): number {
-    return Number(
-      this.paymentForm.get('amount')?.value
-    ) || 0;
+    return Number(this.paymentForm.get('amount')?.value) || 0;
   }
 
   get invoiceTotal(): number {
-    return this.selectedInvoice?.totalAmount ?? 0;
+    return this.selectedInvoice
+      ? this.getInvoiceBalance(this.selectedInvoice)
+      : 0;
   }
 
   get remainingAfterPayment(): number {
-    const remaining = this.invoiceTotal - this.paymentAmount;
-
-    return Math.max(remaining, 0);
+    return Math.max(this.invoiceTotal - this.paymentAmount, 0);
   }
 
   savePayment(): void {
+    if (this.isSaving) {
+      return;
+    }
+
     if (this.paymentForm.invalid) {
       this.paymentForm.markAllAsTouched();
       return;
@@ -156,54 +172,47 @@ export class PaymentCreateComponent implements OnInit {
 
     if (this.paymentAmount > this.invoiceTotal) {
       this.errorMessage =
-        'Payment amount cannot exceed the invoice total.';
+        'Payment amount cannot exceed the remaining invoice balance.';
       return;
     }
 
-    const paymentData = {
+    const formValue = this.paymentForm.getRawValue();
+
+    const paymentData: CreatePaymentRequest = {
       invoiceId: this.selectedInvoice.id,
-      invoiceNumber: this.selectedInvoice.invoiceNumber,
-      customerName: this.selectedInvoice.customerName,
-      paymentDate: this.paymentForm.get('paymentDate')?.value,
+      paymentDate: formValue.paymentDate,
       amount: this.paymentAmount,
-      paymentMethod: this.paymentForm.get('paymentMethod')?.value,
-      referenceNumber:
-        this.paymentForm.get('referenceNumber')?.value?.trim() ?? '',
-      notes:
-        this.paymentForm.get('notes')?.value?.trim() ?? ''
+      paymentMethod: formValue.paymentMethod as PaymentMethod,
+      referenceNumber: formValue.referenceNumber?.trim() || null,
+      notes: formValue.notes?.trim() || null
     };
 
     this.isSaving = true;
     this.errorMessage = '';
 
-    this.paymentService
-      .createPayment(paymentData)
-      .subscribe({
-        next: payment => {
-          this.isSaving = false;
+    this.paymentService.createPayment(paymentData).subscribe({
+      next: payment => {
+        this.isSaving = false;
 
-          this.notificationService.success(
-            'Payment recorded successfully.'
-          );
+        this.notificationService.success(
+          'Payment recorded successfully.'
+        );
 
-          this.router.navigate([
-            '/payments',
-            payment.id
-          ]);
-        },
+        this.router.navigate(['/payments', payment.id]);
+      },
 
-        error: error => {
-          this.isSaving = false;
-          this.errorMessage = 'Unable to save payment.';
+      error: error => {
+        console.error('Failed to save payment:', error);
 
-          console.error('Failed to save payment:', error);
+        this.errorMessage =
+          error?.error?.message ||
+          'Unable to save payment. Please try again.';
 
-          this.notificationService.error(
-            error?.error?.message ||
-            'Unable to save payment. Please try again.'
-          );
-        }
-      });
+        this.isSaving = false;
+
+        this.notificationService.error(this.errorMessage);
+      }
+    });
   }
 
   cancel(): void {
@@ -211,8 +220,11 @@ export class PaymentCreateComponent implements OnInit {
   }
 
   private getToday(): string {
-    return new Date()
-      .toISOString()
-      .split('T')[0];
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }
