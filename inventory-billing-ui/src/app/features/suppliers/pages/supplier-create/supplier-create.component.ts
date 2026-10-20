@@ -1,9 +1,13 @@
 
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Supplier } from '../../../../shared/models/supplier';
-import { SupplierService } from '../../services/supplier.service';
+import {
+    CreateSupplierRequest,
+    SupplierService
+} from '../../services/supplier.service';
 import { SupplierFormComponent } from '../../components/supplier-form/supplier-form.component';
 import { NotificationService } from '../../../../core/services/notification.service';
 
@@ -11,13 +15,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
     selector: 'app-supplier-create',
     standalone: true,
     imports: [
+        RouterLink,
         SupplierFormComponent
     ],
     templateUrl: './supplier-create.component.html',
     styleUrl: './supplier-create.component.scss'
 })
 export class SupplierCreateComponent {
-
     isSubmitting = false;
 
     constructor(
@@ -26,39 +30,66 @@ export class SupplierCreateComponent {
         private readonly router: Router
     ) { }
 
-    onSubmit(supplierData: Partial<Supplier>): void {
+    onSubmit(supplierData: CreateSupplierRequest): void {
+        if (this.isSubmitting) {
+            return;
+        }
+
         this.isSubmitting = true;
 
         this.supplierService
             .createSupplier(supplierData)
-            .subscribe({
-                next: supplier => {
+            .pipe(
+                finalize(() => {
                     this.isSubmitting = false;
-
+                })
+            )
+            .subscribe({
+                next: (_supplier: Supplier) => {
                     this.notificationService.success(
                         'Supplier created successfully.'
                     );
 
-                    this.router.navigate(['/suppliers']);
+                    void this.router.navigate(['/suppliers']);
                 },
 
-                error: error => {
-                    console.error(
-                        'Failed to create supplier:',
-                        error
-                    );
-
-                    this.isSubmitting = false;
+                error: (error: unknown) => {
+                    console.error('Failed to create supplier:', error);
 
                     this.notificationService.error(
-                        error?.error?.message ||
-                        'Failed to create supplier. Please try again.'
+                        this.getErrorMessage(error)
                     );
                 }
             });
     }
 
     onCancel(): void {
-        this.router.navigate(['/suppliers']);
+        if (this.isSubmitting) {
+            return;
+        }
+
+        void this.router.navigate(['/suppliers']);
+    }
+
+    private getErrorMessage(error: unknown): string {
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            'error' in error
+        ) {
+            const response = error.error;
+
+            if (
+                typeof response === 'object' &&
+                response !== null &&
+                'message' in response &&
+                typeof response.message === 'string' &&
+                response.message.trim().length > 0
+            ) {
+                return response.message;
+            }
+        }
+
+        return 'Failed to create supplier. Please try again.';
     }
 }

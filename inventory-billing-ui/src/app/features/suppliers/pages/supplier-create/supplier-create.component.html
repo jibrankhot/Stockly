@@ -1,25 +1,35 @@
 <div class="supplier-create-page">
-
-    <div class="page-header">
-
-        <div>
-
-            <button type="button" class="back-button" (click)="onCancel()">
-                ← Back to Suppliers
-            </button>
-
-            <h1>
-                Create Supplier
-            </h1>
-
-            <p>
-                Add a new supplier to your inventory system.
-            </p>
-
+    <header class="page-header">
+        <div class="page-heading">
+            <h1>Create Supplier</h1>
+            <p>Add a new supplier to your inventory system.</p>
         </div>
 
-    </div>
+        <button type="button" class="back-button" (click)="onCancel()" [disabled]="isSubmitting"
+            aria-label="Back to Suppliers">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 12H5"></path>
+                <path d="m12 19-7-7 7-7"></path>
+            </svg>
+            <span>Back to Suppliers</span>
+        </button>
+    </header>
 
-    <app-supplier-form [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)" (cancel)="onCancel()" />
+    <main class="create-content">
+        <section class="intro-card">
+            <div class="intro-icon" aria-hidden="true">S</div>
 
+            <div class="intro-copy">
+                <h2>Supplier information</h2>
+                <p>
+                    Enter the supplier's business, contact, and address details.
+                    Required fields are marked with an asterisk.
+                </p>
+            </div>
+        </section>
+
+        <app-supplier-form [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
+            (cancel)="onCancel()"></app-supplier-form>
+    </main>
 </div>

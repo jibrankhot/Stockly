@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 
 import { Supplier } from '../../../../shared/models/supplier';
 import { SupplierService } from '../../services/supplier.service';
@@ -21,14 +22,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
   styleUrl: './supplier-list.component.scss'
 })
 export class SupplierListComponent implements OnInit {
-
   suppliers: Supplier[] = [];
 
   searchTerm = '';
-
   selectedStatus = 'all';
 
   isLoading = false;
+  hasLoadError = false;
 
   constructor(
     private readonly supplierService: SupplierService,
@@ -42,12 +42,9 @@ export class SupplierListComponent implements OnInit {
   }
 
   get filteredSuppliers(): Supplier[] {
-    const search = this.searchTerm
-      .trim()
-      .toLowerCase();
+    const search = this.searchTerm.trim().toLowerCase();
 
     return this.suppliers.filter(supplier => {
-
       const matchesSearch =
         !search ||
         (supplier.name ?? '').toLowerCase().includes(search) ||
@@ -67,28 +64,35 @@ export class SupplierListComponent implements OnInit {
   }
 
   loadSuppliers(): void {
+    if (this.isLoading) {
+      return;
+    }
+
     this.isLoading = true;
+    this.hasLoadError = false;
 
-    this.supplierService.getSuppliers().subscribe({
-      next: suppliers => {
-        this.suppliers = suppliers;
-        this.isLoading = false;
-      },
+    this.supplierService.getSuppliers()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: suppliers => {
+          this.suppliers = Array.isArray(suppliers)
+            ? suppliers
+            : [];
+        },
+        error: error => {
+          console.error('Failed to load suppliers:', error);
+          this.hasLoadError = true;
 
-      error: error => {
-        console.error(
-          'Failed to load suppliers:',
-          error
-        );
-
-        this.isLoading = false;
-
-        this.notificationService.error(
-          error?.error?.message ||
-          'Failed to load suppliers. Please try again.'
-        );
-      }
-    });
+          this.notificationService.error(
+            error?.error?.message ||
+            'Failed to load suppliers. Please try again.'
+          );
+        }
+      });
   }
 
   viewSupplier(supplier: Supplier): void {
@@ -116,7 +120,6 @@ export class SupplierListComponent implements OnInit {
         'danger'
       )
       .subscribe(confirmed => {
-
         if (!confirmed) {
           return;
         }
@@ -125,12 +128,10 @@ export class SupplierListComponent implements OnInit {
           .deleteSupplier(supplier.id)
           .subscribe({
             next: deleted => {
-
               if (!deleted) {
                 this.notificationService.error(
                   'Supplier could not be deleted.'
                 );
-
                 return;
               }
 
@@ -142,7 +143,6 @@ export class SupplierListComponent implements OnInit {
                 'Supplier deleted successfully.'
               );
             },
-
             error: error => {
               console.error(
                 'Failed to delete supplier:',

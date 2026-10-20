@@ -1,8 +1,5 @@
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-} from '@angular/common/http';
+
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -21,12 +18,10 @@ interface RequestOptions {
 })
 export class ApiClientService {
   private readonly http = inject(HttpClient);
+
   private readonly baseUrl = API_CONFIG.baseUrl.replace(/\/+$/, '');
 
-  get<T>(
-    endpoint: string,
-    params?: QueryParams,
-  ): Observable<T> {
+  get<T>(endpoint: string, params?: QueryParams): Observable<T> {
     return this.http.get<T>(this.buildUrl(endpoint), {
       params: this.buildParams(params),
     });
@@ -65,10 +60,7 @@ export class ApiClientService {
     });
   }
 
-  delete<T>(
-    endpoint: string,
-    params?: QueryParams,
-  ): Observable<T> {
+  delete<T>(endpoint: string, params?: QueryParams): Observable<T> {
     return this.http.delete<T>(this.buildUrl(endpoint), {
       params: this.buildParams(params),
     });
@@ -98,6 +90,10 @@ export class ApiClientService {
     }
 
     for (const [key, value] of Object.entries(params)) {
+      if (!key.trim()) {
+        throw new Error('Query parameter names cannot be empty.');
+      }
+
       httpParams = httpParams.set(key, String(value));
     }
 

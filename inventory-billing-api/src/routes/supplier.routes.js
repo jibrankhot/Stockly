@@ -1,3 +1,4 @@
+
 const express = require('express');
 
 const supplierController = require('../controllers/supplier.controller');
@@ -24,9 +25,6 @@ router.put(
     supplierController.updateSupplier
 );
 
-router.delete(
-    '/:id',
-    supplierController.deleteSupplier
-);
+router.delete('/:id', supplierController.deleteSupplier);
 
 module.exports = router;

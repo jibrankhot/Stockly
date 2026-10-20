@@ -1,245 +1,220 @@
 <form class="supplier-form" [formGroup]="supplierForm" (ngSubmit)="submit()" novalidate>
+    <div class="form-columns">
 
-    <!-- Basic Information -->
-    <section class="form-section">
+        <!-- LEFT COLUMN: Business + Contact Information -->
+        <div class="form-column left-column">
 
-        <div class="section-header">
-            <h2>Basic Information</h2>
-            <p>Enter the supplier's basic business information.</p>
+            <!-- Business Information -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Business Information</h2>
+                    <p>Enter the supplier's business details.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="name">
+                            Supplier Name <span class="required">*</span>
+                        </label>
+                        <input id="name" type="text" formControlName="name" placeholder="Enter supplier name"
+                            maxlength="200" autocomplete="organization" [class.invalid]="isFieldInvalid('name')"
+                            [attr.aria-invalid]="isFieldInvalid('name')"
+                            [attr.aria-describedby]="isFieldInvalid('name') ? 'name-error' : null" />
+
+                        @if (isFieldInvalid('name')) {
+                        <div class="error-message" id="name-error">
+                            @if (supplierForm.controls.name.hasError('required')) {
+                            <span>Supplier name is required.</span>
+                            }
+                            @if (supplierForm.controls.name.hasError('maxlength')) {
+                            <span>Supplier name cannot exceed 200 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="code">
+                            Supplier Code <span class="required">*</span>
+                        </label>
+                        <input id="code" type="text" formControlName="code" placeholder="e.g. SUP-001" maxlength="100"
+                            autocomplete="off" [class.invalid]="isFieldInvalid('code')"
+                            [attr.aria-invalid]="isFieldInvalid('code')"
+                            [attr.aria-describedby]="isFieldInvalid('code') ? 'code-error' : null" />
+
+                        @if (isFieldInvalid('code')) {
+                        <div class="error-message" id="code-error">
+                            @if (supplierForm.controls.code.hasError('required')) {
+                            <span>Supplier code is required.</span>
+                            }
+                            @if (supplierForm.controls.code.hasError('maxlength')) {
+                            <span>Supplier code cannot exceed 100 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="taxNumber">Tax Number</label>
+                        <input id="taxNumber" type="text" formControlName="taxNumber"
+                            placeholder="Enter tax or GST number" maxlength="100"
+                            [class.invalid]="isFieldInvalid('taxNumber')"
+                            [attr.aria-invalid]="isFieldInvalid('taxNumber')"
+                            [attr.aria-describedby]="isFieldInvalid('taxNumber') ? 'tax-number-error' : null" />
+
+                        @if (isFieldInvalid('taxNumber')) {
+                        <div class="error-message" id="tax-number-error">
+                            @if (supplierForm.controls.taxNumber.hasError('maxlength')) {
+                            <span>Tax number cannot exceed 100 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label class="toggle-field" for="isActive">
+                            <input id="isActive" type="checkbox" formControlName="isActive" />
+                            <span class="toggle" aria-hidden="true"></span>
+                            <span class="toggle-content">
+                                <strong>Active Supplier</strong>
+                                <small>Active suppliers can be selected for purchase orders.</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Information -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Contact Information</h2>
+                    <p>Enter the supplier's contact details.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="phone">Phone Number</label>
+                        <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number"
+                            maxlength="30" autocomplete="tel" [class.invalid]="isFieldInvalid('phone')"
+                            [attr.aria-invalid]="isFieldInvalid('phone')"
+                            [attr.aria-describedby]="isFieldInvalid('phone') ? 'phone-error' : null" />
+
+                        @if (isFieldInvalid('phone')) {
+                        <div class="error-message" id="phone-error">
+                            @if (supplierForm.controls.phone.hasError('maxlength')) {
+                            <span>Phone number cannot exceed 30 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="email">Email Address</label>
+                        <input id="email" type="email" formControlName="email" placeholder="supplier@example.com"
+                            maxlength="255" autocomplete="email" [class.invalid]="isFieldInvalid('email')"
+                            [attr.aria-invalid]="isFieldInvalid('email')"
+                            [attr.aria-describedby]="isFieldInvalid('email') ? 'email-error' : null" />
+
+                        @if (isFieldInvalid('email')) {
+                        <div class="error-message" id="email-error">
+                            @if (supplierForm.controls.email.hasError('email')) {
+                            <span>Please enter a valid email address.</span>
+                            }
+                            @if (supplierForm.controls.email.hasError('maxlength')) {
+                            <span>Email cannot exceed 255 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+            </section>
+
         </div>
 
-        <div class="form-grid">
+        <!-- RIGHT COLUMN: Address Information + Actions -->
+        <div class="form-column right-column">
 
-            <!-- Supplier Code -->
-            <div class="form-field">
-                <label for="code">Supplier Code</label>
-
-                <input id="code" type="text" formControlName="code" placeholder="e.g. SUP-001"
-                    [class.invalid]="isFieldInvalid('code')" />
-
-                @if (isFieldInvalid('code')) {
-                <div class="error-message">
-                    @if (supplierForm.get('code')?.hasError('maxlength')) {
-                    <span>Supplier code cannot exceed 30 characters.</span>
-                    }
+            <!-- Address Information -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Address Information</h2>
+                    <p>Enter the supplier's business location.</p>
                 </div>
-                }
-            </div>
 
-            <!-- Supplier Name -->
-            <div class="form-field">
-                <label for="name">
-                    Supplier Name
-                    <span class="required">*</span>
-                </label>
+                <div class="form-grid">
+                    <div class="form-field full-width">
+                        <label for="address">Street Address</label>
+                        <textarea id="address" rows="2" formControlName="address"
+                            placeholder="Enter complete business address" autocomplete="street-address"
+                            [class.invalid]="isFieldInvalid('address')"
+                            [attr.aria-invalid]="isFieldInvalid('address')"></textarea>
+                    </div>
 
-                <input id="name" type="text" formControlName="name" placeholder="Enter supplier name"
-                    [class.invalid]="isFieldInvalid('name')" />
+                    <div class="form-field">
+                        <label for="city">City</label>
+                        <input id="city" type="text" formControlName="city" placeholder="Enter city" maxlength="100"
+                            autocomplete="address-level2" [class.invalid]="isFieldInvalid('city')"
+                            [attr.aria-invalid]="isFieldInvalid('city')"
+                            [attr.aria-describedby]="isFieldInvalid('city') ? 'city-error' : null" />
 
-                @if (isFieldInvalid('name')) {
-                <div class="error-message">
-                    @if (supplierForm.get('name')?.hasError('required')) {
-                    <span>Supplier name is required.</span>
-                    }
+                        @if (isFieldInvalid('city')) {
+                        <div class="error-message" id="city-error">
+                            @if (supplierForm.controls.city.hasError('maxlength')) {
+                            <span>City cannot exceed 100 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
 
-                    @if (supplierForm.get('name')?.hasError('maxlength')) {
-                    <span>Supplier name cannot exceed 150 characters.</span>
-                    }
+                    <div class="form-field">
+                        <label for="state">State</label>
+                        <input id="state" type="text" formControlName="state" placeholder="Enter state" maxlength="100"
+                            autocomplete="address-level1" [class.invalid]="isFieldInvalid('state')"
+                            [attr.aria-invalid]="isFieldInvalid('state')"
+                            [attr.aria-describedby]="isFieldInvalid('state') ? 'state-error' : null" />
+
+                        @if (isFieldInvalid('state')) {
+                        <div class="error-message" id="state-error">
+                            @if (supplierForm.controls.state.hasError('maxlength')) {
+                            <span>State cannot exceed 100 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="postalCode">Postal Code</label>
+                        <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code"
+                            maxlength="20" autocomplete="postal-code" [class.invalid]="isFieldInvalid('postalCode')"
+                            [attr.aria-invalid]="isFieldInvalid('postalCode')"
+                            [attr.aria-describedby]="isFieldInvalid('postalCode') ? 'postal-code-error' : null" />
+
+                        @if (isFieldInvalid('postalCode')) {
+                        <div class="error-message" id="postal-code-error">
+                            @if (supplierForm.controls.postalCode.hasError('maxlength')) {
+                            <span>Postal code cannot exceed 20 characters.</span>
+                            }
+                        </div>
+                        }
+                    </div>
                 </div>
-                }
-            </div>
+            </section>
 
-        </div>
-    </section>
+            <!-- Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="onCancel()">
+                    Cancel
+                </button>
 
-    <!-- Contact Information -->
-    <section class="form-section">
-
-        <div class="section-header">
-            <h2>Contact Information</h2>
-            <p>Enter the supplier's contact details.</p>
-        </div>
-
-        <div class="form-grid">
-
-            <!-- Email -->
-            <div class="form-field">
-                <label for="email">Email</label>
-
-                <input id="email" type="email" formControlName="email" placeholder="supplier@example.com"
-                    [class.invalid]="isFieldInvalid('email')" />
-
-                @if (isFieldInvalid('email')) {
-                <div class="error-message">
-                    @if (supplierForm.get('email')?.hasError('email')) {
-                    <span>Please enter a valid email address.</span>
+                <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+                    @if (isSubmitting) {
+                    Saving...
+                    } @else {
+                    Create Supplier
                     }
-
-                    @if (supplierForm.get('email')?.hasError('maxlength')) {
-                    <span>Email cannot exceed 150 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-            <!-- Phone -->
-            <div class="form-field">
-                <label for="phone">Phone</label>
-
-                <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number"
-                    [class.invalid]="isFieldInvalid('phone')" />
-
-                @if (isFieldInvalid('phone')) {
-                <div class="error-message">
-                    @if (supplierForm.get('phone')?.hasError('maxlength')) {
-                    <span>Phone number cannot exceed 20 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Address -->
-    <section class="form-section">
-
-        <div class="section-header">
-            <h2>Address</h2>
-            <p>Enter the supplier's business address.</p>
-        </div>
-
-        <div class="form-grid">
-
-            <!-- Address -->
-            <div class="form-field full-width">
-                <label for="address">Address</label>
-
-                <textarea id="address" rows="3" formControlName="address" placeholder="Enter complete address"
-                    [class.invalid]="isFieldInvalid('address')"></textarea>
-
-                @if (isFieldInvalid('address')) {
-                <div class="error-message">
-                    @if (supplierForm.get('address')?.hasError('maxlength')) {
-                    <span>Address cannot exceed 250 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-            <!-- City -->
-            <div class="form-field">
-                <label for="city">City</label>
-
-                <input id="city" type="text" formControlName="city" placeholder="Enter city"
-                    [class.invalid]="isFieldInvalid('city')" />
-
-                @if (isFieldInvalid('city')) {
-                <div class="error-message">
-                    @if (supplierForm.get('city')?.hasError('maxlength')) {
-                    <span>City cannot exceed 100 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-            <!-- State -->
-            <div class="form-field">
-                <label for="state">State</label>
-
-                <input id="state" type="text" formControlName="state" placeholder="Enter state"
-                    [class.invalid]="isFieldInvalid('state')" />
-
-                @if (isFieldInvalid('state')) {
-                <div class="error-message">
-                    @if (supplierForm.get('state')?.hasError('maxlength')) {
-                    <span>State cannot exceed 100 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-            <!-- Postal Code -->
-            <div class="form-field">
-                <label for="postalCode">Postal Code</label>
-
-                <input id="postalCode" type="text" formControlName="postalCode" placeholder="Enter postal code"
-                    [class.invalid]="isFieldInvalid('postalCode')" />
-
-                @if (isFieldInvalid('postalCode')) {
-                <div class="error-message">
-                    @if (supplierForm.get('postalCode')?.hasError('maxlength')) {
-                    <span>Postal code cannot exceed 20 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Business Information -->
-    <section class="form-section">
-
-        <div class="section-header">
-            <h2>Business Information</h2>
-            <p>Configure tax and supplier status information.</p>
-        </div>
-
-        <div class="form-grid">
-
-            <!-- Tax Number -->
-            <div class="form-field">
-                <label for="taxNumber">Tax Number</label>
-
-                <input id="taxNumber" type="text" formControlName="taxNumber" placeholder="Enter tax number"
-                    [class.invalid]="isFieldInvalid('taxNumber')" />
-
-                @if (isFieldInvalid('taxNumber')) {
-                <div class="error-message">
-                    @if (supplierForm.get('taxNumber')?.hasError('maxlength')) {
-                    <span>Tax number cannot exceed 30 characters.</span>
-                    }
-                </div>
-                }
-            </div>
-
-            <!-- Status -->
-            <div class="form-field full-width">
-                <label class="toggle-field">
-
-                    <input type="checkbox" formControlName="isActive" />
-
-                    <span class="toggle"></span>
-
-                    <span class="toggle-content">
-                        <strong>Active Supplier</strong>
-                        <small>
-                            Active suppliers can be used for purchase orders.
-                        </small>
-                    </span>
-
-                </label>
+                </button>
             </div>
 
         </div>
-    </section>
-
-    <!-- Actions -->
-    <div class="form-actions">
-
-        <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="onCancel()">
-            Cancel
-        </button>
-
-        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
-            @if (isSubmitting) {
-            Saving...
-            } @else {
-            Save Supplier
-            }
-        </button>
-
     </div>
-
 </form>
