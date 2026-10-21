@@ -1,260 +1,273 @@
 <div class="supplier-details-page">
 
-    @if (supplier) {
+    @if (supplier; as currentSupplier) {
 
-    <!-- Page Header -->
+    <header class="page-header">
+        <div class="header-main">
+            <div class="supplier-heading">
+                <div class="supplier-avatar" aria-hidden="true">
+                    {{ currentSupplier.name?.charAt(0)?.toUpperCase() || 'S' }}
+                </div>
 
-    <div class="page-header">
+                <div class="supplier-heading-copy">
+                    <h1>{{ currentSupplier.name || 'Unnamed Supplier' }}</h1>
 
-        <div class="header-left">
+                    <div class="supplier-meta">
+                        <span class="supplier-code">
+                            Supplier code:
+                            <strong>{{ currentSupplier.code || 'Not provided' }}</strong>
+                        </span>
 
-            <button type="button" class="back-button" (click)="goBack()">
-                ← Back to Suppliers
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button type="button" class="secondary-button back-button" (click)="goBack()"
+                aria-label="Back to suppliers">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+                <span>Back to Suppliers</span>
             </button>
 
-            <div class="title-row">
+            <button type="button" class="edit-button" (click)="editSupplier()">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+                </svg>
+                <span>Edit Supplier</span>
+            </button>
+        </div>
+    </header>
 
-                <div class="supplier-avatar">
-                    {{ supplier.name.charAt(0).toUpperCase() }}
-                </div>
+    <main class="details-content">
 
-                <div>
-
-                    <h1>
-                        {{ supplier.name }}
-                    </h1>
-
-                    <p>
-                        {{ supplier.code }}
-                    </p>
-
-                </div>
-
-                <span class="status-badge" [class.active]="supplier.isActive" [class.inactive]="!supplier.isActive">
-                    {{ supplier.isActive ? 'Active' : 'Inactive' }}
-                </span>
-
+        <section class="details-intro">
+            <div class="intro-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="7" width="18" height="14" rx="2"></rect>
+                    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <path d="M3 12h18"></path>
+                    <path d="M10 12v2h4v-2"></path>
+                </svg>
             </div>
 
-        </div>
-
-        <button type="button" class="btn btn-primary" (click)="editSupplier()">
-            Edit Supplier
-        </button>
-
-    </div>
-
-
-    <!-- Contact Information -->
-
-    <section class="details-card">
-
-        <div class="card-header">
-
-            <div>
-                <h2>Contact Information</h2>
-
+            <div class="intro-copy">
+                <h2>Supplier Overview</h2>
                 <p>
-                    Supplier contact details.
+                    Review business details, contact information, address, and record history.
                 </p>
             </div>
+        </section>
 
+        <div class="details-layout">
+
+            <!-- LEFT COLUMN -->
+            <div class="details-column">
+
+                <section class="details-card">
+                    <header class="card-header">
+                        <div class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="7" width="18" height="14" rx="2"></rect>
+                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <path d="M3 12h18"></path>
+                            </svg>
+                        </div>
+
+                        <div class="card-heading">
+                            <h2>Business Information</h2>
+                            <p>Supplier identity and registration details.</p>
+                        </div>
+                    </header>
+
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Supplier Name</span>
+                            <strong>{{ currentSupplier.name || 'Not provided' }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Supplier Code</span>
+                            <strong>{{ currentSupplier.code || 'Not provided' }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Tax Number / GST Number</span>
+                            <strong>{{ currentSupplier.taxNumber || 'Not provided' }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Supplier Status</span>
+                            <div class="status-value">
+                                <span class="status-badge" [class.active]="currentSupplier.isActive"
+                                    [class.inactive]="!currentSupplier.isActive">
+                                    <span class="status-dot" aria-hidden="true"></span>
+                                    {{ currentSupplier.isActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="details-card">
+                    <header class="card-header">
+                        <div class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7a2 2 0 0 1 1.73 2.03Z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <div class="card-heading">
+                            <h2>Contact Information</h2>
+                            <p>How to reach this supplier.</p>
+                        </div>
+                    </header>
+
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Email Address</span>
+                            <strong class="detail-value">
+                                {{ currentSupplier.email || 'Not provided' }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Phone Number</span>
+                            <strong class="detail-value">
+                                {{ currentSupplier.phone || 'Not provided' }}
+                            </strong>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="details-column">
+
+                <section class="details-card">
+                    <header class="card-header">
+                        <div class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="2.5"></circle>
+                            </svg>
+                        </div>
+
+                        <div class="card-heading">
+                            <h2>Address Information</h2>
+                            <p>Registered business location.</p>
+                        </div>
+                    </header>
+
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Street Address</span>
+                            <strong class="detail-value address-value">
+                                {{ currentSupplier.address || 'Not provided' }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">City</span>
+                            <strong>{{ currentSupplier.city || 'Not provided' }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">State</span>
+                            <strong>{{ currentSupplier.state || 'Not provided' }}</strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Postal Code</span>
+                            <strong>{{ currentSupplier.postalCode || 'Not provided' }}</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="details-card">
+                    <header class="card-header">
+                        <div class="section-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M12 7v5l3 2"></path>
+                            </svg>
+                        </div>
+
+                        <div class="card-heading">
+                            <h2>Record Information</h2>
+                            <p>Creation and modification history.</p>
+                        </div>
+                    </header>
+
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Created</span>
+                            <strong>
+                                {{ currentSupplier.createdAt
+                                ? (currentSupplier.createdAt | date:'dd MMM yyyy, hh:mm a')
+                                : 'Not available' }}
+                            </strong>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Last Updated</span>
+                            <strong>
+                                {{ currentSupplier.updatedAt
+                                ? (currentSupplier.updatedAt | date:'dd MMM yyyy, hh:mm a')
+                                : 'Not available' }}
+                            </strong>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
         </div>
-
-        <div class="details-grid">
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Email
-                </span>
-
-                <strong>
-                    {{ supplier.email || 'Not provided' }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Phone
-                </span>
-
-                <strong>
-                    {{ supplier.phone || 'Not provided' }}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- Address -->
-
-    <section class="details-card">
-
-        <div class="card-header">
-
-            <div>
-                <h2>Address</h2>
-
-                <p>
-                    Supplier business address.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="details-grid">
-
-            <div class="detail-item full-width">
-
-                <span class="detail-label">
-                    Address
-                </span>
-
-                <strong>
-                    {{ supplier.address || 'Not provided' }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    City
-                </span>
-
-                <strong>
-                    {{ supplier.city || 'Not provided' }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    State
-                </span>
-
-                <strong>
-                    {{ supplier.state || 'Not provided' }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Postal Code
-                </span>
-
-                <strong>
-                    {{ supplier.postalCode || 'Not provided' }}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- Business Information -->
-
-    <section class="details-card">
-
-        <div class="card-header">
-
-            <div>
-                <h2>Business Information</h2>
-
-                <p>
-                    Supplier tax information.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="details-grid">
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Tax Number
-                </span>
-
-                <strong>
-                    {{ supplier.taxNumber || 'Not provided' }}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- Record Information -->
-
-    <section class="details-card">
-
-        <div class="card-header">
-
-            <div>
-                <h2>Record Information</h2>
-
-                <p>
-                    Supplier record timestamps.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="details-grid">
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Created
-                </span>
-
-                <strong>
-                    {{ supplier.createdAt | date:'dd MMM yyyy, hh:mm a' }}
-                </strong>
-
-            </div>
-
-            <div class="detail-item">
-
-                <span class="detail-label">
-                    Last Updated
-                </span>
-
-                <strong>
-                    {{ supplier.updatedAt | date:'dd MMM yyyy, hh:mm a' }}
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
+    </main>
 
     } @else if (isLoading) {
 
-    <div class="loading-state">
-        Loading supplier...
-    </div>
+    <section class="state-card" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading supplier</h2>
+        <p>Please wait while supplier information is loaded.</p>
+    </section>
 
     } @else {
 
-    <div class="loading-state">
-        Supplier information is unavailable.
-    </div>
+    <section class="state-card" role="alert">
+        <span class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+            </svg>
+        </span>
+
+        <h2>Supplier information unavailable</h2>
+        <p>
+            {{ errorMessage || 'The supplier details could not be displayed.' }}
+        </p>
+
+        <div class="state-actions">
+            @if (supplierId !== null) {
+            <button type="button" class="edit-button" (click)="retryLoad()" [disabled]="isLoading">
+                Try Again
+            </button>
+            }
+
+            <button type="button" class="secondary-button" (click)="goBack()">
+                Back to Suppliers
+            </button>
+        </div>
+    </section>
 
     }
 

@@ -1,41 +1,58 @@
 <div class="supplier-edit-page">
+    @if (supplier; as currentSupplier) {
+    <header class="page-header">
+        <div class="page-heading">
+            <div class="heading-copy">
+                <h1>Edit Supplier</h1>
+                <p>Update supplier business, contact, and address details.</p>
+            </div>
 
-    @if (supplier) {
-
-    <!-- Page Header -->
-
-    <div class="page-header">
-
-        <div>
-
-            <button type="button" class="back-button" (click)="onCancel()">
-                ← Back to Supplier
+            <button type="button" class="back-button" (click)="onCancel()" [disabled]="isSubmitting"
+                aria-label="Back to suppliers">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                </svg>
+                <span>Back to Suppliers</span>
             </button>
+        </div>
+    </header>
 
-            <h1>
-                Edit Supplier
-            </h1>
-
-            <p>
-                Update {{ supplier.name }} information.
-            </p>
-
+    <main class="edit-content">
+        <section class="form-section" aria-label="Supplier details form">
+            <app-supplier-form [supplier]="currentSupplier" [isSubmitting]="isSubmitting"
+                (formSubmit)="onSubmit($event)" (cancel)="onCancel()">
+            </app-supplier-form>
+        </section>
+    </main>
+    } @else if (isLoading) {
+    <section class="state-card" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading supplier</h2>
+        <p>Please wait while supplier information is loaded.</p>
+    </section>
+    } @else {
+    <section class="state-card" role="alert">
+        <div class="state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 8v4"></path>
+                <path d="M12 16h.01"></path>
+            </svg>
         </div>
 
-    </div>
+        <h2>Supplier unavailable</h2>
+        <p>
+            The supplier could not be loaded. Return to the supplier list to try again.
+        </p>
 
-
-    <!-- Supplier Form -->
-
-    <app-supplier-form [supplier]="supplier" [isSubmitting]="isSubmitting" (formSubmit)="onSubmit($event)"
-        (cancel)="onCancel()" />
-
-    } @else if (isLoading) {
-
-    <div class="loading-state">
-        Loading supplier...
-    </div>
-
+        <button type="button" class="back-button state-back-button" (click)="onCancel()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 12H5"></path>
+                <path d="m12 19-7-7 7-7"></path>
+            </svg>
+            <span>Back to Suppliers</span>
+        </button>
+    </section>
     }
-
 </div>
