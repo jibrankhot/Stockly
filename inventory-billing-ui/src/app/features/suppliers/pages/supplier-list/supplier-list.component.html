@@ -1,6 +1,4 @@
 <div class="supplier-list-page">
-
-    <!-- Page Header -->
     <header class="page-header">
         <div class="page-heading">
             <h1>Suppliers</h1>
@@ -13,106 +11,78 @@
         </a>
     </header>
 
-    <!-- Search and Filters -->
+    <!-- Search, status and actions -->
     <section class="filter-card" aria-label="Supplier filters">
-
-        <!-- Search: full width on mobile -->
         <div class="search-field">
             <span class="search-icon" aria-hidden="true">⌕</span>
-
             <input type="search" placeholder="Search suppliers..." aria-label="Search suppliers"
                 [(ngModel)]="searchTerm" />
         </div>
 
-        <!-- Status: 50% on mobile -->
-        <select [(ngModel)]="selectedStatus" aria-label="Filter suppliers by status">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
+        <div class="filter-actions">
+            <select [(ngModel)]="selectedStatus" aria-label="Filter suppliers by status">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
 
-        <!-- Clear: 20% on mobile -->
-        <button type="button" class="clear-button" (click)="clearFilters()">
-            Clear
-        </button>
-
-        <!-- Add: 30% on mobile -->
-        <a routerLink="/suppliers/create" class="btn btn-primary mobile-add-supplier">
-            <span class="btn-icon" aria-hidden="true">+</span>
-            Add
-        </a>
-    </section>
-
-    <!-- Supplier List -->
-    <section class="table-card">
-
-        <div class="table-header">
-            <div>
-                <h2>Supplier List</h2>
-                <span>{{ filteredSuppliers.length }} supplier(s)</span>
-            </div>
+            <button type="button" class="clear-button" (click)="clearFilters()">
+                Clear
+            </button>
 
             @if (!isLoading && !hasLoadError) {
             <button type="button" class="refresh-button" (click)="loadSuppliers()">
-                Refresh
+                Refresh List
             </button>
             }
-        </div>
 
-        <!-- Loading -->
+            <a routerLink="/suppliers/create" class="btn btn-primary mobile-add-supplier">
+                <span class="btn-icon" aria-hidden="true">+</span>
+                Add Supplier
+            </a>
+        </div>
+    </section>
+
+    <!-- Supplier results -->
+    <section class="table-card" aria-label="Suppliers">
         @if (isLoading) {
         <div class="empty-state" role="status">
             <span class="loading-indicator" aria-hidden="true"></span>
-
             <h3>Loading suppliers</h3>
             <p>Please wait while we retrieve your supplier data.</p>
         </div>
-        }
-
-        <!-- Error -->
-        @else if (hasLoadError) {
+        } @else if (hasLoadError) {
         <div class="empty-state" role="alert">
             <div class="empty-icon" aria-hidden="true">!</div>
-
             <h3>Unable to load suppliers</h3>
             <p>Something went wrong while retrieving your supplier data.</p>
-
             <button type="button" class="btn btn-primary" (click)="loadSuppliers()">
                 Try Again
             </button>
         </div>
-        }
-
-        <!-- Results -->
-        @else if (filteredSuppliers.length > 0) {
+        } @else if (filteredSuppliers.length > 0) {
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th scope="col">Supplier</th>
-                        <th scope="col">Contact</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Email</th>
                         <th scope="col">Location</th>
                         <th scope="col">Status</th>
                         <th scope="col">Created</th>
-                        <th scope="col" class="actions-column">
-                            Actions
-                        </th>
+                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @for (
-                    supplier of filteredSuppliers;
-                    track supplier.id
-                    ) {
+                    @for (supplier of filteredSuppliers; track supplier.id) {
                     <tr>
-                        <!-- Supplier -->
                         <td>
                             <div class="supplier-cell">
                                 <span class="supplier-avatar">
                                     {{ supplier.name.charAt(0).toUpperCase() }}
                                 </span>
-
                                 <div class="supplier-info">
                                     <strong>{{ supplier.name }}</strong>
                                     <span>{{ supplier.code }}</span>
@@ -120,63 +90,36 @@
                             </div>
                         </td>
 
-                        <!-- Contact -->
                         <td>
-                            <div class="contact-info">
-
-                                <div class="mobile-detail">
-                                    <span class="mobile-field-label">
-                                        Phone
-                                    </span>
-                                    <strong>
-                                        {{ supplier.phone || '—' }}
-                                    </strong>
-                                </div>
-
-                                <div class="mobile-detail">
-                                    <span class="mobile-field-label">
-                                        Email
-                                    </span>
-                                    <span class="detail-value">
-                                        {{ supplier.email || '—' }}
-                                    </span>
-                                </div>
-
+                            <div class="mobile-detail phone-detail">
+                                <span class="mobile-field-label">Phone</span>
+                                <strong>{{ supplier.phone || '—' }}</strong>
                             </div>
                         </td>
 
-                        <!-- Location -->
+                        <td>
+                            <div class="mobile-detail email-detail">
+                                <span class="mobile-field-label">Email</span>
+                                <span class="detail-value">{{ supplier.email || '—' }}</span>
+                            </div>
+                        </td>
+
                         <td>
                             <div class="location-info">
-
                                 <div class="mobile-detail">
-                                    <span class="mobile-field-label">
-                                        City
-                                    </span>
-                                    <strong>
-                                        {{ supplier.city || '—' }}
-                                    </strong>
+                                    <span class="mobile-field-label">City</span>
+                                    <strong>{{ supplier.city || '—' }}</strong>
                                 </div>
-
                                 <div class="mobile-detail">
-                                    <span class="mobile-field-label">
-                                        State
-                                    </span>
-                                    <span class="detail-value">
-                                        {{ supplier.state || '—' }}
-                                    </span>
+                                    <span class="mobile-field-label">State</span>
+                                    <span class="detail-value">{{ supplier.state || '—' }}</span>
                                 </div>
-
                             </div>
                         </td>
 
-                        <!-- Status -->
                         <td>
                             <div class="mobile-status-detail">
-                                <span class="mobile-field-label">
-                                    Status
-                                </span>
-
+                                <span class="mobile-field-label">Status</span>
                                 <span class="status-badge" [class.active]="supplier.isActive"
                                     [class.inactive]="!supplier.isActive">
                                     {{ supplier.isActive ? 'Active' : 'Inactive' }}
@@ -184,36 +127,26 @@
                             </div>
                         </td>
 
-                        <!-- Created -->
                         <td>
                             <div class="mobile-detail created-detail">
-                                <span class="mobile-field-label">
-                                    Created
-                                </span>
-
+                                <span class="mobile-field-label">Created</span>
                                 <span class="created-date">
                                     {{ supplier.createdAt | date:'dd MMM yyyy' }}
                                 </span>
                             </div>
                         </td>
 
-                        <!-- Actions -->
                         <td>
                             <div class="actions">
                                 <button type="button" class="action-button" (click)="viewSupplier(supplier)"
-                                    [attr.aria-label]="'View ' + supplier.name">
-                                    View
-                                </button>
+                                    [attr.aria-label]="'View ' + supplier.name">View</button>
 
                                 <button type="button" class="action-button" (click)="editSupplier(supplier)"
-                                    [attr.aria-label]="'Edit ' + supplier.name">
-                                    Edit
-                                </button>
+                                    [attr.aria-label]="'Edit ' + supplier.name">Edit</button>
 
                                 <button type="button" class="action-button delete-action"
-                                    (click)="deleteSupplier(supplier)" [attr.aria-label]="'Delete ' + supplier.name">
-                                    Delete
-                                </button>
+                                    (click)="deleteSupplier(supplier)"
+                                    [attr.aria-label]="'Delete ' + supplier.name">Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -221,24 +154,19 @@
                 </tbody>
             </table>
         </div>
-        }
-
-        <!-- Empty State -->
-        @else {
+        } @else {
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">♧</div>
 
             @if (suppliers.length === 0) {
             <h3>No suppliers yet</h3>
             <p>Add your first supplier to get started.</p>
-
             <a routerLink="/suppliers/create" class="btn btn-primary">
                 Add Supplier
             </a>
             } @else {
             <h3>No suppliers found</h3>
             <p>Try changing your search or filter criteria.</p>
-
             <button type="button" class="btn btn-secondary" (click)="clearFilters()">
                 Clear Filters
             </button>
