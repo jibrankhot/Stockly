@@ -42,6 +42,12 @@ export class PaymentListComponent implements OnInit {
   deletingPaymentId: number | null = null;
   errorMessage = '';
 
+  // Pagination
+  readonly pageSizeOptions = [5, 10, 25, 50];
+
+  pageSize = 5;
+  currentPage = 1;
+
   readonly paymentMethods: PaymentMethod[] = [
     'Cash',
     'Card',
@@ -61,6 +67,7 @@ export class PaymentListComponent implements OnInit {
     this.loadPayments();
   }
 
+  // Load and sort payments
   loadPayments(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -93,7 +100,10 @@ export class PaymentListComponent implements OnInit {
     });
   }
 
+  // Search and filter
   applyFilters(): void {
+    this.currentPage = 1;
+
     const search = this.searchTerm.trim().toLowerCase();
 
     this.filteredPayments = this.payments.filter(payment => {
@@ -134,9 +144,61 @@ export class PaymentListComponent implements OnInit {
     );
   }
 
+  // Pagination calculations
+  get totalPages(): number {
+    return Math.max(
+      1,
+      Math.ceil(this.filteredPayments.length / this.pageSize)
+    );
+  }
 
+  get paginatedPayments(): Payment[] {
+    const start = (this.currentPage - 1) * this.pageSize;
 
-  // Replace deletePayment() with this method.
+    return this.filteredPayments.slice(
+      start,
+      start + this.pageSize
+    );
+  }
+
+  get paginationStart(): number {
+    return this.filteredPayments.length === 0
+      ? 0
+      : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get paginationEnd(): number {
+    return Math.min(
+      this.currentPage * this.pageSize,
+      this.filteredPayments.length
+    );
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from(
+      { length: this.totalPages },
+      (_, index) => index + 1
+    );
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+  }
+
+  changePageSize(size: number): void {
+    if (!this.pageSizeOptions.includes(size)) {
+      return;
+    }
+
+    this.pageSize = size;
+    this.currentPage = 1;
+  }
+
+  // Delete payment
   deletePayment(payment: Payment): void {
     if (this.isDeleting) {
       return;
@@ -181,6 +243,12 @@ export class PaymentListComponent implements OnInit {
 
               this.applyFilters();
 
+              // Keep the current page valid after deletion.
+              this.currentPage = Math.min(
+                this.currentPage,
+                this.totalPages
+              );
+
               this.notificationService.success(
                 `Payment "${payment.paymentNumber}" deleted successfully.`
               );
@@ -197,7 +265,7 @@ export class PaymentListComponent implements OnInit {
       });
   }
 
-
+  // Payment method labels
   getMethodLabel(method: PaymentMethod): string {
     const labels: Record<PaymentMethod, string> = {
       Cash: 'Cash',
@@ -211,6 +279,7 @@ export class PaymentListComponent implements OnInit {
     return labels[method] ?? method;
   }
 
+  // Payment method badge styles
   getMethodClass(method: PaymentMethod): string {
     const classes: Record<PaymentMethod, string> = {
       Cash: 'method-cash',
@@ -224,6 +293,7 @@ export class PaymentListComponent implements OnInit {
     return classes[method] ?? 'method-other';
   }
 
+  // Summary calculations
   get totalPaymentAmount(): number {
     return this.payments.reduce(
       (total, payment) => total + payment.amount,
@@ -241,6 +311,7 @@ export class PaymentListComponent implements OnInit {
       : 0;
   }
 
+  // Track table rows
   trackByPaymentId(
     _index: number,
     payment: Payment

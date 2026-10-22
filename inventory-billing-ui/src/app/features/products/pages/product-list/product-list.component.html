@@ -15,18 +15,19 @@
         <div class="search-field">
             <span class="search-icon" aria-hidden="true">⌕</span>
             <input type="search" placeholder="Search by product name or SKU..." [(ngModel)]="searchTerm"
-                aria-label="Search products" autocomplete="off" />
+                (ngModelChange)="onFiltersChanged()" aria-label="Search products" autocomplete="off" />
         </div>
 
         <div class="filter-actions">
-            <select [(ngModel)]="selectedCategoryId" aria-label="Filter by category" [disabled]="isLoadingCategories">
+            <select [(ngModel)]="selectedCategoryId" (ngModelChange)="onFiltersChanged()"
+                aria-label="Filter by category" [disabled]="isLoadingCategories">
                 <option [ngValue]="null">All Categories</option>
                 @for (category of categories; track category.id) {
                 <option [ngValue]="category.id">{{ category.name }}</option>
                 }
             </select>
 
-            <select [(ngModel)]="selectedStatus" aria-label="Filter by status">
+            <select [(ngModel)]="selectedStatus" (ngModelChange)="onFiltersChanged()" aria-label="Filter by status">
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -47,15 +48,33 @@
         </a>
     </section>
 
-    <section class="table-card" aria-label="Products">
+    <section class="table-card" aria-labelledby="product-list-title">
         @if (isLoading) {
         <div class="empty-state" role="status" aria-live="polite">
             <span class="loading-indicator" aria-hidden="true"></span>
             <h3>Loading products</h3>
             <p>Please wait while your products are being loaded.</p>
         </div>
-        }
-        @else if (filteredProducts.length > 0) {
+        } @else if (filteredProducts.length > 0) {
+
+        <!-- Directory heading and result count -->
+        <div class="table-header">
+            <div class="table-heading">
+                <div>
+                    <h2 id="product-list-title">Product directory</h2>
+                    <p>
+                        Showing {{ paginationStart }}–{{ paginationEnd }}
+                        of {{ filteredProducts.length }} products
+                    </p>
+                </div>
+
+                <span class="result-count">
+                    {{ filteredProducts.length }}
+                    {{ filteredProducts.length === 1 ? 'result' : 'results' }}
+                </span>
+            </div>
+        </div>
+
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -72,13 +91,14 @@
                 </thead>
 
                 <tbody>
-                    @for (product of filteredProducts; track product.id) {
+                    @for (product of paginatedProducts; track product.id) {
                     <tr>
                         <td data-label="Product" class="product-column">
                             <div class="product-cell">
                                 <span class="product-avatar" aria-hidden="true">
                                     {{ (product.name || '?').charAt(0).toUpperCase() }}
                                 </span>
+
                                 <div class="product-info">
                                     <strong>{{ product.name }}</strong>
                                     <span>{{ product.unit }}</span>
@@ -113,6 +133,7 @@
                                 <span [class.low-stock]="isLowStock(product)">
                                     {{ product.currentStock }}
                                 </span>
+
                                 @if (isLowStock(product)) {
                                 <span class="low-stock-label">Low stock</span>
                                 }
@@ -125,7 +146,6 @@
                                 {{ product.isActive ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-
 
                         <td data-label="Actions" class="actions-cell actions-data-cell">
                             <div class="actions">
@@ -166,14 +186,55 @@
                                 </button>
                             </div>
                         </td>
-
                     </tr>
                     }
                 </tbody>
             </table>
         </div>
-        }
-        @else {
+
+        <!-- Pagination -->
+        <footer class="pagination-bar" aria-label="Product pagination">
+            <div class="pagination-info">
+                <label for="product-page-size">Rows per page</label>
+
+                <select id="product-page-size" [ngModel]="pageSize" (ngModelChange)="changePageSize(+$event)"
+                    aria-label="Number of products per page">
+                    @for (size of pageSizeOptions; track size) {
+                    <option [ngValue]="size">{{ size }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-controls">
+                <button type="button" class="pagination-button pagination-prev" (click)="goToPage(currentPage - 1)"
+                    [disabled]="currentPage <= 1" aria-label="Go to previous page">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m14.5 5-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Previous</span>
+                </button>
+
+                @for (page of pageNumbers; track page) {
+                <button type="button" class="pagination-button pagination-number" [class.active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Go to page ' + page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+
+                <button type="button" class="pagination-button pagination-next" (click)="goToPage(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages" aria-label="Go to next page">
+                    <span>Next</span>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+
+        } @else {
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">▣</div>
 
@@ -183,8 +244,7 @@
             <a routerLink="/products/create" class="btn btn-primary">
                 Add Product
             </a>
-            }
-            @else {
+            } @else {
             <h3>No matching products found</h3>
             <p>Try changing your search or filter criteria.</p>
             <button type="button" class="btn btn-secondary" (click)="clearFilters()">

@@ -75,12 +75,32 @@
             </button>
         </div>
         } @else if (filteredCategories.length > 0) {
+
+        <!-- Section heading and result count -->
+        <div class="table-header">
+            <div class="table-heading">
+                <div>
+                    <h2 id="category-list-title">Category directory</h2>
+                    <p>
+                        Showing {{ paginationStart }}–{{ paginationEnd }}
+                        of {{ filteredCategories.length }} categories
+                    </p>
+                </div>
+
+                <span class="result-count">
+                    {{ filteredCategories.length }}
+                    {{ filteredCategories.length === 1 ? 'result' : 'results' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Category table / mobile cards -->
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th scope="col">Category</th>
-                        <th scope="col">Description</th>
+                        <th scope="col" class="category-heading-cell">Category</th>
+                        <th scope="col" class="description-heading-cell">Description</th>
                         <th scope="col">Products</th>
                         <th scope="col">Status</th>
                         <th scope="col">Date Created</th>
@@ -89,7 +109,7 @@
                 </thead>
 
                 <tbody>
-                    @for (category of filteredCategories; track category.id) {
+                    @for (category of paginatedCategories; track category.id) {
                     <tr>
                         <td class="category-data-cell">
                             <div class="category-cell">
@@ -178,6 +198,48 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <footer class="pagination-bar" aria-label="Category pagination">
+            <div class="pagination-info">
+                <label for="category-page-size">Rows per page</label>
+                <select id="category-page-size" [ngModel]="pageSize" (ngModelChange)="changePageSize(+$event)"
+                    aria-label="Number of categories per page">
+                    @for (size of pageSizeOptions; track size) {
+                    <option [ngValue]="size">{{ size }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-controls">
+                <button type="button" class="pagination-button pagination-prev" (click)="goToPage(currentPage - 1)"
+                    [disabled]="currentPage <= 1" aria-label="Go to previous page">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m14.5 5-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Previous</span>
+                </button>
+
+                @for (page of pageNumbers; track page) {
+                <button type="button" class="pagination-button pagination-number" [class.active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Go to page ' + page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+
+                <button type="button" class="pagination-button pagination-next" (click)="goToPage(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages" aria-label="Go to next page">
+                    <span>Next</span>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+
         } @else {
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">

@@ -1,7 +1,8 @@
 <div class="supplier-list-page">
-    <!-- Page Header -->
+    <!-- Page heading -->
     <header class="page-header">
         <div class="page-heading">
+            <span class="eyebrow">SUPPLIER MANAGEMENT</span>
             <h1>Suppliers</h1>
             <p>Manage your suppliers and supplier information.</p>
         </div>
@@ -12,56 +13,82 @@
         </a>
     </header>
 
-    <!-- Search and Filters -->
+    <!-- Search and filters -->
     <section class="filter-card" aria-label="Supplier filters">
         <div class="search-field">
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input type="search" placeholder="Search suppliers..." aria-label="Search suppliers"
-                [(ngModel)]="searchTerm" />
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="10.8" cy="10.8" r="6.3" stroke="currentColor" stroke-width="1.7" />
+                <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            </svg>
+
+            <input type="search" placeholder="Search suppliers..." aria-label="Search suppliers" autocomplete="off"
+                [(ngModel)]="searchTerm" (ngModelChange)="onFiltersChanged()" />
         </div>
 
-        <select [(ngModel)]="selectedStatus" aria-label="Filter suppliers by status">
+        <select [(ngModel)]="selectedStatus" (ngModelChange)="onFiltersChanged()"
+            aria-label="Filter suppliers by status">
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
         </select>
 
-        <button type="button" class="clear-button" (click)="clearFilters()">
+        <button type="button" class="clear-button" (click)="clearFilters()"
+            [disabled]="!searchTerm.trim() && selectedStatus === 'all'">
             Clear
         </button>
 
         @if (!isLoading && !hasLoadError) {
         <button type="button" class="refresh-button" (click)="loadSuppliers()">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 11a8 8 0 0 0-14.8-3L3 11m0-6v6h6m-5 2a8 8 0 0 0 14.8 3L21 13m0 6v-6h-6"
+                    stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             Refresh
         </button>
         }
 
         <a routerLink="/suppliers/create" class="btn btn-primary mobile-add-supplier">
             <span class="btn-icon" aria-hidden="true">+</span>
-            Add
+            Add Supplier
         </a>
     </section>
 
-    <!-- Supplier Table -->
-    <section class="table-card" aria-label="Suppliers">
+    <!-- Supplier directory -->
+    <section class="table-card" aria-labelledby="supplier-list-title">
         @if (isLoading) {
-        <div class="empty-state" role="status">
+        <div class="empty-state" role="status" aria-live="polite">
             <span class="loading-indicator" aria-hidden="true"></span>
             <h3>Loading suppliers</h3>
             <p>Please wait while we retrieve your supplier data.</p>
         </div>
-        }
-        @else if (hasLoadError) {
+        } @else if (hasLoadError) {
         <div class="empty-state" role="alert">
-            <div class="empty-icon" aria-hidden="true">!</div>
+            <div class="empty-icon error-icon" aria-hidden="true">!</div>
             <h3>Unable to load suppliers</h3>
             <p>Something went wrong while retrieving your supplier data.</p>
             <button type="button" class="btn btn-primary" (click)="loadSuppliers()">
                 Try Again
             </button>
         </div>
-        }
-        @else if (filteredSuppliers.length > 0) {
+        } @else if (filteredSuppliers.length > 0) {
+        <!-- This section was hidden by the previous CSS -->
+        <div class="table-header">
+            <div class="table-heading">
+                <div class="table-heading-copy">
+                    <h2 id="supplier-list-title">Supplier directory</h2>
+                    <p>
+                        Showing {{ paginationStart }}–{{ paginationEnd }}
+                        of {{ filteredSuppliers.length }} suppliers
+                    </p>
+                </div>
+
+                <span class="result-count">
+                    {{ filteredSuppliers.length }}
+                    {{ filteredSuppliers.length === 1 ? 'result' : 'results' }}
+                </span>
+            </div>
+        </div>
+
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -77,11 +104,11 @@
                 </thead>
 
                 <tbody>
-                    @for (supplier of filteredSuppliers; track supplier.id) {
+                    @for (supplier of paginatedSuppliers; track supplier.id) {
                     <tr>
-                        <td>
+                        <td class="supplier-column" data-label="Supplier">
                             <div class="supplier-cell">
-                                <span class="supplier-avatar">
+                                <span class="supplier-avatar" aria-hidden="true">
                                     {{ supplier.name.charAt(0).toUpperCase() }}
                                 </span>
 
@@ -92,59 +119,54 @@
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Phone">
                             <div class="mobile-detail phone-detail">
                                 <span class="mobile-field-label">Phone</span>
                                 <strong>{{ supplier.phone || '—' }}</strong>
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Email">
                             <div class="mobile-detail email-detail">
                                 <span class="mobile-field-label">Email</span>
-                                <span class="detail-value">
-                                    {{ supplier.email || '—' }}
-                                </span>
+                                <span class="detail-value">{{ supplier.email || '—' }}</span>
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Location">
                             <div class="location-info">
                                 <div class="mobile-detail">
                                     <span class="mobile-field-label">City</span>
                                     <strong>{{ supplier.city || '—' }}</strong>
                                 </div>
-
                                 <div class="mobile-detail">
                                     <span class="mobile-field-label">State</span>
-                                    <span class="detail-value">
-                                        {{ supplier.state || '—' }}
-                                    </span>
+                                    <span class="detail-value">{{ supplier.state || '—' }}</span>
                                 </div>
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Status">
                             <div class="mobile-status-detail">
                                 <span class="mobile-field-label">Status</span>
                                 <span class="status-badge" [class.active]="supplier.isActive"
                                     [class.inactive]="!supplier.isActive">
+                                    <span class="status-dot" aria-hidden="true"></span>
                                     {{ supplier.isActive ? 'Active' : 'Inactive' }}
                                 </span>
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Created">
                             <div class="mobile-detail created-detail">
                                 <span class="mobile-field-label">Created</span>
                                 <span class="created-date">
-                                    {{ supplier.createdAt | date:'dd MMM yyyy' }}
+                                    {{ supplier.createdAt ? (supplier.createdAt | date:'dd MMM yyyy') : '—' }}
                                 </span>
                             </div>
                         </td>
 
-                        <!-- Row Actions -->
-                        <td class="actions-cell">
+                        <td class="actions-cell" data-label="Actions">
                             <div class="actions">
                                 <button type="button" class="action-button view-action" (click)="viewSupplier(supplier)"
                                     [attr.aria-label]="'View supplier ' + supplier.name">
@@ -167,13 +189,19 @@
                                 </button>
 
                                 <button type="button" class="action-button delete-action"
-                                    (click)="deleteSupplier(supplier)"
-                                    [attr.aria-label]="'Delete supplier ' + supplier.name">
+                                    (click)="deleteSupplier(supplier)" [disabled]="isDeleting(supplier)"
+                                    [attr.aria-label]="'Delete supplier ' + supplier.name"
+                                    [attr.aria-busy]="isDeleting(supplier)">
+                                    @if (isDeleting(supplier)) {
+                                    <span class="button-spinner" aria-hidden="true"></span>
+                                    <span>Deleting</span>
+                                    } @else {
                                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor"
                                             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                     <span>Delete</span>
+                                    }
                                 </button>
                             </div>
                         </td>
@@ -182,19 +210,56 @@
                 </tbody>
             </table>
         </div>
-        }
-        @else {
+
+        <!-- Pagination -->
+        <footer class="pagination-bar" aria-label="Supplier pagination">
+            <div class="pagination-info">
+                <label for="supplier-page-size">Rows per page</label>
+                <select id="supplier-page-size" [ngModel]="pageSize" (ngModelChange)="changePageSize(+$event)"
+                    aria-label="Number of suppliers per page">
+                    @for (size of pageSizeOptions; track size) {
+                    <option [ngValue]="size">{{ size }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-controls">
+                <button type="button" class="pagination-button pagination-prev" (click)="goToPage(currentPage - 1)"
+                    [disabled]="currentPage <= 1" aria-label="Go to previous page">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m14.5 5-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Previous</span>
+                </button>
+
+                @for (page of pageNumbers; track page) {
+                <button type="button" class="pagination-button pagination-number" [class.active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Go to page ' + page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+
+                <button type="button" class="pagination-button pagination-next" (click)="goToPage(currentPage + 1)"
+                    [disabled]="currentPage >= totalPages" aria-label="Go to next page">
+                    <span>Next</span>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+        } @else {
         <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">♧</div>
 
             @if (suppliers.length === 0) {
             <h3>No suppliers yet</h3>
             <p>Add your first supplier to get started.</p>
-            <a routerLink="/suppliers/create" class="btn btn-primary">
-                Add Supplier
-            </a>
-            }
-            @else {
+            <a routerLink="/suppliers/create" class="btn btn-primary">Add Supplier</a>
+            } @else {
             <h3>No suppliers found</h3>
             <p>Try changing your search or filter criteria.</p>
             <button type="button" class="btn btn-secondary" (click)="clearFilters()">

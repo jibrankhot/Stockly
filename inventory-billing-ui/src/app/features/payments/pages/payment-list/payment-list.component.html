@@ -1,13 +1,16 @@
 <div class="payment-list-page">
   <!-- Page header -->
   <header class="page-header">
-    <div class="page-header-content">
+    <div class="page-heading">
+      <span class="eyebrow">PAYMENT MANAGEMENT</span>
       <h1>Payments</h1>
       <p>Track and manage customer payments received against invoices.</p>
     </div>
 
     <a routerLink="/payments/create" class="btn btn-primary desktop-add-payment">
-      <span class="btn-icon" aria-hidden="true">+</span>
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
       <span>Record Payment</span>
     </a>
   </header>
@@ -89,16 +92,25 @@
 
       <div class="filter-actions">
         <button type="button" class="clear-button" (click)="clearFilters()" [disabled]="!hasActiveFilters">
-          Clear
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+          </svg>
+          <span>Clear</span>
         </button>
 
         <button type="button" class="refresh-button" (click)="loadPayments()" [disabled]="isLoading">
-          {{ isLoading ? 'Loading…' : 'Refresh List' }}
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 7v5h-5M4 17v-5h5" />
+            <path d="M5.5 9a7 7 0 0 1 11.8-2L20 12M4 12l2.7 5a7 7 0 0 0 11.8-2" />
+          </svg>
+          <span>{{ isLoading ? 'Loading…' : 'Refresh' }}</span>
         </button>
 
         <a routerLink="/payments/create" class="btn btn-primary mobile-add-payment">
-          <span class="btn-icon" aria-hidden="true">+</span>
-          Record Payment
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Record</span>
         </a>
       </div>
     </div>
@@ -117,6 +129,9 @@
     <strong>Unable to load payments</strong>
     <p>{{ errorMessage }}</p>
     <button type="button" class="btn btn-outline" (click)="loadPayments()">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20 7v5h-5M4 17v-5h5M5.5 9a7 7 0 0 1 11.8-2L20 12M4 12l2.7 5a7 7 0 0 0 11.8-2" />
+      </svg>
       Try Again
     </button>
   </section>
@@ -124,8 +139,8 @@
   <!-- Payment history -->
   <section *ngIf="!isLoading && !errorMessage" class="table-card">
     <div class="table-header">
-      <div>
-        <h2>All Payments</h2>
+      <div class="table-heading-copy">
+        <h2>Payment directory</h2>
         <p>
           Showing <strong>{{ filteredPayments.length }}</strong>
           of <strong>{{ totalPayments }}</strong>
@@ -150,12 +165,12 @@
             <th scope="col">Method</th>
             <th scope="col">Reference</th>
             <th scope="col">Amount</th>
-            <th scope="col">Actions</th>
+            <th scope="col" class="actions-column">Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let payment of filteredPayments; trackBy: trackByPaymentId">
+          <tr *ngFor="let payment of paginatedPayments; trackBy: trackByPaymentId">
             <td data-label="Payment" class="payment-cell">
               <span class="payment-number">{{ payment.paymentNumber }}</span>
             </td>
@@ -188,13 +203,25 @@
 
             <td data-label="Actions" class="actions-cell">
               <div class="actions">
-                <a [routerLink]="['/payments', payment.id]" class="action-button">
-                  View
+                <a [routerLink]="['/payments', payment.id]" class="action-button view-action"
+                  [attr.aria-label]="'View payment ' + payment.paymentNumber">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor"
+                      stroke-width="1.7" stroke-linejoin="round" />
+                    <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.7" />
+                  </svg>
+                  <span>View</span>
                 </a>
 
                 <button type="button" class="action-button delete-action" [disabled]="isDeleting"
-                  (click)="deletePayment(payment)">
-                  {{ deletingPaymentId === payment.id ? 'Deleting…' : 'Delete' }}
+                  (click)="deletePayment(payment)" [attr.aria-label]="'Delete payment ' + payment.paymentNumber"
+                  [attr.aria-busy]="deletingPaymentId === payment.id">
+                  <svg *ngIf="deletingPaymentId !== payment.id" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.7"
+                      stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span *ngIf="deletingPaymentId === payment.id" class="button-spinner" aria-hidden="true"></span>
+                  <span>{{ deletingPaymentId === payment.id ? 'Deleting…' : 'Delete' }}</span>
                 </button>
               </div>
             </td>
@@ -218,10 +245,16 @@
                 </p>
 
                 <button *ngIf="hasActiveFilters" type="button" class="btn btn-outline" (click)="clearFilters()">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 5l14 14M19 5 5 19" />
+                  </svg>
                   Clear Filters
                 </button>
 
                 <a *ngIf="!hasActiveFilters" routerLink="/payments/create" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
                   Record Payment
                 </a>
               </div>
@@ -230,5 +263,47 @@
         </tbody>
       </table>
     </div>
+
+
+    <!-- Pagination -->
+    <footer class="pagination-bar" aria-label="Payment pagination">
+      <div class="pagination-info">
+
+
+        <div class="page-size-control">
+          <label for="payment-page-size">Rows per page</label>
+          <select id="payment-page-size" [ngModel]="pageSize" (ngModelChange)="changePageSize(+$event)">
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <nav class="pagination-controls" aria-label="Payment pages">
+        <button type="button" class="pagination-button pagination-prev" (click)="goToPage(currentPage - 1)"
+          [disabled]="currentPage <= 1" aria-label="Previous page">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m14.5 5-7 7 7 7" />
+          </svg>
+          <span>Previous</span>
+        </button>
+
+        <button *ngFor="let page of pageNumbers" type="button" class="pagination-button pagination-number"
+          [class.active]="page === currentPage" [attr.aria-current]="page === currentPage ? 'page' : null"
+          [attr.aria-label]="'Go to page ' + page" (click)="goToPage(page)">
+          {{ page }}
+        </button>
+
+        <button type="button" class="pagination-button pagination-next" (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage >= totalPages" aria-label="Next page">
+          <span>Next</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9.5 5 7 7-7 7" />
+          </svg>
+        </button>
+      </nav>
+    </footer>
+
   </section>
 </div>
