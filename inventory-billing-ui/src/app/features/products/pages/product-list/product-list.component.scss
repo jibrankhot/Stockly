@@ -63,7 +63,7 @@
 }
 
 /* =========================================================
-   PAGE HEADER — MATCH SUPPLIERS PAGE
+   PAGE HEADER
 ========================================================= */
 
 .page-header {
@@ -531,14 +531,18 @@ tbody tr:last-child td {
 }
 
 /* =========================================================
-   STOCK
+   STOCK — INLINE VALUE AND LOW-STOCK WARNING
 ========================================================= */
 
 .stock-cell {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 5px;
+
+  white-space: nowrap;
 }
 
 .stock-cell > span:first-child {
@@ -546,6 +550,7 @@ tbody tr:last-child td {
   font-size: 12px;
   font-weight: 750;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .stock-cell > span:first-child.low-stock {
@@ -553,11 +558,12 @@ tbody tr:last-child td {
 }
 
 .low-stock-label {
-  display: block;
+  display: inline;
   color: var(--danger);
   font-size: 10px;
   font-weight: 650;
   line-height: 1.4;
+  white-space: nowrap;
 }
 
 /* =========================================================
@@ -593,34 +599,42 @@ tbody tr:last-child td {
   color: var(--list-muted);
 }
 
+
 /* =========================================================
    VIEW / EDIT / DELETE ACTIONS
 ========================================================= */
+
+.actions-data-cell {
+  text-align: center;
+}
 
 .actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
+  min-width: 0;
 }
 
 .action-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
 
-  min-height: 36px;
+  min-height: 34px;
   padding: 0 9px;
 
-  border: 1px solid #c4cedb;
+  border: 1px solid var(--list-border);
   border-radius: 6px;
 
   background: var(--list-surface);
-  color: #263449;
+  color: var(--list-secondary);
 
   font: inherit;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 650;
+  line-height: 1.2;
   white-space: nowrap;
 
   cursor: pointer;
@@ -631,14 +645,25 @@ tbody tr:last-child td {
     color 140ms ease;
 }
 
+.action-button svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+}
+
 .action-button:hover:not(:disabled) {
   border-color: var(--list-accent-border);
   background: var(--list-accent-soft);
   color: var(--list-accent-hover);
 }
 
+.action-button:focus-visible {
+  outline: 2px solid var(--list-accent);
+  outline-offset: 2px;
+}
+
 .action-button:disabled {
-  opacity: 0.55;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -652,6 +677,7 @@ tbody tr:last-child td {
   background: var(--danger-soft);
   color: var(--danger-hover);
 }
+
 
 /* =========================================================
    EMPTY STATE
@@ -768,7 +794,6 @@ tbody tr:last-child td {
 
 /* =========================================================
    MOBILE — SINGLE-COLUMN PRODUCT CARDS
-   Compact layout matching the Suppliers cards
 ========================================================= */
 
 @media (max-width: 600px) {
@@ -814,7 +839,7 @@ tbody tr:last-child td {
     display: none;
   }
 
-  /* Filters: search, dropdowns, buttons */
+  /* Filters */
 
   .filter-card {
     display: grid;
@@ -910,7 +935,7 @@ tbody tr:last-child td {
     font-size: 14px;
   }
 
-  /* Product list container */
+  /* Product list */
 
   .table-card {
     width: 100%;
@@ -942,8 +967,6 @@ tbody tr:last-child td {
     min-width: 0;
   }
 
-  /* Each product is a single vertical card */
-
   tbody tr {
     display: flex;
     flex-direction: column;
@@ -966,7 +989,7 @@ tbody tr:last-child td {
     background: var(--list-surface);
   }
 
-  /* Product title and avatar */
+  /* Product heading */
 
   tbody tr td.product-column {
     display: block;
@@ -1017,9 +1040,7 @@ tbody tr:last-child td {
     font-size: 10px;
   }
 
-  /* Details: inline label and value, like Suppliers
-     Example: SKU: STOR-001
-  */
+  /* Inline detail rows: label and value together */
 
   tbody tr td:not(.product-column, .actions-cell) {
     display: flex;
@@ -1057,8 +1078,6 @@ tbody tr:last-child td {
     letter-spacing: 0;
   }
 
-  /* Consistent value styling */
-
   .sku,
   .category-name,
   .price {
@@ -1087,13 +1106,17 @@ tbody tr:last-child td {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Stock */
+  /* Stock: keep number and low-stock label on one line */
 
   .stock-cell {
     display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 5px;
+
+    white-space: nowrap;
   }
 
   .stock-cell > span:first-child {
@@ -1101,17 +1124,20 @@ tbody tr:last-child td {
     font-size: 11px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
-  .stock-cell > span:first-child.low-stock,
-  .low-stock-label {
+  .stock-cell > span:first-child.low-stock {
     color: var(--danger);
   }
 
   .low-stock-label {
+    display: inline;
+    color: var(--danger);
     font-size: 9px;
     font-weight: 650;
     line-height: 1.4;
+    white-space: nowrap;
   }
 
   /* Status */
@@ -1127,7 +1153,7 @@ tbody tr:last-child td {
     vertical-align: middle;
   }
 
-  /* Actions */
+  /* Action buttons */
 
   tbody tr td.actions-cell {
     display: block;
@@ -1225,6 +1251,18 @@ tbody tr:last-child td {
   .category-name,
   .price {
     font-size: 10px;
+  }
+
+  .stock-cell {
+    gap: 4px;
+  }
+
+  .stock-cell > span:first-child {
+    font-size: 10px;
+  }
+
+  .low-stock-label {
+    font-size: 9px;
   }
 
   .actions {

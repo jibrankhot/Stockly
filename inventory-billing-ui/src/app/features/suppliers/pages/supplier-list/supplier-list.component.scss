@@ -1,4 +1,9 @@
 
+/* =========================================================
+   SUPPLIER LIST — RESPONSIVE CSS
+   Mobile filter layout fixed for the supplied Angular HTML
+========================================================= */
+
 :host {
   --list-accent: #4d9638;
   --list-accent-hover: #3f812e;
@@ -6,7 +11,7 @@
   --list-accent-border: #c8e2bd;
   --list-focus: rgb(77 150 56 / 18%);
 
-  --list-surface: #ffffff;
+  --list-surface: #fff;
   --list-text: #172033;
   --list-secondary: #334155;
   --list-muted: #526176;
@@ -14,6 +19,11 @@
   --list-divider: #d8e0ea;
   --list-hover: #f3f7f1;
   --list-input-border: #bdcbd9;
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
 
   display: block;
   width: 100%;
@@ -44,7 +54,7 @@
   color: var(--list-text);
 }
 
-/* Heading — matches Edit Supplier */
+/* Header */
 
 .page-header {
   display: flex;
@@ -60,6 +70,7 @@
 }
 
 .page-heading {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -83,7 +94,7 @@
   background: #f8fbff;
 }
 
-/* Buttons */
+/* General buttons */
 
 .btn {
   display: inline-flex;
@@ -114,10 +125,13 @@
 .search-field input:focus-visible,
 .filter-card select:focus-visible {
   outline: 2px solid var(--list-accent);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
-.btn:disabled {
+.btn:disabled,
+.action-button:disabled,
+.clear-button:disabled,
+.refresh-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
@@ -125,7 +139,7 @@
 .btn-primary {
   border-color: var(--list-accent);
   background: var(--list-accent);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -154,7 +168,7 @@
   display: none;
 }
 
-/* Search and filter panel */
+/* Search and filters — desktop */
 
 .filter-card {
   display: flex;
@@ -188,11 +202,14 @@
 }
 
 .search-field input,
-.filter-actions select {
+.filter-card select {
   display: block;
   width: 100%;
   height: 40px;
   min-width: 0;
+  min-height: 40px;
+  max-height: 40px;
+  margin: 0;
   border: 1px solid var(--list-input-border);
   border-radius: 7px;
   outline: none;
@@ -211,14 +228,14 @@
 }
 
 .search-field input:focus,
-.filter-actions select:focus {
+.filter-card select:focus {
   border-color: var(--list-accent);
   box-shadow: 0 0 0 3px var(--list-focus);
 }
 
-.filter-actions select {
-  width: 145px;
+.filter-card > select {
   flex: 0 0 145px;
+  width: 145px;
   padding: 0 10px;
   cursor: pointer;
 }
@@ -235,6 +252,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   min-height: 39px;
   padding: 0 12px;
   border: 1px solid var(--list-border);
@@ -259,13 +277,7 @@
   color: var(--list-accent-hover);
 }
 
-.clear-button:disabled,
-.refresh-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-/* Table container */
+/* Table */
 
 .table-card {
   width: 100%;
@@ -285,19 +297,16 @@
 .table-wrapper {
   width: 100%;
   min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  overflow-x: hidden;
 }
-
-/* Desktop table */
 
 table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 0;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 thead {
@@ -307,27 +316,30 @@ thead {
 th,
 td {
   box-sizing: border-box;
+  min-width: 0;
   vertical-align: middle;
 }
 
 th {
-  padding: 15px 8px;
+  padding: 13px 5px;
   border-bottom: 2px solid #b8c5d6;
   color: #172b45;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 750;
-  line-height: 1.45;
+  line-height: 1.4;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 td {
-  padding: 16px 8px;
+  padding: 14px 5px;
   border-bottom: 1px solid var(--list-divider);
   color: var(--list-secondary);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.5;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 tbody tr {
@@ -342,35 +354,43 @@ tbody tr:hover {
   background: var(--list-hover);
 }
 
-/* Column proportions */
+/* Desktop column proportions */
 
 th:nth-child(1),
-td:nth-child(1) { width: 18%; }
+td:nth-child(1) { width: 20%; }
 
 th:nth-child(2),
-td:nth-child(2) { width: 12%; }
+td:nth-child(2) { width: 11%; }
 
 th:nth-child(3),
 td:nth-child(3) { width: 17%; }
 
 th:nth-child(4),
-td:nth-child(4) { width: 18%; }
+td:nth-child(4) { width: 14%; }
 
 th:nth-child(5),
-td:nth-child(5) { width: 9%; }
+td:nth-child(5) { width: 7%; }
 
 th:nth-child(6),
-td:nth-child(6) { width: 11%; }
+td:nth-child(6) { width: 10%; }
 
 th:nth-child(7),
-td:nth-child(7) { width: 15%; }
+td:nth-child(7) {
+  width: 21%;
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+td:nth-child(7) {
+  overflow-wrap: normal;
+}
 
 /* Supplier identity */
 
 .supplier-cell {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   min-width: 0;
   text-align: left;
 }
@@ -378,19 +398,19 @@ td:nth-child(7) { width: 15%; }
 .supplier-avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   border: 1px solid var(--list-accent-border);
-  border-radius: 9px;
+  border-radius: 8px;
   background: var(--list-accent-soft);
   color: var(--list-accent-hover);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 750;
 }
 
 .supplier-info {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
   text-align: left;
 }
@@ -399,7 +419,7 @@ td:nth-child(7) { width: 15%; }
   display: block;
   max-width: 100%;
   color: var(--list-secondary);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -408,9 +428,10 @@ td:nth-child(7) { width: 15%; }
 .supplier-info span {
   display: block;
   margin-top: 3px;
-  color: var(--list-secondary);
-  font-size: 12px;
+  color: var(--list-muted);
+  font-size: 11px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 /* Field details */
@@ -438,9 +459,9 @@ td:nth-child(7) { width: 15%; }
 .contact-info span,
 .detail-value {
   color: var(--list-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  line-height: 1.6;
+  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
@@ -448,7 +469,23 @@ td:nth-child(7) { width: 15%; }
   font-weight: 600;
 }
 
-/* Location: horizontal on desktop */
+.phone-detail,
+.email-detail {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.email-detail .detail-value {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Location */
 
 .location-info {
   display: flex;
@@ -456,7 +493,8 @@ td:nth-child(7) { width: 15%; }
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 4px 9px;
+  gap: 4px 5px;
+  width: 100%;
   min-width: 0;
   text-align: center;
 }
@@ -465,7 +503,7 @@ td:nth-child(7) { width: 15%; }
   display: inline-flex;
   flex-direction: row;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -476,31 +514,35 @@ td:nth-child(7) { width: 15%; }
 .location-info strong,
 .location-info span,
 .location-info .detail-value {
+  max-width: 100%;
   color: var(--list-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-/* Status */
+/* Status and created date */
 
 .mobile-status-detail {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
-  padding: 5px 10px;
+  max-width: 100%;
+  min-height: 25px;
+  padding: 4px 7px;
   border: 1px solid transparent;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   line-height: 1.3;
   white-space: nowrap;
@@ -518,49 +560,56 @@ td:nth-child(7) { width: 15%; }
   color: #475569;
 }
 
-/* Created date */
-
 .created-detail {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  min-width: 0;
 }
 
 .created-date {
+  max-width: 100%;
   color: var(--list-secondary);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
-/* Actions stay aligned on desktop */
+/* Row action buttons */
+
+.actions-cell,
+.actions-column {
+  text-align: center;
+}
 
 .actions {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  gap: 5px;
+  gap: 4px;
   width: 100%;
   min-width: 0;
 }
 
 .action-button {
   display: inline-flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   min-width: 0;
-  min-height: 36px;
-  padding: 0 8px;
+  min-height: 33px;
+  padding: 0 6px;
   border: 1px solid var(--list-border);
   border-radius: 6px;
   background: var(--list-surface);
   color: var(--list-secondary);
   font: inherit;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 650;
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -569,26 +618,28 @@ td:nth-child(7) { width: 15%; }
     color 140ms ease;
 }
 
+.action-button svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+}
+
 .action-button:hover:not(:disabled) {
   border-color: var(--list-accent-border);
   background: var(--list-accent-soft);
   color: var(--list-accent-hover);
 }
 
-.action-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .delete-action {
-  border-color: #f3b4b4;
-  color: #b91c1c;
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 .delete-action:hover:not(:disabled) {
   border-color: #fca5a5;
-  background: #fef2f2;
-  color: #991b1b;
+  background: var(--danger-soft);
+  color: var(--danger-hover);
 }
 
 /* Empty and loading states */
@@ -647,35 +698,87 @@ td:nth-child(7) { width: 15%; }
   to { transform: rotate(360deg); }
 }
 
-/* Tablet */
+/* =========================================================
+   TABLET
+========================================================= */
 
-@media (max-width: 1000px) and (min-width: 601px) {
+@media (min-width: 601px) and (max-width: 1100px) {
   .supplier-list-page {
-    padding-right: 16px;
-    padding-left: 16px;
+    padding-right: 12px;
+    padding-left: 12px;
   }
 
-  table {
-    min-width: 1040px;
+  th,
+  td {
+    padding-right: 3px;
+    padding-left: 3px;
+  }
+
+  .supplier-cell {
+    gap: 5px;
+  }
+
+  .supplier-avatar {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .supplier-info strong,
+  .supplier-info span,
+  .email-detail .detail-value,
+  .location-info strong,
+  .location-info span,
+  .created-date {
+    font-size: 10px;
+  }
+
+  .actions {
+    gap: 2px;
+  }
+
+  .action-button {
+    gap: 2px;
+    padding: 0 3px;
+    font-size: 9px;
+  }
+
+  .action-button svg {
+    width: 10px;
+    height: 10px;
+    flex-basis: 10px;
   }
 }
+
+/* Tablet filter layout */
 
 @media (min-width: 601px) and (max-width: 850px) {
   .filter-card {
+    display: flex;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .search-field {
-    flex-basis: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
   }
 
-  .filter-actions {
-    width: 100%;
-    flex-wrap: wrap;
+  .filter-card > select {
+    flex: 1 1 140px;
+    width: auto;
+    min-width: 0;
+  }
+
+  .filter-card > .clear-button,
+  .filter-card > .refresh-button {
+    flex: 0 0 auto;
   }
 }
 
-/* Mobile */
+/* =========================================================
+   MOBILE — PAGE HEADER, FILTERS AND SUPPLIER CARDS
+========================================================= */
 
 @media (max-width: 600px) {
   .supplier-list-page {
@@ -683,6 +786,8 @@ td:nth-child(7) { width: 15%; }
     min-width: 0;
     padding: 12px 10px 20px;
   }
+
+  /* Page header */
 
   .page-header {
     align-items: flex-start;
@@ -702,28 +807,44 @@ td:nth-child(7) { width: 15%; }
   }
 
   .desktop-add-supplier {
-    display: none;
+    display: none !important;
   }
 
-  /* Search row first */
+  /* -------------------------------------------------------
+     FILTERS
+
+     Row 1: Search — full width
+     Row 2: Status — full width
+     Row 3: Clear | Refresh | Add — one line
+  ------------------------------------------------------- */
+
   .filter-card {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
-    gap: 9px;
+    gap: 8px;
     width: 100%;
     min-width: 0;
+    margin-bottom: 14px;
     padding: 10px;
   }
 
-  .search-field {
+  .filter-card > .search-field {
+    position: relative;
+    grid-column: 1 / -1;
+    display: block;
     width: 100%;
     min-width: 0;
   }
 
   .search-field input {
+    display: block;
+    width: 100%;
     height: 42px;
-    padding-left: 36px;
+    min-height: 42px;
+    max-height: 42px;
+    margin: 0;
+    padding: 0 12px 0 36px;
     font-size: 13px;
   }
 
@@ -731,59 +852,68 @@ td:nth-child(7) { width: 15%; }
     left: 11px;
   }
 
-  /* Status row second; three buttons on the third row */
-  .filter-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 7px;
-    width: 100%;
-    min-width: 0;
-  }
+  /* Status dropdown */
 
-  .filter-actions select {
+  .filter-card > select {
     grid-column: 1 / -1;
+    display: block;
     width: 100%;
     min-width: 0;
-    height: 40px;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    margin: 0;
     padding: 0 10px;
-    font-size: 12px;
+    align-self: stretch;
   }
 
-  .filter-actions .clear-button,
-  .filter-actions .refresh-button,
-  .filter-actions .mobile-add-supplier {
+  /* Three buttons share the same row */
+
+  .filter-card > .clear-button,
+  .filter-card > .refresh-button,
+  .filter-card > .mobile-add-supplier {
+    grid-column: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     min-width: 0;
+    height: 40px;
     min-height: 40px;
-    padding: 0 5px;
+    max-height: 40px;
+    margin: 0;
+    padding: 0 4px;
     font-size: 11px;
+    line-height: 1.2;
     text-align: center;
     white-space: nowrap;
   }
 
-  .filter-actions .mobile-add-supplier {
+  .filter-card > .mobile-add-supplier {
     gap: 3px;
+    text-decoration: none;
   }
 
   .mobile-add-supplier .btn-icon {
-    font-size: 14px;
+    flex: 0 0 auto;
+    font-size: 13px;
   }
 
-  /* Table becomes individual supplier cards */
+  /* -------------------------------------------------------
+     SUPPLIER CARDS
+  ------------------------------------------------------- */
 
   .table-card {
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     border-radius: 10px;
   }
 
   .table-wrapper {
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     overflow: visible;
   }
 
@@ -843,24 +973,34 @@ td:nth-child(7) { width: 15%; }
   }
 
   .supplier-cell {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    width: 100%;
+    min-width: 0;
   }
 
   .supplier-avatar {
     width: 40px;
     height: 40px;
-    flex-basis: 40px;
+    flex: 0 0 40px;
+  }
+
+  .supplier-info {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .supplier-info strong {
     font-size: 14px;
+    overflow-wrap: anywhere;
   }
 
   .supplier-info span {
     font-size: 12px;
   }
 
-  /* Each detail stays on its own row */
+  /* Detail row separators */
 
   tbody td:nth-child(2) {
     order: 2;
@@ -892,7 +1032,7 @@ td:nth-child(7) { width: 15%; }
     border-top: 1px solid var(--list-divider);
   }
 
-  /* Inline label/value: Phone: 1234567890 */
+  /* Phone and email */
 
   .phone-detail,
   .email-detail {
@@ -902,7 +1042,9 @@ td:nth-child(7) { width: 15%; }
     flex-wrap: wrap;
     gap: 4px;
     width: 100%;
+    min-width: 0;
     text-align: left;
+    overflow-wrap: anywhere;
   }
 
   .mobile-field-label {
@@ -928,9 +1070,10 @@ td:nth-child(7) { width: 15%; }
     font-weight: 550;
     line-height: 1.6;
     overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
-  /* City: Chennai, State: Tamil Nadu — inline pairs */
+  /* Location */
 
   .location-info {
     display: flex;
@@ -938,6 +1081,7 @@ td:nth-child(7) { width: 15%; }
     align-items: stretch;
     gap: 8px;
     width: 100%;
+    min-width: 0;
     text-align: left;
   }
 
@@ -967,7 +1111,7 @@ td:nth-child(7) { width: 15%; }
     overflow-wrap: anywhere;
   }
 
-  /* Status label and badge on one line */
+  /* Status */
 
   .mobile-status-detail {
     display: flex;
@@ -976,6 +1120,7 @@ td:nth-child(7) { width: 15%; }
     justify-content: space-between;
     gap: 12px;
     width: 100%;
+    min-width: 0;
   }
 
   .mobile-status-detail .mobile-field-label {
@@ -988,7 +1133,7 @@ td:nth-child(7) { width: 15%; }
     font-size: 12px;
   }
 
-  /* Created label and date on one line */
+  /* Created date */
 
   .created-detail {
     display: flex;
@@ -997,6 +1142,7 @@ td:nth-child(7) { width: 15%; }
     justify-content: space-between;
     gap: 12px;
     width: 100%;
+    min-width: 0;
   }
 
   .created-detail .mobile-field-label {
@@ -1009,7 +1155,11 @@ td:nth-child(7) { width: 15%; }
     text-align: right;
   }
 
-  /* View, Edit and Delete */
+  /* View, Edit and Delete actions */
+
+  .actions-cell {
+    text-align: left;
+  }
 
   .actions {
     display: grid;
@@ -1017,9 +1167,14 @@ td:nth-child(7) { width: 15%; }
     align-items: stretch;
     gap: 8px;
     width: 100%;
+    min-width: 0;
   }
 
   .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     width: 100%;
     min-width: 0;
     min-height: 40px;
@@ -1027,13 +1182,23 @@ td:nth-child(7) { width: 15%; }
     font-size: 12px;
   }
 
+  .action-button svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+  }
+
+  /* Empty and loading states */
+
   .empty-state {
     min-height: 210px;
     padding: 28px 14px;
   }
 }
 
-/* Narrow phones */
+/* =========================================================
+   NARROW PHONES
+========================================================= */
 
 @media (max-width: 380px) {
   .supplier-list-page {
@@ -1041,26 +1206,23 @@ td:nth-child(7) { width: 15%; }
   }
 
   .filter-card {
+    gap: 6px;
     padding: 8px;
   }
 
-  .filter-actions {
-    gap: 5px;
-  }
-
-  .filter-actions .clear-button,
-  .filter-actions .refresh-button,
-  .filter-actions .mobile-add-supplier {
-    padding: 0 3px;
+  .filter-card > .clear-button,
+  .filter-card > .refresh-button,
+  .filter-card > .mobile-add-supplier {
+    padding: 0 2px;
     font-size: 10px;
   }
 
-  .filter-actions .mobile-add-supplier {
+  .filter-card > .mobile-add-supplier {
     gap: 2px;
   }
 
   .mobile-add-supplier .btn-icon {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .page-header {
@@ -1084,9 +1246,17 @@ td:nth-child(7) { width: 15%; }
     padding: 0 3px;
     font-size: 11px;
   }
+
+  .action-button svg {
+    width: 13px;
+    height: 13px;
+    flex-basis: 13px;
+  }
 }
 
-/* Very narrow phones */
+/* =========================================================
+   VERY NARROW PHONES
+========================================================= */
 
 @media (max-width: 340px) {
   .supplier-list-page {
@@ -1094,24 +1264,24 @@ td:nth-child(7) { width: 15%; }
     padding-left: 6px;
   }
 
-  .filter-actions {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
+  .filter-card {
+    gap: 5px;
+    padding: 7px;
   }
 
-  .filter-actions .clear-button,
-  .filter-actions .refresh-button,
-  .filter-actions .mobile-add-supplier {
-    padding: 0 2px;
+  .filter-card > .clear-button,
+  .filter-card > .refresh-button,
+  .filter-card > .mobile-add-supplier {
+    padding: 0 1px;
     font-size: 9px;
   }
 
-  .mobile-add-supplier {
-    gap: 2px;
+  .filter-card > .mobile-add-supplier {
+    gap: 1px;
   }
 
   .mobile-add-supplier .btn-icon {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .supplier-info strong {
@@ -1130,34 +1300,45 @@ td:nth-child(7) { width: 15%; }
   }
 
   .action-button {
+    gap: 3px;
     padding: 0 2px;
     font-size: 10px;
   }
+
+  .action-button svg {
+    width: 12px;
+    height: 12px;
+    flex-basis: 12px;
+  }
 }
 
-/* Add button visibility */
+/* =========================================================
+   ADD BUTTON VISIBILITY
+========================================================= */
 
 @media (min-width: 601px) {
   .desktop-add-supplier {
     display: inline-flex;
   }
 
-  .filter-actions .mobile-add-supplier {
+  .filter-card > .mobile-add-supplier {
     display: none;
   }
 }
 
 @media (max-width: 600px) {
   .desktop-add-supplier {
-    display: none;
+    display: none !important;
   }
 
-  .filter-actions .mobile-add-supplier {
+  .filter-card > .mobile-add-supplier {
     display: inline-flex;
   }
 }
 
-/* Reduced motion */
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .loading-indicator {
