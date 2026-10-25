@@ -1,41 +1,48 @@
 
+/* ============================================================
+   STOCK OVERVIEW — PRODUCTION STYLES
+   Angular component: stock-overview.component.scss
+   ============================================================ */
+
 :host {
   --stock-accent: var(--accent, #16a34a);
   --stock-accent-hover: var(--accent-hover, #15803d);
   --stock-accent-soft: var(--accent-soft, #f0fdf4);
   --stock-accent-border: var(--accent-border, #bbf7d0);
-  --stock-focus: rgb(22 163 74 / 16%);
+  --stock-focus: rgb(22 163 74 / 18%);
 
   --stock-surface: var(--surface, #ffffff);
-  --stock-page: var(--page-bg, #f6faf7);
-  --stock-header-bg: #fbfdfb;
+  --stock-page: var(--page-bg, #f5f8f6);
+  --stock-header-surface: #fbfdfb;
 
   --stock-text: var(--text, #172033);
-  --stock-secondary: #334155;
+  --stock-secondary: #475569;
   --stock-muted: var(--muted, #64748b);
   --stock-subtle: #94a3b8;
 
-  --stock-border: var(--border, #cbd5e1);
-  --stock-divider: var(--divider, #e2e8f0);
-  --stock-input-border: #b8c5d6;
-  --stock-hover: #f1f5f9;
+  --stock-border: var(--border, #d1dceb);
+  --stock-divider: #e2e8f0;
+  --stock-input-border: #c4d0df;
   --stock-table-head: #e8eef6;
-
-  --stock-danger: #dc2626;
-  --stock-danger-bg: #fef2f2;
-  --stock-danger-border: #fecaca;
-
-  --stock-warning: #b45309;
-  --stock-warning-bg: #fffbeb;
-  --stock-warning-border: #fde68a;
+  --stock-row-hover: #f4f8f5;
 
   --stock-success: #15803d;
   --stock-success-bg: #f0fdf4;
   --stock-success-border: #bbf7d0;
 
+  --stock-warning: #b45309;
+  --stock-warning-bg: #fffbeb;
+  --stock-warning-border: #fde68a;
+
+  --stock-danger: #dc2626;
+  --stock-danger-bg: #fef2f2;
+  --stock-danger-border: #fecaca;
+
   display: block;
+  width: 100%;
   min-width: 0;
   color: var(--stock-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 :host-context([data-theme='blue']) {
@@ -43,10 +50,13 @@
   --stock-accent-hover: #2563eb;
   --stock-accent-soft: #eff6ff;
   --stock-accent-border: #bfdbfe;
-  --stock-focus: rgb(59 130 246 / 16%);
+  --stock-focus: rgb(59 130 246 / 18%);
 }
 
-* {
+:host,
+:host *,
+:host *::before,
+:host *::after {
   box-sizing: border-box;
 }
 
@@ -68,43 +78,60 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible {
   outline: 3px solid var(--stock-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
+
+/* ============================================================
+   PAGE LAYOUT
+   ============================================================ */
 
 .stock-page {
   width: 100%;
   min-width: 0;
-  padding: 22px 24px 30px;
+  padding: 20px 24px 28px;
   background: var(--stock-page);
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
-/* =========================================================
+/* ============================================================
    PAGE HEADER
-========================================================= */
+   Light Payments-style header with a green left accent.
+   ============================================================ */
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: 24px;
+
+  min-width: 0;
+  min-height: 120px;
+  margin: 0 0 20px;
+  padding: 20px 24px;
+
+  border: 0;
+  border-left: 4px solid #4b9637;
+  border-radius: 0 12px 12px 0;
+  background: var(--stock-header-surface);
+  color: var(--stock-text);
+  box-shadow: none;
 }
 
 .page-header-content {
-  flex: 1 1 320px;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .eyebrow {
   display: inline-block;
-  margin-bottom: 7px;
-  color: var(--stock-accent);
+  margin-bottom: 8px;
+
+  color: #4b9637;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1.15px;
+  letter-spacing: 1.1px;
   line-height: 1.4;
+  opacity: 1;
 }
 
 .page-header h1 {
@@ -117,30 +144,34 @@ select:focus-visible {
 }
 
 .page-description {
-  max-width: 650px;
-  margin: 8px 0 0;
+  max-width: 680px;
+  margin: 9px 0 0;
+
   color: var(--stock-muted);
   font-size: 13px;
+  font-weight: 450;
   line-height: 1.65;
+  opacity: 1;
 }
 
 .header-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 9px;
 }
 
-/* =========================================================
+/* ============================================================
    BUTTONS
-========================================================= */
+   ============================================================ */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
 
   min-height: 40px;
   padding: 0 14px;
@@ -150,10 +181,11 @@ select:focus-visible {
 
   font-size: 12px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.35;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
+
   cursor: pointer;
 
   transition:
@@ -176,7 +208,7 @@ select:focus-visible {
 .btn-primary {
   border-color: var(--stock-accent);
   background: var(--stock-accent);
-  color: #fff;
+  color: #ffffff;
   box-shadow: 0 2px 5px rgb(15 23 42 / 8%);
 }
 
@@ -198,6 +230,31 @@ select:focus-visible {
   color: var(--stock-accent-hover);
 }
 
+.page-header .btn-secondary {
+  border-color: var(--stock-border);
+  background: transparent;
+  color: var(--stock-secondary);
+}
+
+.page-header .btn-secondary:hover:not(:disabled) {
+  border-color: var(--stock-accent-border);
+  background: var(--stock-accent-soft);
+  color: var(--stock-accent-hover);
+}
+
+/* The header's primary action uses the same green button as Payments. */
+.page-header .btn-primary {
+  border-color: var(--stock-accent);
+  background: var(--stock-accent);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.page-header .btn-primary:hover:not(:disabled) {
+  border-color: var(--stock-accent-hover);
+  background: var(--stock-accent-hover);
+}
+
 .btn-clear {
   align-self: end;
   border-color: transparent;
@@ -206,7 +263,7 @@ select:focus-visible {
 }
 
 .btn-clear:hover:not(:disabled) {
-  background: var(--stock-hover);
+  background: var(--stock-page);
   color: var(--stock-text);
 }
 
@@ -221,9 +278,10 @@ select:focus-visible {
   animation: stock-spin 0.8s linear infinite;
 }
 
-/* =========================================================
+/* ============================================================
    SUMMARY CARDS
-========================================================= */
+   Five equal columns on desktop.
+   ============================================================ */
 
 .summary-grid {
   display: grid;
@@ -235,11 +293,11 @@ select:focus-visible {
 .summary-card {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 11px;
 
   min-width: 0;
-  min-height: 118px;
-  padding: 17px 15px;
+  min-height: 116px;
+  padding: 17px 14px;
 
   border: 1px solid var(--stock-border);
   border-radius: 12px;
@@ -260,12 +318,12 @@ select:focus-visible {
 
 .summary-icon {
   display: flex;
+  flex: 0 0 38px;
   align-items: center;
   justify-content: center;
 
-  flex: 0 0 39px;
-  width: 39px;
-  height: 39px;
+  width: 38px;
+  height: 38px;
 
   border: 1px solid transparent;
   border-radius: 10px;
@@ -313,28 +371,30 @@ select:focus-visible {
   line-height: 1.4;
 }
 
-.summary-copy strong {
+.summary-copy > strong {
   max-width: 100%;
   color: var(--stock-text);
   font-size: clamp(17px, 1.45vw, 23px);
   font-weight: 780;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
   line-height: 1.25;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
 .summary-hint {
-  color: var(--stock-subtle);
+  color: var(--stock-muted);
   font-size: 10px;
   line-height: 1.5;
 }
 
-/* =========================================================
-   FILTER CARD
-========================================================= */
+/* ============================================================
+   SEARCH AND FILTERS
+   Desktop: search, status, clear and refresh in one row.
+   ============================================================ */
 
 .filter-card {
+  min-width: 0;
   margin-bottom: 20px;
   padding: 19px 20px;
 
@@ -348,9 +408,8 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .filter-heading h2,
@@ -363,24 +422,23 @@ select:focus-visible {
   line-height: 1.4;
 }
 
-.filter-heading p,
-.table-heading-copy p {
+.filter-heading p {
   margin: 5px 0 0;
   color: var(--stock-muted);
   font-size: 11px;
   line-height: 1.55;
 }
 
-.refresh-button {
-  min-height: 36px;
-  padding: 0 12px;
-}
-
 .filter-controls {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(155px, 220px) auto;
+  grid-template-columns:
+    minmax(200px, 1fr)
+    minmax(145px, 210px)
+    auto
+    auto;
   align-items: end;
-  gap: 13px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .search-field,
@@ -405,6 +463,7 @@ select:focus-visible {
   align-items: center;
   gap: 9px;
 
+  width: 100%;
   min-width: 0;
   height: 41px;
   padding: 0 12px;
@@ -435,10 +494,12 @@ select:focus-visible {
   min-width: 0;
   height: 100%;
   padding: 0;
+
   border: 0;
   outline: none;
   background: transparent;
   box-shadow: none;
+
   color: var(--stock-text);
   font-size: 12px;
 }
@@ -462,7 +523,7 @@ select:focus-visible {
   width: 100%;
   min-width: 0;
   height: 41px;
-  padding: 0 30px 0 11px;
+  padding: 0 28px 0 11px;
 
   border: 1px solid var(--stock-input-border);
   border-radius: 8px;
@@ -484,16 +545,29 @@ select:focus-visible {
   box-shadow: 0 0 0 3px var(--stock-focus);
 }
 
-.filter-controls > .btn-clear {
+.filter-controls > .btn-clear,
+.filter-controls > .refresh-button {
   min-height: 41px;
+}
+
+.filter-controls > .btn-clear {
+  padding: 0 10px;
+}
+
+.filter-controls > .refresh-button {
   padding: 0 12px;
 }
 
-/* =========================================================
-   INVENTORY DIRECTORY
-========================================================= */
+.mobile-stock-actions {
+  display: none;
+}
+
+/* ============================================================
+   STOCK DIRECTORY HEADER
+   ============================================================ */
 
 .inventory-card {
+  width: 100%;
   min-width: 0;
   overflow: hidden;
 
@@ -507,46 +581,65 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 
+  min-width: 0;
   padding: 19px 20px;
+
   border-bottom: 1px solid var(--stock-divider);
-  background: var(--stock-header-bg);
+  background: var(--stock-header-surface);
 }
 
 .table-heading-copy {
+  flex: 1 1 auto;
   min-width: 0;
 }
 
-.results-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
-  min-height: 29px;
-  padding: 4px 10px;
-
-  border: 1px solid var(--stock-border);
-  border-radius: 999px;
-  background: var(--stock-surface);
+.table-heading-copy > p {
+  margin: 6px 0 0;
   color: var(--stock-muted);
   font-size: 11px;
+  line-height: 1.55;
+}
+
+.table-heading-copy > .directory-count {
+  margin-top: 7px;
+  font-size: 11px;
+}
+
+.directory-count strong {
+  color: var(--stock-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.directory-results-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 29px;
+  padding: 5px 10px;
+
+  border: 1px solid var(--stock-accent-border);
+  border-radius: 999px;
+  background: var(--stock-accent-soft);
+  color: var(--stock-accent-hover);
+
+  font-size: 10px;
+  font-weight: 750;
   white-space: nowrap;
 }
 
-.results-count strong {
-  color: var(--stock-text);
-  font-weight: 800;
-}
-
-/* =========================================================
-   TABLE
-========================================================= */
+/* ============================================================
+   DESKTOP TABLE
+   Eight columns with explicit widths for stable alignment.
+   ============================================================ */
 
 .table-wrapper {
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-color: var(--stock-border) transparent;
@@ -555,15 +648,49 @@ select:focus-visible {
 
 .stock-table {
   width: 100%;
-  min-width: 850px;
+  min-width: 0;
   border-collapse: separate;
   border-spacing: 0;
-  table-layout: auto;
+  table-layout: fixed;
   text-align: left;
 }
 
+.stock-table .product-column {
+  width: 20%;
+}
+
+.stock-table .item-type-column {
+  width: 12%;
+}
+
+.stock-table .sku-column {
+  width: 11%;
+}
+
+.stock-table th:nth-child(4) {
+  width: 8%;
+}
+
+.stock-table th:nth-child(5) {
+  width: 12%;
+}
+
+.stock-table th:nth-child(6) {
+  width: 12%;
+}
+
+.stock-table th:nth-child(7) {
+  width: 14%;
+}
+
+.stock-table th:nth-child(8) {
+  width: 11%;
+}
+
 .stock-table thead th {
-  padding: 13px 15px;
+  padding: 13px 12px;
+  text-align: center;
+  vertical-align: middle;
 
   border-bottom: 1px solid var(--stock-border);
   background: var(--stock-table-head);
@@ -571,7 +698,7 @@ select:focus-visible {
 
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.35px;
+  letter-spacing: 0.15px;
   line-height: 1.4;
   white-space: nowrap;
 }
@@ -583,16 +710,19 @@ select:focus-visible {
 
 .stock-table thead th:last-child,
 .stock-table tbody td:last-child {
-  padding-right: 20px;
+  padding-right: 16px;
 }
 
 .stock-table tbody td {
-  padding: 14px 15px;
+  padding: 13px 12px;
+  text-align: center;
+  vertical-align: middle;
+
   border-bottom: 1px solid var(--stock-divider);
   color: var(--stock-secondary);
+
   font-size: 11px;
   line-height: 1.5;
-  vertical-align: middle;
 }
 
 .stock-table tbody tr:last-child td {
@@ -600,11 +730,12 @@ select:focus-visible {
 }
 
 .stock-table tbody tr {
+  background: var(--stock-surface);
   transition: background-color 140ms ease;
 }
 
 .stock-table tbody tr:hover {
-  background: var(--stock-hover);
+  background: var(--stock-row-hover);
 }
 
 .numeric-cell {
@@ -613,19 +744,24 @@ select:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.product-cell {
+  overflow: hidden;
+  text-align: left;
+}
+
 .product-identity {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 150px;
+  min-width: 0;
 }
 
 .product-avatar {
   display: inline-flex;
+  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
 
-  flex: 0 0 36px;
   width: 36px;
   height: 36px;
 
@@ -648,7 +784,7 @@ select:focus-visible {
 
 .product-copy strong {
   display: block;
-  max-width: 210px;
+  max-width: 100%;
   overflow: hidden;
 
   color: var(--stock-text);
@@ -657,6 +793,7 @@ select:focus-visible {
   line-height: 1.5;
 
   text-overflow: ellipsis;
+  overflow-wrap: normal;
   white-space: nowrap;
 }
 
@@ -666,11 +803,17 @@ select:focus-visible {
   line-height: 1.4;
 }
 
+.item-type-cell {
+  color: var(--stock-muted) !important;
+  font-size: 10px !important;
+  overflow-wrap: anywhere;
+}
+
 .sku-cell {
   color: var(--stock-muted) !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 10px !important;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .quantity-cell strong {
@@ -680,8 +823,7 @@ select:focus-visible {
 }
 
 .money-cell {
-  color: var(--stock-secondary);
-  font-size: 11px !important;
+  font-size: 10px !important;
   white-space: nowrap;
 }
 
@@ -690,9 +832,9 @@ select:focus-visible {
   font-weight: 750;
 }
 
-/* =========================================================
+/* ============================================================
    STATUS BADGES
-========================================================= */
+   ============================================================ */
 
 .status-badge {
   display: inline-flex;
@@ -701,7 +843,8 @@ select:focus-visible {
   gap: 6px;
 
   min-height: 25px;
-  padding: 4px 9px;
+  max-width: 100%;
+  padding: 4px 8px;
 
   border: 1px solid transparent;
   border-radius: 999px;
@@ -721,35 +864,28 @@ select:focus-visible {
   background: currentColor;
 }
 
-/* Compatible with common status-class naming conventions. */
-.status-badge.in-stock,
-.status-badge.in_stock,
-.status-badge.active,
+/* Matches the classes returned by getStatusClass(). */
 .status-badge.status-in-stock {
   border-color: var(--stock-success-border);
   background: var(--stock-success-bg);
   color: var(--stock-success);
 }
 
-.status-badge.low-stock,
-.status-badge.low_stock,
 .status-badge.status-low-stock {
   border-color: var(--stock-warning-border);
   background: var(--stock-warning-bg);
   color: var(--stock-warning);
 }
 
-.status-badge.out-of-stock,
-.status-badge.out_of_stock,
 .status-badge.status-out-of-stock {
   border-color: var(--stock-danger-border);
   background: var(--stock-danger-bg);
   color: var(--stock-danger);
 }
 
-/* =========================================================
+/* ============================================================
    LOADING, ERROR AND EMPTY STATES
-========================================================= */
+   ============================================================ */
 
 .state-card {
   display: flex;
@@ -780,6 +916,7 @@ select:focus-visible {
   color: var(--stock-muted);
   font-size: 12px;
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .state-card > .btn {
@@ -865,57 +1002,42 @@ select:focus-visible {
   margin-top: 16px;
 }
 
-/* =========================================================
+/* ============================================================
    PAGINATION
-========================================================= */
+   Page-size selector on the left; navigation on the right.
+   ============================================================ */
 
 .pagination-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px;
-
-  padding: 14px 20px;
-  border-top: 1px solid var(--stock-divider);
-  background: var(--stock-header-bg);
-}
-
-.pagination-summary {
-  color: var(--stock-muted);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-.pagination-summary strong {
-  color: var(--stock-text);
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-}
-
-.pagination-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
   gap: 16px;
+
+  min-width: 0;
+  padding: 14px 20px;
+
+  border-top: 1px solid var(--stock-divider);
+  background: var(--stock-header-surface);
 }
 
 .page-size-control {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .page-size-control label {
   color: var(--stock-muted);
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .page-size-control select {
-  width: 68px;
-  height: 33px;
+  width: 66px;
+  height: 34px;
   padding: 0 8px;
   font-size: 11px;
 }
@@ -923,7 +1045,10 @@ select:focus-visible {
 .pagination-controls {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
   gap: 5px;
+  margin-left: auto;
 }
 
 .page-button {
@@ -931,8 +1056,8 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
 
-  min-width: 32px;
-  height: 32px;
+  min-width: 34px;
+  height: 34px;
   padding: 0 8px;
 
   border: 1px solid var(--stock-border);
@@ -960,7 +1085,7 @@ select:focus-visible {
 .page-button.page-active {
   border-color: var(--stock-accent);
   background: var(--stock-accent);
-  color: #fff;
+  color: #ffffff;
 }
 
 .page-button:disabled {
@@ -974,9 +1099,50 @@ select:focus-visible {
   line-height: 1;
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
+/* ============================================================
+   MOBILE INVENTORY CARDS
+   Hidden on desktop; enabled at the mobile breakpoint.
+   ============================================================ */
+
+.mobile-stock-list {
+  display: none;
+}
+
+/* ============================================================
+   LARGE DESKTOP
+   ============================================================ */
+
+@media (min-width: 1500px) {
+  .stock-page {
+    padding: 24px 28px 32px;
+  }
+
+  .summary-grid {
+    gap: 16px;
+  }
+
+  .summary-card {
+    padding: 19px 17px;
+  }
+
+  .filter-card {
+    padding: 21px 22px;
+  }
+
+  .stock-table thead th {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .stock-table tbody td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+/* ============================================================
+   LAPTOP / NARROW DESKTOP
+   ============================================================ */
 
 @media (max-width: 1200px) {
   .stock-page {
@@ -985,21 +1151,84 @@ select:focus-visible {
 
   .summary-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .summary-card {
-    min-height: 108px;
+    min-height: 105px;
+  }
+
+  .summary-copy > strong {
+    font-size: 21px;
   }
 
   .filter-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(150px, 200px) auto;
-    gap: 10px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(150px, 200px)
+      auto
+      auto;
+    gap: 9px;
+  }
+
+  .filter-controls > .btn {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .stock-table thead th,
+  .stock-table tbody td {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .stock-table thead th:first-child,
+  .stock-table tbody td:first-child {
+    padding-left: 15px;
+  }
+
+  .stock-table thead th:last-child,
+  .stock-table tbody td:last-child {
+    padding-right: 12px;
+  }
+
+  .status-badge {
+    gap: 4px;
+    padding-right: 6px;
+    padding-left: 6px;
+    font-size: 9px;
+  }
+
+  .product-identity {
+    gap: 7px;
+  }
+
+  .product-avatar {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .money-cell {
+    font-size: 9px !important;
   }
 }
+
+/* ============================================================
+   TABLET
+   ============================================================ */
 
 @media (max-width: 900px) {
   .stock-page {
     padding: 18px;
+  }
+
+  .page-header {
+    padding: 24px;
+  }
+
+  .header-actions {
+    gap: 7px;
   }
 
   .summary-grid {
@@ -1009,31 +1238,55 @@ select:focus-visible {
 
   .summary-card {
     min-height: 100px;
+    padding: 15px;
   }
 
-  .summary-copy strong {
+  .summary-copy > strong {
     font-size: 21px;
   }
 
   .filter-controls {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) auto;
+    gap: 10px;
   }
 
-  .filter-controls > .btn-clear {
+  .filter-controls > .refresh-button {
     grid-column: 1 / -1;
-    justify-self: start;
+    justify-self: end;
   }
 
-  .table-header,
-  .pagination-bar {
+  .table-header {
     padding-right: 16px;
     padding-left: 16px;
   }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .stock-table {
+    min-width: 850px;
+    table-layout: auto;
+  }
+
+  .stock-table thead th,
+  .stock-table tbody td {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .mobile-stock-actions,
+  .mobile-stock-list {
+    display: none;
+  }
 }
 
-/* =========================================================
+/* ============================================================
    MOBILE
-========================================================= */
+   Row 1: search
+   Row 2: status + clear
+   Row 3: Reset + Low Stock + Adjust Stock
+   ============================================================ */
 
 @media (max-width: 650px) {
   .stock-page {
@@ -1043,8 +1296,12 @@ select:focus-visible {
 
   .page-header {
     align-items: flex-start;
-    gap: 13px;
-    margin-bottom: 17px;
+    flex-direction: column;
+    gap: 12px;
+    min-height: auto;
+    margin-bottom: 15px;
+    padding: 18px 16px;
+    border-radius: 0 10px 10px 0;
   }
 
   .page-header-content {
@@ -1052,7 +1309,7 @@ select:focus-visible {
   }
 
   .eyebrow {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-size: 9px;
     letter-spacing: 0.9px;
   }
@@ -1068,19 +1325,7 @@ select:focus-visible {
   }
 
   .header-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    gap: 8px;
-  }
-
-  .header-actions .btn {
-    width: 100%;
-    min-width: 0;
-    min-height: 39px;
-    gap: 6px;
-    padding: 0 8px;
-    font-size: 11px;
+    display: none;
   }
 
   .summary-grid {
@@ -1092,7 +1337,8 @@ select:focus-visible {
   .summary-card {
     align-items: flex-start;
     gap: 9px;
-    min-height: 100px;
+
+    min-height: 96px;
     padding: 12px 10px;
     border-radius: 10px;
   }
@@ -1117,7 +1363,7 @@ select:focus-visible {
     font-size: 10px;
   }
 
-  .summary-copy strong {
+  .summary-copy > strong {
     font-size: clamp(16px, 4.3vw, 21px);
     letter-spacing: -0.4px;
   }
@@ -1133,8 +1379,7 @@ select:focus-visible {
   }
 
   .filter-heading {
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
     margin-bottom: 13px;
   }
 
@@ -1143,22 +1388,22 @@ select:focus-visible {
     font-size: 14px;
   }
 
-  .filter-heading p,
-  .table-heading-copy p {
-    font-size: 10px;
-  }
-
-  .refresh-button {
-    flex: 0 0 auto;
-    min-height: 34px;
-    gap: 5px;
-    padding: 0 9px;
+  .filter-heading p {
     font-size: 10px;
   }
 
   .filter-controls {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 11px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 11px 8px;
+  }
+
+  .filter-controls .search-field {
+    grid-column: 1 / -1;
+  }
+
+  .filter-controls .status-filter {
+    grid-column: 1;
   }
 
   .search-field,
@@ -1182,13 +1427,46 @@ select:focus-visible {
   }
 
   .filter-controls > .btn-clear {
-    grid-column: auto;
+    grid-column: 2;
+    align-self: end;
     justify-self: stretch;
-    width: 100%;
-    min-height: 38px;
+
+    width: auto;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0 10px;
+
     border: 1px solid var(--stock-border);
     border-radius: 8px;
     background: var(--stock-surface);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .filter-controls > .refresh-button {
+    display: none;
+  }
+
+  .mobile-stock-actions {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 0.75fr)
+      minmax(0, 0.95fr)
+      minmax(0, 1.2fr);
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  .mobile-stock-actions .btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .inventory-card {
+    border-radius: 10px;
   }
 
   .table-header {
@@ -1197,61 +1475,156 @@ select:focus-visible {
     padding: 14px 13px;
   }
 
-  .results-count {
+  .table-heading-copy {
+    flex: 1 1 auto;
+  }
+
+  .table-heading-copy > p {
+    font-size: 10px;
+  }
+
+  .table-heading-copy > .directory-count {
+    margin-top: 7px;
+  }
+
+  .directory-results-badge {
     min-height: 26px;
-    padding: 3px 8px;
-    font-size: 10px;
+    padding: 4px 8px;
+    font-size: 9px;
   }
 
-  /* Keep the complete table usable on narrow screens. */
+  /* Use cards instead of a horizontally scrolling table. */
   .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: none;
   }
 
-  .stock-table {
-    min-width: 850px;
-  }
-
-  .stock-table thead th {
-    padding: 12px;
-    font-size: 10px;
-  }
-
-  .stock-table tbody td {
+  .mobile-stock-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 11px;
+    width: 100%;
+    min-width: 0;
     padding: 12px;
   }
 
-  .stock-table thead th:first-child,
-  .stock-table tbody td:first-child {
-    padding-left: 13px;
+  .mobile-stock-card {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 14px;
+
+    border: 1px solid var(--stock-divider);
+    border-radius: 11px;
+    background: var(--stock-surface);
   }
 
-  .stock-table thead th:last-child,
-  .stock-table tbody td:last-child {
-    padding-right: 13px;
-  }
-
-  .pagination-bar {
+  .mobile-stock-card-header {
+    display: flex;
     align-items: flex-start;
-    flex-direction: column;
-    gap: 13px;
-    padding: 13px;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--stock-divider);
   }
 
-  .pagination-summary {
+  .mobile-stock-card-header .product-identity {
+    gap: 9px;
+  }
+
+  .mobile-stock-card-header .product-avatar {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .mobile-stock-card-header .product-copy {
+    flex: 1 1 auto;
+  }
+
+  .mobile-stock-card-header .product-copy strong {
+    font-size: 12px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-stock-card-header .product-copy span {
+    margin-top: 3px;
+    color: var(--stock-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
+    overflow-wrap: anywhere;
   }
 
-  .pagination-actions {
+  .mobile-stock-card-header .status-badge {
+    flex: 0 0 auto;
+    max-width: 48%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .mobile-stock-type {
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
     gap: 10px;
+
+    padding: 11px 0;
+    border-bottom: 1px solid var(--stock-divider);
+    font-size: 11px;
+  }
+
+  .mobile-stock-type > span,
+  .mobile-stock-metric > span {
+    color: var(--stock-muted);
+  }
+
+  .mobile-stock-type > strong {
+    color: var(--stock-secondary);
+    font-weight: 650;
+    text-align: right;
+  }
+
+  .mobile-stock-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    padding-top: 13px;
+  }
+
+  .mobile-stock-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .mobile-stock-metric > span {
+    font-size: 10px;
+  }
+
+  .mobile-stock-metric > strong {
+    color: var(--stock-text);
+    font-size: 12px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep pagination controls at opposite ends. */
+  .pagination-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px;
   }
 
   .page-size-control {
-    gap: 6px;
+    gap: 5px;
   }
 
   .page-size-control label {
@@ -1259,18 +1632,25 @@ select:focus-visible {
   }
 
   .page-size-control select {
-    width: 59px;
+    width: 54px;
     height: 32px;
+    padding: 0 5px;
+    font-size: 11px;
   }
 
   .pagination-controls {
-    gap: 4px;
+    gap: 3px;
+    margin-left: auto;
   }
 
   .page-button {
-    min-width: 30px;
+    min-width: 29px;
     height: 31px;
-    padding: 0 7px;
+    padding: 0 6px;
+  }
+
+  .page-direction {
+    font-size: 19px;
   }
 
   .state-card,
@@ -1290,27 +1670,25 @@ select:focus-visible {
   }
 }
 
-/* =========================================================
+/* ============================================================
    SMALL PHONES
-========================================================= */
+   ============================================================ */
 
 @media (max-width: 380px) {
   .stock-page {
     padding: 10px 8px 16px;
   }
 
+  .page-header {
+    padding: 18px 14px;
+  }
+
   .page-header h1 {
     font-size: 22px;
   }
 
-  .header-actions {
-    gap: 6px;
-  }
-
-  .header-actions .btn {
-    gap: 5px;
-    padding: 0 5px;
-    font-size: 10px;
+  .page-description {
+    font-size: 11px;
   }
 
   .summary-grid {
@@ -1319,7 +1697,7 @@ select:focus-visible {
 
   .summary-card {
     gap: 7px;
-    min-height: 92px;
+    min-height: 90px;
     padding: 10px 8px;
   }
 
@@ -1338,7 +1716,7 @@ select:focus-visible {
     font-size: 9px;
   }
 
-  .summary-copy strong {
+  .summary-copy > strong {
     font-size: 16px;
   }
 
@@ -1350,12 +1728,21 @@ select:focus-visible {
     padding: 10px;
   }
 
-  .filter-heading {
-    align-items: flex-start;
+  .filter-controls {
+    gap: 10px 6px;
   }
 
-  .refresh-button {
-    padding: 0 7px;
+  .filter-controls > .btn-clear {
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .mobile-stock-actions {
+    gap: 5px;
+  }
+
+  .mobile-stock-actions .btn {
+    padding: 0 4px;
     font-size: 9px;
   }
 
@@ -1363,12 +1750,42 @@ select:focus-visible {
     padding: 12px 10px;
   }
 
-  .pagination-bar {
-    padding: 11px 9px;
+  .directory-results-badge {
+    padding: 4px 6px;
+    font-size: 8px;
   }
 
-  .pagination-actions {
+  .mobile-stock-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    width: 100%;
+    padding: 9px;
+  }
+
+  .mobile-stock-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 11px;
+  }
+
+  .mobile-stock-card-header {
     gap: 7px;
+  }
+
+  .mobile-stock-card-header .status-badge {
+    gap: 4px;
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+
+  .mobile-stock-metrics {
+    gap: 12px 8px;
+  }
+
+  .pagination-bar {
+    gap: 5px;
+    padding: 10px 8px;
   }
 
   .page-size-control {
@@ -1379,21 +1796,25 @@ select:focus-visible {
     font-size: 9px;
   }
 
+  .page-size-control select {
+    width: 48px;
+  }
+
   .pagination-controls {
-    gap: 3px;
+    gap: 2px;
   }
 
   .page-button {
-    min-width: 27px;
-    height: 30px;
-    padding: 0 5px;
+    min-width: 26px;
+    height: 29px;
+    padding: 0 4px;
     font-size: 10px;
   }
 }
 
-/* =========================================================
+/* ============================================================
    REDUCED MOTION
-========================================================= */
+   ============================================================ */
 
 @keyframes stock-spin {
   to {
@@ -1402,12 +1823,44 @@ select:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :host *,
+  :host *::before,
+  :host *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+/* Desktop/tablet: show the table, hide mobile cards */
+.desktop-stock-table {
+  display: block;
+}
+
+.mobile-stock-cards {
+  display: none;
+}
+
+/* Mobile: show one full-width card per row */
+@media (max-width: 650px) {
+  .desktop-stock-table {
+    display: none !important;
+  }
+
+  .mobile-stock-cards {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    gap: 11px;
+    padding: 12px;
+  }
+
+  .mobile-stock-cards > .mobile-stock-card {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
   }
 }
