@@ -1,67 +1,109 @@
-<div class="page-container">
-
+<div class="invoice-details-page">
     <!-- Page Header -->
-    <div class="page-header">
+    <header class="page-header">
+        <div class="page-heading">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SALES
+            </div>
 
-        <div>
             <h1>Invoice Details</h1>
+
             <p *ngIf="invoice">
-                {{ invoice.invoiceNumber }}
+                Invoice <strong>{{ invoice.invoiceNumber }}</strong>
+            </p>
+
+            <p *ngIf="!invoice">
+                Review invoice information, customer details, and totals.
             </p>
         </div>
 
-        <div class="header-actions">
-            <a *ngIf="invoice" [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
-                Edit Invoice
+        <nav class="header-actions" aria-label="Invoice actions">
+            <a routerLink="/invoices" class="btn btn-outline back-button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m12 19-7-7 7-7"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+                Back to Invoices
             </a>
 
             <a *ngIf="invoice" [routerLink]="['/invoices', invoice.id, 'print']" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 9V2h12v7"></path>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M6 14h12v8H6z"></path>
+                </svg>
                 Print
             </a>
 
-            <a routerLink="/invoices" class="btn btn-outline">
-                Back to Invoices
+            <a *ngIf="invoice" [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+                </svg>
+                Edit Invoice
             </a>
+        </nav>
+    </header>
+
+    <!-- Loading State -->
+    <section *ngIf="isLoading" class="state-card loading-state" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading invoice</h2>
+        <p>Please wait while we retrieve the invoice details.</p>
+    </section>
+
+    <!-- Error State -->
+    <section *ngIf="!isLoading && errorMessage" class="state-card error-state" role="alert">
+        <div class="state-icon error-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 8v5"></path>
+                <path d="M12 16h.01"></path>
+            </svg>
         </div>
 
-    </div>
-
-
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-state">
-        <p>Loading invoice...</p>
-    </div>
-
-
-    <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-state">
+        <h2>Unable to display invoice</h2>
         <p>{{ errorMessage }}</p>
 
-        <a routerLink="/invoices" class="btn btn-outline">
+        <a routerLink="/invoices" class="btn btn-primary">
             Back to Invoices
         </a>
-    </div>
+    </section>
 
-
-    <!-- Invoice -->
-    <div *ngIf="!isLoading && invoice" class="invoice-content">
+    <!-- Invoice Content -->
+    <main *ngIf="!isLoading && invoice" class="invoice-content">
 
         <!-- Invoice Information -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Invoice Information</h2>
+                <div class="section-heading">
+                    <div class="section-icon invoice-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                            <path d="M14 2v6h6"></path>
+                            <path d="M8 13h8M8 17h5"></path>
+                        </svg>
+                    </div>
+
+                    <div class="section-heading-copy">
+                        <h2>Invoice Information</h2>
+                        <p>Invoice reference and important dates</p>
+                    </div>
+                </div>
 
                 <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
+                    <span class="status-dot"></span>
                     {{ getStatusLabel(invoice.status) }}
                 </span>
             </div>
 
             <div class="info-grid">
-
                 <div class="info-item">
                     <span class="label">Invoice Number</span>
-                    <span class="value">{{ invoice.invoiceNumber }}</span>
+                    <span class="value invoice-number">
+                        {{ invoice.invoiceNumber }}
+                    </span>
                 </div>
 
                 <div class="info-item">
@@ -74,55 +116,67 @@
                 <div class="info-item">
                     <span class="label">Due Date</span>
                     <span class="value">
-                        {{
-                        invoice.dueDate
-                        ? (invoice.dueDate | date:'dd MMM yyyy')
-                        : '—'
-                        }}
+                        {{ invoice.dueDate ? (invoice.dueDate | date:'dd MMM yyyy') : '—' }}
                     </span>
                 </div>
 
                 <div class="info-item">
-                    <span class="label">Created</span>
+                    <span class="label">Created On</span>
                     <span class="value">
                         {{ invoice.createdAt | date:'dd MMM yyyy, hh:mm a' }}
                     </span>
                 </div>
-
             </div>
-
         </section>
-
 
         <!-- Customer Information -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Customer Information</h2>
+                <div class="section-heading">
+                    <div class="section-icon customer-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21v-2a8 8 0 0 1 16 0v2Z"></path>
+                        </svg>
+                    </div>
+
+                    <div class="section-heading-copy">
+                        <h2>Customer Information</h2>
+                        <p>Customer associated with this invoice</p>
+                    </div>
+                </div>
             </div>
 
             <div class="customer-info">
-
                 <div class="info-item">
-                    <span class="label">Customer</span>
+                    <span class="label">Customer Name</span>
                     <span class="value">{{ invoice.customerName }}</span>
                 </div>
 
                 <div class="info-item">
                     <span class="label">Customer ID</span>
-                    <span class="value">{{ invoice.customerId }}</span>
+                    <span class="value">#{{ invoice.customerId }}</span>
                 </div>
-
             </div>
-
         </section>
 
-
         <!-- Invoice Items -->
-        <section class="card">
-
+        <section class="card items-card">
             <div class="card-header">
-                <h2>Invoice Items</h2>
+                <div class="section-heading">
+                    <div class="section-icon items-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m12 3 9 5-9 5-9-5 9-5Z"></path>
+                            <path d="m3 12 9 5 9-5"></path>
+                            <path d="m3 16 9 5 9-5"></path>
+                        </svg>
+                    </div>
+
+                    <div class="section-heading-copy">
+                        <h2>Invoice Items</h2>
+                        <p>Products, quantities, taxes, and discounts</p>
+                    </div>
+                </div>
 
                 <span class="item-count">
                     {{ invoiceItems.length }}
@@ -131,12 +185,10 @@
             </div>
 
             <div class="table-wrapper">
-
                 <table>
-
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th class="number-column">#</th>
                             <th>Product</th>
                             <th>SKU</th>
                             <th class="text-right">Qty</th>
@@ -148,131 +200,156 @@
                     </thead>
 
                     <tbody>
-
                         <tr *ngFor="let item of invoiceItems; let i = index">
-
-                            <td>{{ i + 1 }}</td>
-
-                            <td>
-                                <div class="product-name">
-                                    {{ item.productName }}
-                                </div>
+                            <td class="number-column" data-label="Item">
+                                {{ i + 1 }}
                             </td>
 
-                            <td>
-                                <span class="sku">
-                                    {{ item.sku }}
-                                </span>
+                            <td data-label="Product">
+                                <span class="product-name">{{ item.productName }}</span>
                             </td>
 
-                            <td class="text-right">
+                            <td data-label="SKU">
+                                <span class="sku">{{ item.sku || '—' }}</span>
+                            </td>
+
+                            <td class="text-right" data-label="Quantity">
                                 {{ item.quantity }}
                             </td>
 
-                            <td class="text-right">
+                            <td class="text-right" data-label="Unit Price">
                                 ₹{{ item.unitPrice | number:'1.2-2' }}
                             </td>
 
-                            <td class="text-right">
+                            <td class="text-right" data-label="Tax">
                                 ₹{{ item.taxAmount | number:'1.2-2' }}
                             </td>
 
-                            <td class="text-right">
+                            <td class="text-right" data-label="Discount">
                                 ₹{{ item.discountAmount | number:'1.2-2' }}
                             </td>
 
-                            <td class="text-right total-cell">
+                            <td class="text-right total-cell" data-label="Total">
                                 ₹{{ item.totalAmount | number:'1.2-2' }}
                             </td>
-
                         </tr>
 
-                        <tr *ngIf="invoiceItems.length === 0">
+                        <tr *ngIf="invoiceItems.length === 0" class="empty-row">
                             <td colspan="8" class="empty-items">
-                                No invoice items found.
+                                <div class="empty-state">
+                                    <span class="empty-state-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                                            <path d="M14 2v6h6"></path>
+                                            <path d="M8 13h8M8 17h5"></path>
+                                        </svg>
+                                    </span>
+
+                                    <strong>No invoice items</strong>
+                                    <span>No products were found for this invoice.</span>
+                                </div>
                             </td>
                         </tr>
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </section>
 
+        <!-- Lower Content: Summary Left, Notes and Actions Right -->
+        <div class="details-bottom-grid">
 
-        <!-- Summary -->
-        <section class="summary-card">
+            <!-- Invoice Summary: Left Column -->
+            <section class="summary-card">
+                <div class="summary-heading">
+                    <div class="section-icon summary-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16M4 10h16M4 15h10"></path>
+                            <path d="M16 18h5M18.5 15.5v5"></path>
+                        </svg>
+                    </div>
 
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span>
-                    ₹{{ invoice.subtotal | number:'1.2-2' }}
-                </span>
+                    <div class="section-heading-copy">
+                        <h2>Invoice Summary</h2>
+                        <p>Breakdown of invoice charges</p>
+                    </div>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>₹{{ invoice.subtotal | number:'1.2-2' }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <strong>₹{{ invoice.taxAmount | number:'1.2-2' }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <strong class="discount-value">
+                        − ₹{{ invoice.discountAmount | number:'1.2-2' }}
+                    </strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row grand-total">
+                    <div class="grand-total-copy">
+                        <span>Total Amount</span>
+                        <small>Including applicable taxes and discounts</small>
+                    </div>
+
+                    <strong>₹{{ invoice.totalAmount | number:'1.2-2' }}</strong>
+                </div>
+            </section>
+
+            <!-- Notes and Actions: Right Column -->
+            <div class="details-side-column">
+
+                <!-- Notes -->
+                <section *ngIf="invoice.notes" class="card notes-card">
+                    <div class="card-header">
+                        <div class="section-heading">
+                            <div class="section-icon notes-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                                    <path d="M14 2v6h6"></path>
+                                    <path d="M8 13h8M8 17h6"></path>
+                                </svg>
+                            </div>
+
+                            <div class="section-heading-copy">
+                                <h2>Notes</h2>
+                                <p>Additional information for this invoice</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notes">{{ invoice.notes }}</div>
+                </section>
+
+                <!-- Bottom Actions -->
+                <footer class="bottom-actions">
+                    <a routerLink="/invoices" class="btn btn-outline">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m12 19-7-7 7-7"></path>
+                            <path d="M5 12h14"></path>
+                        </svg>
+                        Back to Invoices
+                    </a>
+
+                    <div class="action-group">
+                        <a [routerLink]="['/invoices', invoice.id, 'print']" class="btn btn-secondary">
+                            Print Invoice
+                        </a>
+
+                        <a [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
+                            Edit Invoice
+                        </a>
+                    </div>
+                </footer>
+
             </div>
-
-            <div class="summary-row">
-                <span>Tax</span>
-                <span>
-                    ₹{{ invoice.taxAmount | number:'1.2-2' }}
-                </span>
-            </div>
-
-            <div class="summary-row">
-                <span>Discount</span>
-                <span>
-                    ₹{{ invoice.discountAmount | number:'1.2-2' }}
-                </span>
-            </div>
-
-            <div class="summary-divider"></div>
-
-            <div class="summary-row grand-total">
-                <span>Total Amount</span>
-                <span>
-                    ₹{{ invoice.totalAmount | number:'1.2-2' }}
-                </span>
-            </div>
-
-        </section>
-
-
-        <!-- Notes -->
-        <section *ngIf="invoice.notes" class="card">
-
-            <div class="card-header">
-                <h2>Notes</h2>
-            </div>
-
-            <div class="notes">
-                {{ invoice.notes }}
-            </div>
-
-        </section>
-
-
-        <!-- Bottom Actions -->
-        <div class="bottom-actions">
-
-            <a routerLink="/invoices" class="btn btn-outline">
-                Back to Invoices
-            </a>
-
-            <div class="action-group">
-
-                <a [routerLink]="['/invoices', invoice.id, 'print']" class="btn btn-secondary">
-                    Print Invoice
-                </a>
-
-                <a [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
-                    Edit Invoice
-                </a>
-
-            </div>
-
         </div>
-
-    </div>
-
+    </main>
 </div>

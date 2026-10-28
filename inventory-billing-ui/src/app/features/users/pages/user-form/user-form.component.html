@@ -1,169 +1,222 @@
-<div class="page-container">
+<div class="user-form-page">
 
-    <div class="page-header">
+    <!-- Page header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="eyebrow">USER MANAGEMENT</span>
 
-        <div>
+            <h1>{{ editing ? 'Edit User' : 'Create User' }}</h1>
 
-            <h1>
-                {{ editing ? 'Edit User' : 'Create User' }}
-            </h1>
-
-            <p>
+            <p class="page-description">
                 {{
                 editing
-                ? 'Update user account information.'
-                : 'Create a new user account.'
+                ? 'Update user account information and access settings.'
+                : 'Create a user account and configure their access to Stockly.'
                 }}
             </p>
-
         </div>
 
-        <a routerLink="/users" class="btn btn-outline">
-            ← Back to Users
+        <a routerLink="/users" class="btn btn-secondary header-back-button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M19 12H5m7 7-7-7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            Back to Users
         </a>
+    </header>
 
-    </div>
+    <!-- Loading state -->
+    <section *ngIf="loading" class="state-card loading-state" role="status" aria-live="polite">
 
+        <span class="loading-spinner" aria-hidden="true"></span>
 
-    <div *ngIf="loading" class="state-card">
-        Loading user...
-    </div>
+        <div>
+            <h2>Loading user</h2>
+            <p>Please wait while we retrieve the account information.</p>
+        </div>
+    </section>
 
-
-    <form *ngIf="!loading" [formGroup]="userForm" (ngSubmit)="save()">
+    <!-- Form -->
+    <form *ngIf="!loading" [formGroup]="userForm" (ngSubmit)="save()" novalidate>
 
         <section class="form-card">
 
-            <div class="card-header">
-
-                <h2>User Information</h2>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        Username <span>*</span>
-                    </label>
-
-                    <input type="text" formControlName="username" placeholder="Enter username" />
-
-                    <small *ngIf="isInvalid('username')" class="validation-error">
-                        Username must contain at least 3 characters.
-                    </small>
-
+            <div class="form-card-header">
+                <div class="section-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20m5.5-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6"
+                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
 
+                <div class="form-card-heading">
+                    <h2>User Information</h2>
+                    <p>Enter the user's personal details and account permissions.</p>
+                </div>
 
+                <span class="required-note">
+                    <span aria-hidden="true">*</span> Required fields
+                </span>
+            </div>
+
+            <div class="form-content">
+
+                <!-- Username -->
                 <div class="form-group">
-
-                    <label>
-                        Full Name <span>*</span>
+                    <label for="username">
+                        Username <span class="required-mark">*</span>
                     </label>
 
-                    <input type="text" formControlName="fullName" placeholder="Enter full name" />
+                    <input id="username" type="text" formControlName="username" autocomplete="username"
+                        placeholder="Enter username" [class.input-invalid]="isInvalid('username')"
+                        [attr.aria-invalid]="isInvalid('username')"
+                        [attr.aria-describedby]="isInvalid('username') ? 'username-error' : null" />
 
-                    <small *ngIf="isInvalid('fullName')" class="validation-error">
+                    <small *ngIf="isInvalid('username')" id="username-error" class="validation-error">
+                        <span *ngIf="userForm.get('username')?.hasError('required')">
+                            Username is required.
+                        </span>
+                        <span *ngIf="userForm.get('username')?.hasError('minlength')">
+                            Username must contain at least 3 characters.
+                        </span>
+                    </small>
+                </div>
+
+                <!-- Full name -->
+                <div class="form-group">
+                    <label for="fullName">
+                        Full Name <span class="required-mark">*</span>
+                    </label>
+
+                    <input id="fullName" type="text" formControlName="fullName" autocomplete="name"
+                        placeholder="Enter full name" [class.input-invalid]="isInvalid('fullName')"
+                        [attr.aria-invalid]="isInvalid('fullName')"
+                        [attr.aria-describedby]="isInvalid('fullName') ? 'fullName-error' : null" />
+
+                    <small *ngIf="isInvalid('fullName')" id="fullName-error" class="validation-error">
                         Full name is required.
                     </small>
-
                 </div>
 
-
+                <!-- Email -->
                 <div class="form-group">
-
-                    <label>
-                        Email <span>*</span>
+                    <label for="email">
+                        Email Address <span class="required-mark">*</span>
                     </label>
 
-                    <input type="email" formControlName="email" placeholder="Enter email address" />
+                    <input id="email" type="email" formControlName="email" autocomplete="email"
+                        placeholder="name@example.com" [class.input-invalid]="isInvalid('email')"
+                        [attr.aria-invalid]="isInvalid('email')"
+                        [attr.aria-describedby]="isInvalid('email') ? 'email-error' : null" />
 
-                    <small *ngIf="isInvalid('email')" class="validation-error">
-                        Enter a valid email address.
+                    <small *ngIf="isInvalid('email')" id="email-error" class="validation-error">
+                        <span *ngIf="userForm.get('email')?.hasError('required')">
+                            Email address is required.
+                        </span>
+                        <span *ngIf="userForm.get('email')?.hasError('email')">
+                            Enter a valid email address.
+                        </span>
+                    </small>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+
+                    <input id="phone" type="tel" inputmode="numeric" formControlName="phone" autocomplete="tel"
+                        maxlength="10" placeholder="Enter 10-digit phone number"
+                        [class.input-invalid]="isInvalid('phone')" [attr.aria-invalid]="isInvalid('phone')"
+                        [attr.aria-describedby]="isInvalid('phone') ? 'phone-error' : null" />
+
+                    <small class="field-hint" *ngIf="!isInvalid('phone')">
+                        Enter a 10-digit mobile number.
                     </small>
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Phone
-                    </label>
-
-                    <input type="text" formControlName="phone" maxlength="10"
-                        placeholder="Enter 10 digit phone number" />
-
-                    <small *ngIf="isInvalid('phone')" class="validation-error">
-                        Phone number must contain 10 digits.
+                    <small *ngIf="isInvalid('phone')" id="phone-error" class="validation-error">
+                        Phone number must contain exactly 10 digits.
                     </small>
-
                 </div>
 
-
+                <!-- Role -->
                 <div class="form-group">
-
-                    <label>
-                        Role <span>*</span>
+                    <label for="roleId">
+                        Assigned Role <span class="required-mark">*</span>
                     </label>
 
-                    <select formControlName="roleId">
+                    <select id="roleId" formControlName="roleId" [class.input-invalid]="isInvalid('roleId')"
+                        [attr.aria-invalid]="isInvalid('roleId')"
+                        [attr.aria-describedby]="isInvalid('roleId') ? 'roleId-error' : null">
 
-                        <option value="">
-                            Select Role
-                        </option>
+                        <option value="">Select a role</option>
 
-                        <option *ngFor="let role of roles" [value]="role.id">
+                        <option *ngFor="let role of roles; trackBy: trackByRole" [value]="role.id">
                             {{ role.name }}
                         </option>
-
                     </select>
 
-                    <small *ngIf="isInvalid('roleId')" class="validation-error">
+                    <small *ngIf="isInvalid('roleId')" id="roleId-error" class="validation-error">
                         Please select a role.
                     </small>
-
                 </div>
 
-
+                <!-- Account status -->
                 <div class="form-group status-group">
+                    <label>Account Status</label>
 
-                    <label>
-                        Status
-                    </label>
+                    <div class="status-control">
+                        <label class="status-toggle" for="isActive">
+                            <input id="isActive" type="checkbox" formControlName="isActive" />
 
-                    <label class="checkbox-label">
+                            <span class="toggle-track" aria-hidden="true">
+                                <span class="toggle-thumb"></span>
+                            </span>
 
-                        <input type="checkbox" formControlName="isActive" />
-
-                        <span>
-                            Active User
-                        </span>
-
-                    </label>
-
+                            <span class="toggle-copy">
+                                <strong>
+                                    {{ userForm.get('isActive')?.value ? 'Active User' : 'Inactive User' }}
+                                </strong>
+                                <small>
+                                    {{
+                                    userForm.get('isActive')?.value
+                                    ? 'This account is enabled.'
+                                    : 'This account is disabled.'
+                                    }}
+                                </small>
+                            </span>
+                        </label>
+                    </div>
                 </div>
 
             </div>
-
         </section>
 
+        <!-- Error message -->
+        <div *ngIf="errorMessage" class="error-message" role="alert" aria-live="assertive">
 
-        <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
+            <span class="error-symbol" aria-hidden="true">!</span>
+
+            <div>
+                <strong>{{ editing ? 'Unable to update user' : 'Unable to create user' }}</strong>
+                <p>{{ errorMessage }}</p>
+            </div>
         </div>
 
-
-        <div class="form-actions">
-
-            <a routerLink="/users" class="btn btn-outline">
+        <!-- Form actions -->
+        <footer class="form-actions">
+            <a routerLink="/users" class="btn btn-secondary">
                 Cancel
             </a>
 
-            <button type="submit" class="btn btn-primary" [disabled]="saving">
+            <button type="submit" class="btn btn-primary save-button" [disabled]="saving">
+
+                <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 4h12l3 3v13H4V4h1Zm3 0v6h8V4M8 20v-7h8v7" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+
+                <span *ngIf="saving" class="button-spinner" aria-hidden="true">
+                </span>
 
                 {{
                 saving
@@ -172,11 +225,8 @@
                 ? 'Update User'
                 : 'Create User'
                 }}
-
             </button>
-
-        </div>
+        </footer>
 
     </form>
-
 </div>

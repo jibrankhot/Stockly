@@ -6,7 +6,7 @@
             <p class="page-description">Track inventory coming in and going out.</p>
         </div>
 
-        <nav class="header-actions" aria-label="Inventory navigation">
+        <nav class="header-actions desktop-header-actions" aria-label="Inventory navigation">
             <a routerLink="/inventory" class="btn btn-secondary">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z" stroke="currentColor" stroke-width="1.7"
@@ -14,6 +14,7 @@
                 </svg>
                 Stock Overview
             </a>
+
             <a routerLink="/inventory/adjustment" class="btn btn-primary">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -24,7 +25,7 @@
     </header>
 
     <section class="summary-grid" aria-label="Stock movement summary">
-        <article class="summary-card summary-total">
+        <article class="summary-card">
             <div class="summary-icon icon-total" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M4 5.5h16v13H4zM8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.7"
@@ -74,53 +75,80 @@
         </div>
 
         <div class="filter-controls">
-            <div class="filter-main-row">
-                <div class="filter-group search-group">
-                    <label for="movement-search">Search movements</label>
-                    <div class="input-with-icon">
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8" />
-                            <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                        </svg>
-                        <input id="movement-search" name="movementSearch" type="search" autocomplete="off"
-                            [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
-                            placeholder="Search product, SKU or reference..." />
-                    </div>
-                </div>
-
-                <div class="filter-group type-group">
-                    <label for="movement-type">Movement type</label>
-                    <select id="movement-type" name="movementType" [(ngModel)]="typeFilter"
-                        (ngModelChange)="applyFilters()">
-                        <option value="all">All movements</option>
-                        <option value="purchase">Purchase</option>
-                        <option value="sale">Sale</option>
-                        <option value="adjustment">Adjustment</option>
-                        <option value="return">Return</option>
-                    </select>
-                </div>
-
-                <button type="button" class="btn btn-clear" (click)="clearFilters()" [disabled]="!hasActiveFilters()">
-                    Clear filters
-                </button>
-            </div>
-
-            <div class="filter-actions-row">
-                <span class="filter-hint">
-                    {{ filteredMovements.length }} {{ filteredMovements.length === 1 ? 'result' : 'results' }} found
-                </span>
-
-                <button type="button" class="btn btn-secondary refresh-button" (click)="loadMovements()"
-                    [disabled]="isLoading">
-                    <svg class="refresh-icon" [class.is-spinning]="isLoading" viewBox="0 0 24 24" fill="none"
-                        aria-hidden="true">
-                        <path d="M20 7v5h-5M4.5 16.5A8 8 0 0 0 18 19l2-2M4 12V7h5m-3-2A8 8 0 0 1 20 12"
-                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            <div class="filter-group search-group">
+                <label for="movement-search">Search movements</label>
+                <div class="input-with-icon">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8" />
+                        <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                     </svg>
-                    {{ isLoading ? 'Refreshing...' : 'Refresh' }}
-                </button>
+                    <input id="movement-search" name="movementSearch" type="search" autocomplete="off"
+                        [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
+                        placeholder="Search product, SKU or reference..." />
+                </div>
             </div>
+
+            <div class="filter-group type-group">
+                <label for="movement-type">Movement type</label>
+                <select id="movement-type" name="movementType" [(ngModel)]="typeFilter"
+                    (ngModelChange)="applyFilters()">
+                    <option value="all">All movements</option>
+                    <option value="purchase">Purchase</option>
+                    <option value="sale">Sale</option>
+                    <option value="adjustment">Adjustment</option>
+                    <option value="return">Return</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-clear filter-clear-button" (click)="clearFilters()"
+                [disabled]="!hasActiveFilters()">
+                Clear filters
+            </button>
+
+            <button type="button" class="btn btn-secondary refresh-button desktop-refresh-button"
+                (click)="loadMovements()" [disabled]="isLoading">
+                <svg class="refresh-icon" [class.is-spinning]="isLoading" viewBox="0 0 24 24" fill="none"
+                    aria-hidden="true">
+                    <path d="M20 7v5h-5M4.5 16.5A8 8 0 0 0 18 19l2-2M4 12V7h5m-3-2A8 8 0 0 1 20 12"
+                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+            </button>
         </div>
+
+        <div class="filter-actions-row">
+            <span class="filter-hint" aria-live="polite">
+                {{ filteredMovements.length }}
+                {{ filteredMovements.length === 1 ? 'result' : 'results' }} found
+            </span>
+        </div>
+
+        <nav class="mobile-navigation-actions" aria-label="Mobile inventory actions">
+            <button type="button" class="btn btn-secondary mobile-refresh-button" (click)="loadMovements()"
+                [disabled]="isLoading">
+                <svg class="refresh-icon" [class.is-spinning]="isLoading" viewBox="0 0 24 24" fill="none"
+                    aria-hidden="true">
+                    <path d="M20 7v5h-5M4.5 16.5A8 8 0 0 0 18 19l2-2M4 12V7h5m-3-2A8 8 0 0 1 20 12"
+                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+            </button>
+
+            <a routerLink="/inventory" class="btn btn-secondary mobile-overview-button">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Stock Overview
+            </a>
+
+            <a routerLink="/inventory/adjustment" class="btn btn-primary mobile-adjust-button">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Adjust Stock
+            </a>
+        </nav>
     </section>
 
     <section *ngIf="isLoading" class="state-card" aria-live="polite">
@@ -133,7 +161,9 @@
         <div class="state-icon error-icon" aria-hidden="true">!</div>
         <h2>Unable to load stock movements</h2>
         <p>{{ errorMessage }}</p>
-        <button type="button" class="btn btn-primary" (click)="loadMovements()">Try again</button>
+        <button type="button" class="btn btn-primary" (click)="loadMovements()">
+            Try again
+        </button>
     </section>
 
     <section class="movement-directory" *ngIf="!isLoading && !errorMessage">
@@ -146,6 +176,7 @@
                     {{ totalMovements === 1 ? 'movement' : 'movements' }}
                 </p>
             </div>
+
             <span class="directory-results-badge">
                 {{ filteredMovements.length }}
                 {{ filteredMovements.length === 1 ? 'result' : 'results' }}
@@ -161,24 +192,30 @@
                         <th scope="col">Reference</th>
                         <th scope="col">Notes</th>
                         <th scope="col" class="numeric-cell">Quantity</th>
-                        <th scope="col" class="type-column">Movement Type</th>
+                        <th scope="col">Movement Type</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let movement of paginatedMovements; trackBy: trackByMovement">
                         <td class="product-cell">
                             <div class="product-identity">
-                                <span class="product-avatar" aria-hidden="true">{{ (movement.productName ||
-                                    'P').charAt(0).toUpperCase() }}</span>
+                                <span class="product-avatar" aria-hidden="true">
+                                    {{ (movement.productName || 'P').charAt(0).toUpperCase() }}
+                                </span>
                                 <div class="product-copy">
                                     <strong>{{ movement.productName || 'Unnamed product' }}</strong>
                                     <span>{{ movement.sku || 'No SKU' }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="date-cell">{{ movement.createdAt | date:'dd MMM yyyy, hh:mm a' }}</td>
+                        <td class="date-cell">
+                            {{ movement.createdAt | date:'dd MMM yyyy, hh:mm a' }}
+                        </td>
                         <td><span class="reference-value">{{ movement.reference || '—' }}</span></td>
-                        <td><span class="notes-value" [title]="movement.notes || ''">{{ movement.notes || '—' }}</span>
+                        <td>
+                            <span class="notes-value" [title]="movement.notes || ''">
+                                {{ movement.notes || '—' }}
+                            </span>
                         </td>
                         <td class="numeric-cell">
                             <span class="movement-quantity" [class.quantity-in]="movement.quantity > 0"
@@ -186,9 +223,10 @@
                                 {{ movement.quantity > 0 ? '+' : '' }}{{ movement.quantity | number:'1.0-2' }}
                             </span>
                         </td>
-                        <td class="type-cell">
+                        <td>
                             <span class="movement-badge" [ngClass]="getTypeClass(movement.type)">
-                                <span class="badge-dot" aria-hidden="true"></span>{{ getTypeLabel(movement.type) }}
+                                <span class="badge-dot" aria-hidden="true"></span>
+                                {{ getTypeLabel(movement.type) }}
                             </span>
                         </td>
                     </tr>
@@ -200,15 +238,17 @@
             <article class="mobile-movement-card" *ngFor="let movement of paginatedMovements; trackBy: trackByMovement">
                 <div class="mobile-card-header">
                     <div class="product-identity">
-                        <span class="product-avatar" aria-hidden="true">{{ (movement.productName ||
-                            'P').charAt(0).toUpperCase() }}</span>
+                        <span class="product-avatar" aria-hidden="true">
+                            {{ (movement.productName || 'P').charAt(0).toUpperCase() }}
+                        </span>
                         <div class="product-copy">
                             <strong>{{ movement.productName || 'Unnamed product' }}</strong>
                             <span>{{ movement.sku || 'No SKU' }}</span>
                         </div>
                     </div>
                     <span class="movement-badge" [ngClass]="getTypeClass(movement.type)">
-                        <span class="badge-dot" aria-hidden="true"></span>{{ getTypeLabel(movement.type) }}
+                        <span class="badge-dot" aria-hidden="true"></span>
+                        {{ getTypeLabel(movement.type) }}
                     </span>
                 </div>
 
@@ -241,35 +281,41 @@
                     <path d="m16 16 4.5 4.5M8 11h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
                 </svg>
             </div>
-            <h3>{{ movements.length === 0 ? 'No stock movements yet' : 'No matching movements' }}</h3>
+            <h3>
+                {{ movements.length === 0 ? 'No stock movements yet' : 'No matching movements' }}
+            </h3>
             <p>
                 {{ movements.length === 0
                 ? 'Inventory transactions will appear here when stock changes are recorded.'
                 : 'Try changing your search or movement type filter.' }}
             </p>
-            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearFilters()">Clear
-                filters</button>
+            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearFilters()">
+                Clear filters
+            </button>
         </div>
 
         <footer class="pagination-bar" *ngIf="filteredMovements.length > 0">
-            <div class="pagination-summary">
-                Showing {{ paginationStart }}–{{ paginationEnd }} of {{ filteredMovements.length }} movements
-            </div>
+
 
             <div class="page-size-control">
+
                 <label for="movementPageSize">Rows per page</label>
                 <select id="movementPageSize" [ngModel]="pageSize" (ngModelChange)="changePageSize($event)">
-                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                        {{ size }}
+                    </option>
                 </select>
             </div>
 
             <nav class="pagination-controls" aria-label="Movement history pagination">
                 <button type="button" class="page-button page-direction" aria-label="Previous page"
                     (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+
                 <button type="button" class="page-button" *ngFor="let page of pageNumbers"
                     [class.page-active]="page === currentPage"
                     [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Page ' + page"
                     (click)="goToPage(page)">{{ page }}</button>
+
                 <button type="button" class="page-button page-direction" aria-label="Next page"
                     (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
             </nav>

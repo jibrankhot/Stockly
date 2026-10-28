@@ -1,10 +1,10 @@
+
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Invoice } from '../../../../../shared/models/invoice';
 import { InvoiceItem } from '../../../../../shared/models/invoice-item';
-
 import { InvoiceService } from '../../services/invoice.service';
 
 @Component({
@@ -20,7 +20,6 @@ import { InvoiceService } from '../../services/invoice.service';
   styleUrl: './invoice-details.component.scss'
 })
 export class InvoiceDetailsComponent implements OnInit {
-
   invoice: Invoice | null = null;
   invoiceItems: InvoiceItem[] = [];
 
@@ -35,7 +34,7 @@ export class InvoiceDetailsComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    if (!id) {
+    if (!Number.isInteger(id) || id <= 0) {
       this.errorMessage = 'Invalid invoice ID.';
       this.isLoading = false;
       return;
@@ -47,17 +46,20 @@ export class InvoiceDetailsComponent implements OnInit {
   loadInvoice(id: number): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.invoice = null;
+    this.invoiceItems = [];
 
     this.invoiceService.getInvoiceById(id).subscribe({
       next: (invoice) => {
         this.invoice = invoice;
 
-        if (invoice) {
-          this.loadInvoiceItems(invoice.id);
-        } else {
+        if (!invoice) {
           this.errorMessage = 'Invoice not found.';
           this.isLoading = false;
+          return;
         }
+
+        this.loadInvoiceItems(invoice.id);
       },
       error: () => {
         this.errorMessage = 'Unable to load invoice.';
@@ -69,7 +71,7 @@ export class InvoiceDetailsComponent implements OnInit {
   loadInvoiceItems(invoiceId: number): void {
     this.invoiceService.getInvoiceItems(invoiceId).subscribe({
       next: (items) => {
-        this.invoiceItems = items;
+        this.invoiceItems = items ?? [];
         this.isLoading = false;
       },
       error: () => {

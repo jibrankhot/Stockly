@@ -1,173 +1,333 @@
-<div class="page-container">
-
-    <div class="page-header">
-
-        <div>
+<div class="invoice-settings-page">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SETTINGS
+            </div>
 
             <h1>Invoice Settings</h1>
-
             <p>
-                Configure invoice numbering and display options.
+                Configure invoice numbering, payment terms, and the information
+                displayed on your invoices.
             </p>
-
         </div>
 
-    </div>
+        <div class="header-status">
+            <span class="status-indicator"></span>
+            Invoice Preferences
+        </div>
+    </header>
 
-
-    <form [formGroup]="invoiceForm" (ngSubmit)="save()">
-
-        <section class="form-card">
-
-            <div class="card-header">
-
-                <h2>Invoice Configuration</h2>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        Invoice Prefix <span>*</span>
-                    </label>
-
-                    <input type="text" formControlName="invoicePrefix" />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Next Invoice Number <span>*</span>
-                    </label>
-
-                    <input type="number" min="1" formControlName="nextInvoiceNumber" />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Default Payment Terms (Days) <span>*</span>
-                    </label>
-
-                    <input type="number" min="0" formControlName="paymentTerms" />
-
-                </div>
-
-
-                <div class="form-group full-width">
-
-                    <label>
-                        Default Invoice Notes
-                    </label>
-
-                    <textarea rows="4" formControlName="defaultNotes"
-                        placeholder="Enter default invoice notes"></textarea>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <section class="form-card">
-
-            <div class="card-header">
-
-                <h2>Invoice Display</h2>
-
-            </div>
-
-
-            <div class="settings-list">
-
-                <label class="setting-row">
-
-                    <div>
-
-                        <strong>
-                            Show Company Details
-                        </strong>
-
-                        <span>
-                            Display company information on invoices.
-                        </span>
-
+    <form [formGroup]="invoiceForm" (ngSubmit)="save()" class="invoice-settings-form">
+        <div class="settings-layout">
+            <!-- LEFT COLUMN: Invoice Configuration -->
+            <section class="form-card configuration-card">
+                <div class="form-card-header">
+                    <div class="section-icon configuration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <path d="M14 2v6h6"></path>
+                            <path d="M8 13h8"></path>
+                            <path d="M8 17h8"></path>
+                            <path d="M8 9h1"></path>
+                        </svg>
                     </div>
 
-                    <input type="checkbox" formControlName="showCompanyDetails" />
+                    <div class="form-card-heading">
+                        <h2>Invoice Configuration</h2>
+                        <p>Set your invoice numbering and default terms.</p>
+                    </div>
+                </div>
 
-                </label>
+                <div class="form-card-body">
+                    <div class="form-grid">
+                        <!-- Invoice Prefix -->
+                        <div class="form-group">
+                            <label for="invoicePrefix">
+                                Invoice Prefix <span class="required-mark">*</span>
+                            </label>
 
+                            <input id="invoicePrefix" type="text" formControlName="invoicePrefix" placeholder="e.g. INV"
+                                autocomplete="off" [class.invalid]="
+                  invoiceForm.get('invoicePrefix')?.invalid &&
+                  invoiceForm.get('invoicePrefix')?.touched
+                " [attr.aria-invalid]="
+                  invoiceForm.get('invoicePrefix')?.invalid &&
+                  invoiceForm.get('invoicePrefix')?.touched
+                " aria-describedby="invoicePrefix-error" />
 
-                <label class="setting-row">
+                            @if (
+                            invoiceForm.get('invoicePrefix')?.hasError('required') &&
+                            invoiceForm.get('invoicePrefix')?.touched
+                            ) {
+                            <span id="invoicePrefix-error" class="field-error">
+                                Invoice prefix is required.
+                            </span>
+                            } @else {
+                            <span class="field-hint">
+                                Appears at the beginning of each invoice number.
+                            </span>
+                            }
+                        </div>
 
-                    <div>
+                        <!-- Next Invoice Number -->
+                        <div class="form-group">
+                            <label for="nextInvoiceNumber">
+                                Next Invoice Number <span class="required-mark">*</span>
+                            </label>
 
-                        <strong>
-                            Show Tax Details
-                        </strong>
+                            <input id="nextInvoiceNumber" type="number" min="1" step="1"
+                                formControlName="nextInvoiceNumber" placeholder="e.g. 1004" [class.invalid]="
+                  invoiceForm.get('nextInvoiceNumber')?.invalid &&
+                  invoiceForm.get('nextInvoiceNumber')?.touched
+                " [attr.aria-invalid]="
+                  invoiceForm.get('nextInvoiceNumber')?.invalid &&
+                  invoiceForm.get('nextInvoiceNumber')?.touched
+                " aria-describedby="nextInvoiceNumber-error" />
 
-                        <span>
-                            Display tax information on invoices.
-                        </span>
+                            @if (
+                            invoiceForm.get('nextInvoiceNumber')?.invalid &&
+                            invoiceForm.get('nextInvoiceNumber')?.touched
+                            ) {
+                            <span id="nextInvoiceNumber-error" class="field-error">
+                                @if (
+                                invoiceForm.get('nextInvoiceNumber')?.hasError('required')
+                                ) {
+                                Next invoice number is required.
+                                } @else if (
+                                invoiceForm.get('nextInvoiceNumber')?.hasError('min')
+                                ) {
+                                Invoice number must be at least 1.
+                                }
+                            </span>
+                            } @else {
+                            <span class="field-hint">
+                                The number assigned to the next invoice.
+                            </span>
+                            }
+                        </div>
 
+                        <!-- Payment Terms -->
+                        <div class="form-group full-width">
+                            <label for="paymentTerms">
+                                Default Payment Terms
+                                <span class="required-mark">*</span>
+                            </label>
+
+                            <div class="input-with-suffix">
+                                <input id="paymentTerms" type="number" min="0" step="1" formControlName="paymentTerms"
+                                    placeholder="30" [class.invalid]="
+                    invoiceForm.get('paymentTerms')?.invalid &&
+                    invoiceForm.get('paymentTerms')?.touched
+                  " [attr.aria-invalid]="
+                    invoiceForm.get('paymentTerms')?.invalid &&
+                    invoiceForm.get('paymentTerms')?.touched
+                  " aria-describedby="paymentTerms-error" />
+
+                                <span class="input-suffix">Days</span>
+                            </div>
+
+                            @if (
+                            invoiceForm.get('paymentTerms')?.invalid &&
+                            invoiceForm.get('paymentTerms')?.touched
+                            ) {
+                            <span id="paymentTerms-error" class="field-error">
+                                @if (
+                                invoiceForm.get('paymentTerms')?.hasError('required')
+                                ) {
+                                Payment terms are required.
+                                } @else if (
+                                invoiceForm.get('paymentTerms')?.hasError('min')
+                                ) {
+                                Payment terms cannot be negative.
+                                }
+                            </span>
+                            } @else {
+                            <span class="field-hint">
+                                Number of days customers have to pay an invoice.
+                            </span>
+                            }
+                        </div>
+
+                        <!-- Default Notes -->
+                        <div class="form-group full-width">
+                            <label for="defaultNotes">Default Invoice Notes</label>
+
+                            <textarea id="defaultNotes" formControlName="defaultNotes" rows="4"
+                                placeholder="Enter a message to include on your invoices"></textarea>
+
+                            <span class="field-hint">
+                                For example, a thank-you message or payment reminder.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: Invoice Display -->
+            <section class="form-card display-card">
+                <div class="form-card-header">
+                    <div class="section-icon display-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <path d="M7 8h10"></path>
+                            <path d="M7 12h4"></path>
+                            <path d="M7 16h6"></path>
+                        </svg>
                     </div>
 
-                    <input type="checkbox" formControlName="showTaxDetails" />
+                    <div class="form-card-heading">
+                        <h2>Invoice Display</h2>
+                        <p>Choose which details appear on your invoices.</p>
+                    </div>
+                </div>
 
-                </label>
-
-
-                <label class="setting-row">
-
-                    <div>
-
-                        <strong>
-                            Show Payment Details
-                        </strong>
-
-                        <span>
-                            Display payment information on invoices.
+                <div class="form-card-body display-card-body">
+                    <div class="display-intro">
+                        <span class="display-intro-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4"></path>
+                                <path d="M12 8h.01"></path>
+                            </svg>
                         </span>
 
+                        <p>
+                            Turn each option on or off to control what appears on your
+                            generated invoices.
+                        </p>
                     </div>
 
-                    <input type="checkbox" formControlName="showPaymentDetails" />
+                    <div class="settings-list">
+                        <!-- Company Details -->
+                        <label class="setting-row" for="showCompanyDetails">
+                            <div class="setting-icon company-setting-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M3 21h18"></path>
+                                    <path d="M5 21V7l8-4v18"></path>
+                                    <path d="M19 21V11l-6-4"></path>
+                                    <path d="M9 9v.01"></path>
+                                    <path d="M9 12v.01"></path>
+                                    <path d="M9 15v.01"></path>
+                                </svg>
+                            </div>
 
-                </label>
+                            <div class="setting-copy">
+                                <strong>Show Company Details</strong>
+                                <span>Display your company information and contact details.</span>
+                            </div>
 
-            </div>
+                            <span class="toggle-control">
+                                <input id="showCompanyDetails" type="checkbox" formControlName="showCompanyDetails" />
+                                <span class="toggle-track" aria-hidden="true"></span>
+                            </span>
+                        </label>
 
-        </section>
+                        <!-- Tax Details -->
+                        <label class="setting-row" for="showTaxDetails">
+                            <div class="setting-icon tax-setting-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 2v20"></path>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
 
+                            <div class="setting-copy">
+                                <strong>Show Tax Details</strong>
+                                <span>Include tax identification and applicable tax details.</span>
+                            </div>
 
-        <div *ngIf="saved" class="success-message">
-            Invoice settings saved successfully.
+                            <span class="toggle-control">
+                                <input id="showTaxDetails" type="checkbox" formControlName="showTaxDetails" />
+                                <span class="toggle-track" aria-hidden="true"></span>
+                            </span>
+                        </label>
+
+                        <!-- Payment Details -->
+                        <label class="setting-row" for="showPaymentDetails">
+                            <div class="setting-icon payment-setting-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                    <path d="M2 10h20"></path>
+                                    <path d="M6 15h3"></path>
+                                </svg>
+                            </div>
+
+                            <div class="setting-copy">
+                                <strong>Show Payment Details</strong>
+                                <span>Display payment instructions and payment information.</span>
+                            </div>
+
+                            <span class="toggle-control">
+                                <input id="showPaymentDetails" type="checkbox" formControlName="showPaymentDetails" />
+                                <span class="toggle-track" aria-hidden="true"></span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="display-footnote">
+                        <span class="footnote-dot"></span>
+                        These preferences control the invoice display options.
+                    </div>
+                </div>
+            </section>
         </div>
 
+        <!-- Success Message -->
+        @if (saved) {
+        <div class="success-message" role="status" aria-live="polite">
+            <span class="success-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 12 4 4L19 6"></path>
+                </svg>
+            </span>
 
-        <div class="form-actions">
-
-            <button type="submit" class="btn btn-primary" [disabled]="saving">
-
-                {{
-                saving
-                ? 'Saving...'
-                : 'Save Changes'
-                }}
-
-            </button>
-
+            <div>
+                <strong>Invoice settings saved successfully</strong>
+                <p>Your invoice preferences have been updated.</p>
+            </div>
         </div>
+        }
 
+        <!-- Shared Footer -->
+        <div class="form-footer">
+            <div class="footer-note">
+                <span class="required-mark">*</span>
+                Required fields
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="saving">
+                    @if (saving) {
+                    <span class="button-spinner" aria-hidden="true"></span>
+                    Saving Changes...
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                        <path d="M17 21v-8H7v8"></path>
+                        <path d="M7 3v5h8"></path>
+                    </svg>
+                    Save Changes
+                    }
+                </button>
+            </div>
+        </div>
     </form>
-
 </div>

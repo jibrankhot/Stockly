@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
@@ -26,7 +27,6 @@ export class InvoiceSettingsComponent {
   constructor(
     private fb: FormBuilder
   ) {
-
     this.invoiceForm = this.fb.group({
 
       invoicePrefix: [
@@ -67,26 +67,24 @@ export class InvoiceSettingsComponent {
       ]
 
     });
-
   }
 
   save(): void {
 
     if (this.invoiceForm.invalid) {
-
       this.invoiceForm.markAllAsTouched();
-
+      this.saved = false;
       return;
     }
 
     this.saving = true;
     this.saved = false;
 
+    // Simulated save — replace with a backend service
+    // when invoice settings persistence is implemented.
     setTimeout(() => {
-
       this.saving = false;
       this.saved = true;
-
     }, 500);
   }
 

@@ -1,281 +1,327 @@
-<div class="page-container">
-
-    <!-- Header -->
-    <div class="page-header">
-
-        <div>
+<div class="adjustment-page">
+    <!-- Page header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="eyebrow">INVENTORY MANAGEMENT</span>
             <h1>Stock Adjustment</h1>
-
-            <p>
+            <p class="page-description">
                 Manually increase or decrease inventory quantity.
             </p>
         </div>
 
-        <a routerLink="/inventory" class="btn btn-outline">
-            Back to Inventory
-        </a>
+        <nav class="header-actions" aria-label="Inventory navigation">
+            <a routerLink="/inventory" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Stock Overview</span>
+            </a>
 
-    </div>
+            <a routerLink="/inventory/movements" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Stock Movements</span>
+            </a>
+        </nav>
+    </header>
 
+    <!-- Loading state -->
+    <section *ngIf="isLoading" class="state-card" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading inventory</h2>
+        <p>Please wait while we retrieve your stock items.</p>
+    </section>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="state-card">
+    <!-- Initial inventory-load error -->
+    <section *ngIf="
+      !isLoading &&
+      errorMessage &&
+      !successMessage &&
+      stockItems.length === 0
+    " class="state-card error-state" role="alert">
+        <div class="state-icon error-icon" aria-hidden="true">!</div>
+        <h2>Unable to load inventory</h2>
+        <p>{{ errorMessage }}</p>
 
-        Loading stock items...
+        <button type="button" class="btn btn-primary" (click)="loadStock()">
+            Try Again
+        </button>
+    </section>
 
-    </div>
-
-
-    <!-- Form -->
-    <form *ngIf="!isLoading" [formGroup]="adjustmentForm" (ngSubmit)="saveAdjustment()">
-
-
-        <section class="card">
-
+    <!-- Adjustment form -->
+    <form *ngIf="
+      !isLoading &&
+      (stockItems.length > 0 || !errorMessage || successMessage)
+    " [formGroup]="adjustmentForm" (ngSubmit)="saveAdjustment()" novalidate>
+        <section class="adjustment-card">
             <div class="card-header">
+                <div class="card-header-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </div>
 
-                <h2>
-                    Adjustment Details
-                </h2>
-
+                <div class="card-header-copy">
+                    <h2>Adjustment Details</h2>
+                    <p>Choose a product and enter the stock change.</p>
+                </div>
             </div>
 
-
             <div class="form-content">
-
-
                 <!-- Product -->
-                <div class="form-group">
-
+                <div class="form-group product-field">
                     <label for="productId">
-                        Product <span>*</span>
+                        Product <span class="required-mark">*</span>
                     </label>
 
-                    <select id="productId" formControlName="productId" (change)="onProductChange()">
-
-                        <option value="">
-                            Select a product
-                        </option>
+                    <select id="productId" formControlName="productId" (change)="onProductChange()" [class.is-invalid]="
+              adjustmentForm.get('productId')?.touched &&
+              adjustmentForm.get('productId')?.invalid
+            " [attr.aria-invalid]="
+              adjustmentForm.get('productId')?.touched &&
+              adjustmentForm.get('productId')?.invalid
+            " aria-describedby="productId-help productId-error">
+                        <option value="">Select a product</option>
 
                         <option *ngFor="let item of stockItems" [value]="item.productId">
-
-                            {{ item.productName }}
-                            ({{ item.sku }})
-
+                            {{ item.productName }} ({{ item.sku || 'No SKU' }})
                         </option>
-
                     </select>
 
-                    <small *ngIf="
-              adjustmentForm
-                .get('productId')
-                ?.touched &&
-              adjustmentForm
-                .get('productId')
-                ?.hasError('required')
+                    <small id="productId-error" class="field-error" *ngIf="
+              adjustmentForm.get('productId')?.touched &&
+              adjustmentForm.get('productId')?.hasError('required')
             ">
-
                         Please select a product.
-
                     </small>
 
+                    <small id="productId-help" class="field-hint" *ngIf="
+              !adjustmentForm.get('productId')?.touched ||
+              !adjustmentForm.get('productId')?.invalid
+            ">
+                        Select the inventory item you want to update.
+                    </small>
                 </div>
 
-
-                <!-- Current Stock -->
-                <div *ngIf="selectedItem" class="stock-preview">
-
-                    <div>
-
-                        <span>
-                            Current Stock
-                        </span>
-
-                        <strong>
-                            {{ selectedItem.quantity }}
-                        </strong>
-
-                    </div>
-
-                    <div>
-
-                        <span>
-                            Reorder Level
-                        </span>
-
-                        <strong>
-                            {{ selectedItem.reorderLevel }}
-                        </strong>
-
-                    </div>
-
-                    <div>
-
-                        <span>
-                            Stock Status
-                        </span>
-
-                        <strong [class.status-low]="
-                selectedItem.status === 'low-stock'
-              " [class.status-danger]="
-                selectedItem.status === 'out-of-stock'
-              ">
-
-                            {{
-                            selectedItem.status === 'in-stock'
-                            ? 'In Stock'
-                            : selectedItem.status === 'low-stock'
-                            ? 'Low Stock'
-                            : 'Out of Stock'
-                            }}
-
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Adjustment Type -->
+                <!-- Adjustment type -->
                 <div class="form-group">
-
                     <label for="adjustmentType">
-                        Adjustment Type <span>*</span>
+                        Adjustment Type <span class="required-mark">*</span>
                     </label>
 
                     <select id="adjustmentType" formControlName="adjustmentType">
-
-                        <option value="add">
-                            Add Stock
-                        </option>
-
-                        <option value="remove">
-                            Remove Stock
-                        </option>
-
+                        <option value="add">Add Stock</option>
+                        <option value="remove">Remove Stock</option>
                     </select>
 
+                    <small class="field-hint">
+                        Choose whether to increase or decrease stock.
+                    </small>
                 </div>
-
 
                 <!-- Quantity -->
                 <div class="form-group">
-
                     <label for="quantity">
-                        Quantity <span>*</span>
+                        Quantity <span class="required-mark">*</span>
                     </label>
 
-                    <input id="quantity" type="number" min="1" formControlName="quantity">
+                    <input id="quantity" type="number" min="1" step="1" inputmode="numeric" formControlName="quantity"
+                        [class.is-invalid]="
+              adjustmentForm.get('quantity')?.touched &&
+              adjustmentForm.get('quantity')?.invalid
+            " [attr.aria-invalid]="
+              adjustmentForm.get('quantity')?.touched &&
+              adjustmentForm.get('quantity')?.invalid
+            " aria-describedby="quantity-help quantity-error" />
 
-                    <small *ngIf="
-              adjustmentForm
-                .get('quantity')
-                ?.touched &&
-              adjustmentForm
-                .get('quantity')
-                ?.hasError('required')
+                    <small id="quantity-error" class="field-error" *ngIf="
+              adjustmentForm.get('quantity')?.touched &&
+              adjustmentForm.get('quantity')?.hasError('required')
             ">
-
                         Quantity is required.
-
                     </small>
 
-                    <small *ngIf="
-              adjustmentForm
-                .get('quantity')
-                ?.touched &&
-              adjustmentForm
-                .get('quantity')
-                ?.hasError('min')
+                    <small class="field-error" *ngIf="
+              adjustmentForm.get('quantity')?.touched &&
+              adjustmentForm.get('quantity')?.hasError('min')
             ">
-
                         Quantity must be at least 1.
-
                     </small>
 
+                    <small id="quantity-help" class="field-hint" *ngIf="
+              !adjustmentForm.get('quantity')?.touched ||
+              !adjustmentForm.get('quantity')?.invalid
+            ">
+                        Enter the number of units to adjust.
+                    </small>
                 </div>
-
-
-                <!-- New Quantity -->
-                <div *ngIf="selectedItem" class="new-stock-preview">
-
-                    <span>
-                        Stock After Adjustment
-                    </span>
-
-                    <strong>
-                        {{ adjustedQuantity }}
-                    </strong>
-
-                </div>
-
 
                 <!-- Reference -->
                 <div class="form-group">
+                    <label for="reference">Reference</label>
 
-                    <label for="reference">
-                        Reference
-                    </label>
+                    <input id="reference" type="text" formControlName="reference" maxlength="50"
+                        placeholder="e.g. ADJ-001" aria-describedby="reference-help reference-error" />
 
-                    <input id="reference" type="text" formControlName="reference" placeholder="ADJ-001">
+                    <small id="reference-help" class="field-hint">
+                        Optional transaction or document reference.
+                    </small>
 
+                    <small id="reference-error" class="field-error" *ngIf="
+              adjustmentForm.get('reference')?.touched &&
+              adjustmentForm.get('reference')?.hasError('maxlength')
+            ">
+                        Reference cannot exceed 50 characters.
+                    </small>
                 </div>
 
+                <!-- Selected product stock summary -->
+                <section *ngIf="selectedItem" class="stock-preview" aria-label="Selected product stock information">
+                    <div class="preview-heading">
+                        <span class="preview-product-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="m12 3 9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linejoin="round" />
+                                <path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </span>
 
-                <!-- Notes -->
-                <div class="form-group full-width">
+                        <div>
+                            <span class="preview-overline">SELECTED PRODUCT</span>
+                            <strong class="preview-product-name">
+                                {{ selectedItem.productName }}
+                            </strong>
+                            <span class="preview-sku">
+                                SKU: {{ selectedItem.sku || '—' }}
+                            </span>
+                        </div>
+                    </div>
 
-                    <label for="notes">
-                        Notes
-                    </label>
+                    <div class="preview-metrics">
+                        <div class="preview-metric">
+                            <span>Current Stock</span>
+                            <strong>
+                                {{ selectedItem.quantity | number:'1.0-2' }}
+                            </strong>
+                        </div>
 
-                    <textarea id="notes" rows="4" formControlName="notes" placeholder="Reason for stock adjustment">
-          </textarea>
+                        <div class="preview-metric">
+                            <span>Reorder Level</span>
+                            <strong>
+                                {{ selectedItem.reorderLevel | number:'1.0-2' }}
+                            </strong>
+                        </div>
 
+                        <div class="preview-metric preview-status">
+                            <span>Stock Status</span>
+                            <strong class="status-badge" [ngClass]="stockStatusClass">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                {{ stockStatusLabel }}
+                            </strong>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Projected stock -->
+                <section *ngIf="selectedItem" class="new-stock-preview" [class.projected-remove]="
+            adjustmentForm.get('adjustmentType')?.value === 'remove'
+          " aria-live="polite">
+                    <div class="projected-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 12h16M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+
+                    <div class="projected-copy">
+                        <span>Stock After Adjustment</span>
+                        <small>
+                            {{
+                            adjustmentForm.get('adjustmentType')?.value === 'remove'
+                            ? 'Estimated remaining quantity'
+                            : 'Estimated updated quantity'
+                            }}
+                        </small>
+                    </div>
+
+                    <strong>
+                        {{ adjustedQuantity | number:'1.0-2' }}
+                    </strong>
+                </section>
+
+                <!-- Notes: full-width field at the bottom -->
+                <div class="form-group full-width notes-field">
+                    <label for="notes">Notes</label>
+
+                    <textarea id="notes" rows="4" formControlName="notes" maxlength="250"
+                        placeholder="Explain the reason for this stock adjustment..."
+                        aria-describedby="notes-help notes-error"></textarea>
+
+                    <div class="field-footer">
+                        <small id="notes-help" class="field-hint">
+                            Optional details about why the stock is changing.
+                        </small>
+
+                        <small class="character-count">
+                            {{ adjustmentForm.get('notes')?.value?.length || 0 }}/250
+                        </small>
+                    </div>
+
+                    <small id="notes-error" class="field-error" *ngIf="
+              adjustmentForm.get('notes')?.touched &&
+              adjustmentForm.get('notes')?.hasError('maxlength')
+            ">
+                        Notes cannot exceed 250 characters.
+                    </small>
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- Success -->
-        <div *ngIf="successMessage" class="success-message">
-
-            {{ successMessage }}
-
+        <!-- Success message -->
+        <div *ngIf="successMessage" class="feedback-message success-message" role="status" aria-live="polite">
+            <span class="feedback-icon" aria-hidden="true">✓</span>
+            <div>
+                <strong>Adjustment completed</strong>
+                <p>{{ successMessage }}</p>
+            </div>
         </div>
 
-
-        <!-- Error -->
-        <div *ngIf="errorMessage" class="error-message">
-
-            {{ errorMessage }}
-
+        <!-- Save error; keep the form visible -->
+        <div *ngIf="errorMessage && stockItems.length > 0" class="feedback-message error-message" role="alert">
+            <span class="feedback-icon" aria-hidden="true">!</span>
+            <div>
+                <strong>Adjustment unsuccessful</strong>
+                <p>{{ errorMessage }}</p>
+            </div>
         </div>
 
+        <!-- Form actions -->
+        <footer class="form-actions">
+            <p class="action-note">
+                <span class="required-mark">*</span>
+                Required fields
+            </p>
 
-        <!-- Actions -->
-        <div class="form-actions">
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="isSaving">
+                    Cancel
+                </button>
 
-            <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="isSaving">
+                <button type="submit" class="btn btn-primary" [disabled]="isSaving || stockItems.length === 0">
+                    <svg *ngIf="!isSaving" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
 
-                Cancel
+                    <span *ngIf="isSaving" class="button-spinner" aria-hidden="true"></span>
 
-            </button>
-
-            <button type="submit" class="btn btn-primary" [disabled]="isSaving">
-
-                {{
-                isSaving
-                ? 'Saving...'
-                : 'Apply Adjustment'
-                }}
-
-            </button>
-
-        </div>
-
+                    {{ isSaving ? 'Saving Adjustment...' : 'Apply Adjustment' }}
+                </button>
+            </div>
+        </footer>
     </form>
-
 </div>

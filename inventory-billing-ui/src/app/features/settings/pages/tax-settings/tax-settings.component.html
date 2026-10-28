@@ -1,177 +1,328 @@
-<div class="page-container">
-
-    <div class="page-header">
-
-        <div>
+<div class="tax-settings-page">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SETTINGS
+            </div>
 
             <h1>Tax Settings</h1>
-
             <p>
-                Configure tax calculation and default tax rates.
+                Configure tax calculation, default tax rates, and tax display behavior.
             </p>
-
         </div>
 
-    </div>
+        <div class="header-status">
+            <span class="status-indicator"></span>
+            Tax Preferences
+        </div>
+    </header>
 
-
-    <form [formGroup]="taxForm" (ngSubmit)="save()">
-
-        <section class="form-card">
-
-            <div class="card-header">
-
-                <h2>Tax Configuration</h2>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        Tax System <span>*</span>
-                    </label>
-
-                    <select formControlName="taxSystem">
-
-                        <option value="GST">
-                            GST
-                        </option>
-
-                        <option value="VAT">
-                            VAT
-                        </option>
-
-                        <option value="None">
-                            No Tax
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Default Tax Rate (%) <span>*</span>
-                    </label>
-
-                    <input type="number" min="0" max="100" step="0.01" formControlName="defaultTaxRate" />
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <section class="form-card">
-
-            <div class="card-header">
-
-                <h2>Tax Behavior</h2>
-
-            </div>
-
-
-            <div class="settings-list">
-
-                <label class="setting-row">
-
-                    <div>
-
-                        <strong>
-                            Enable Tax
-                        </strong>
-
-                        <span>
-                            Apply tax calculations to invoices and sales.
-                        </span>
-
+    <form [formGroup]="taxForm" (ngSubmit)="save()" class="tax-settings-form">
+        <!-- Top Two-Column Layout -->
+        <div class="settings-layout">
+            <!-- LEFT: Tax Configuration -->
+            <section class="form-card configuration-card">
+                <div class="form-card-header">
+                    <div class="section-icon configuration-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M12 2v20"></path>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
                     </div>
 
-                    <input type="checkbox" formControlName="enableTax" />
+                    <div class="form-card-heading">
+                        <h2>Tax Configuration</h2>
+                        <p>Choose your tax system and default rate.</p>
+                    </div>
+                </div>
 
-                </label>
+                <div class="form-card-body">
+                    <div class="form-grid">
+                        <!-- Tax System -->
+                        <div class="form-group full-width">
+                            <label for="taxSystem">
+                                Tax System <span class="required-mark">*</span>
+                            </label>
 
+                            <select id="taxSystem" formControlName="taxSystem" [class.invalid]="
+                  taxForm.get('taxSystem')?.invalid &&
+                  taxForm.get('taxSystem')?.touched
+                " [attr.aria-invalid]="
+                  taxForm.get('taxSystem')?.invalid &&
+                  taxForm.get('taxSystem')?.touched
+                " aria-describedby="taxSystem-error">
+                                <option value="GST">GST — Goods and Services Tax</option>
+                                <option value="VAT">VAT — Value Added Tax</option>
+                                <option value="None">No Tax</option>
+                            </select>
 
-                <label class="setting-row">
+                            @if (
+                            taxForm.get('taxSystem')?.hasError('required') &&
+                            taxForm.get('taxSystem')?.touched
+                            ) {
+                            <span id="taxSystem-error" class="field-error">
+                                Please select a tax system.
+                            </span>
+                            } @else {
+                            <span class="field-hint">
+                                Select the tax system applicable to your business.
+                            </span>
+                            }
+                        </div>
 
-                    <div>
+                        <!-- Default Tax Rate -->
+                        <div class="form-group full-width">
+                            <label for="defaultTaxRate">
+                                Default Tax Rate <span class="required-mark">*</span>
+                            </label>
 
-                        <strong>
-                            Tax Inclusive Pricing
-                        </strong>
+                            <div class="input-with-suffix">
+                                <input id="defaultTaxRate" type="number" min="0" max="100" step="0.01"
+                                    formControlName="defaultTaxRate" placeholder="18" [class.invalid]="
+                    taxForm.get('defaultTaxRate')?.invalid &&
+                    taxForm.get('defaultTaxRate')?.touched
+                  " [attr.aria-invalid]="
+                    taxForm.get('defaultTaxRate')?.invalid &&
+                    taxForm.get('defaultTaxRate')?.touched
+                  " aria-describedby="defaultTaxRate-error" />
 
-                        <span>
-                            Treat entered selling prices as tax-inclusive.
-                        </span>
+                                <span class="input-suffix">%</span>
+                            </div>
 
+                            @if (
+                            taxForm.get('defaultTaxRate')?.invalid &&
+                            taxForm.get('defaultTaxRate')?.touched
+                            ) {
+                            <span id="defaultTaxRate-error" class="field-error">
+                                @if (
+                                taxForm.get('defaultTaxRate')?.hasError('required')
+                                ) {
+                                Default tax rate is required.
+                                } @else if (
+                                taxForm.get('defaultTaxRate')?.hasError('min')
+                                ) {
+                                Tax rate cannot be less than 0%.
+                                } @else if (
+                                taxForm.get('defaultTaxRate')?.hasError('max')
+                                ) {
+                                Tax rate cannot exceed 100%.
+                                }
+                            </span>
+                            } @else {
+                            <span class="field-hint">
+                                Applied by default when creating a taxable transaction.
+                            </span>
+                            }
+                        </div>
                     </div>
 
-                    <input type="checkbox" formControlName="taxInclusive" />
+                    <div class="configuration-note">
+                        <span class="note-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4"></path>
+                                <path d="M12 8h.01"></path>
+                            </svg>
+                        </span>
 
-                </label>
+                        <p>
+                            The default rate is a starting value. Confirm the applicable
+                            rate for your products and business before issuing invoices.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
+            <!-- RIGHT: Tax Behavior -->
+            <section class="form-card behavior-card">
+                <div class="form-card-header">
+                    <div class="section-icon behavior-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.08-.02a1.7 1.7 0 0 0-1.75.7l-.04.07h-3.4l-.04-.07a1.7 1.7 0 0 0-1.75-.7l-.08.02-1.7-2.94.06-.06A1.7 1.7 0 0 0 9.66 15l-.08-.04v-3.4l.08-.04a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-2.94.08.02a1.7 1.7 0 0 0 1.75-.7l.04-.07h3.4l.04.07a1.7 1.7 0 0 0 1.75.7l.08-.02 1.7 2.94-.06.06A1.7 1.7 0 0 0 19.4 11.5l.08.04v3.4z"
+                                transform="translate(-2 -2)"></path>
+                        </svg>
+                    </div>
+
+                    <div class="form-card-heading">
+                        <h2>Tax Behavior</h2>
+                        <p>Control how tax is handled in your pricing.</p>
+                    </div>
+                </div>
+
+                <div class="form-card-body behavior-card-body">
+                    <div class="settings-list">
+                        <!-- Enable Tax -->
+                        <label class="setting-row" for="enableTax">
+                            <div class="setting-icon enable-setting-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 2v20"></path>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+
+                            <div class="setting-copy">
+                                <strong>Enable Tax</strong>
+                                <span>
+                                    Apply tax calculations to invoices and sales.
+                                </span>
+                            </div>
+
+                            <span class="toggle-control">
+                                <input id="enableTax" type="checkbox" formControlName="enableTax" />
+                                <span class="toggle-track" aria-hidden="true"></span>
+                            </span>
+                        </label>
+
+                        <!-- Tax Inclusive Pricing -->
+                        <label class="setting-row" for="taxInclusive">
+                            <div class="setting-icon inclusive-setting-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                                    <path d="M7 9h10"></path>
+                                    <path d="M7 13h3"></path>
+                                    <path d="M7 16h6"></path>
+                                </svg>
+                            </div>
+
+                            <div class="setting-copy">
+                                <strong>Tax-Inclusive Pricing</strong>
+                                <span>
+                                    Treat entered selling prices as including tax.
+                                </span>
+                            </div>
+
+                            <span class="toggle-control">
+                                <input id="taxInclusive" type="checkbox" formControlName="taxInclusive" />
+                                <span class="toggle-track" aria-hidden="true"></span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="behavior-footnote">
+                        <span class="footnote-dot"></span>
+                        <span>
+                            These are configuration preferences. Your invoicing and
+                            pricing logic must use them for them to affect calculations.
+                        </span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Common GST Rates -->
+        <section class="form-card rates-card">
+            <div class="form-card-header rates-header">
+                <div class="section-icon rates-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M3 3v18h18"></path>
+                        <path d="m19 9-5 5-4-4-4 4"></path>
+                    </svg>
+                </div>
+
+                <div class="form-card-heading">
+                    <h2>Common GST Rates</h2>
+                    <p>
+                        Reference rates available in this application's current settings.
+                    </p>
+                </div>
+
+                <span class="rates-count">
+                    {{ taxRates.length }} rates
+                </span>
             </div>
 
-        </section>
+            <div class="form-card-body rates-card-body">
+                <div class="tax-rate-grid">
+                    @for (tax of taxRates; track tax.rate) {
+                    <div class="tax-rate-card">
+                        <div class="rate-card-top">
+                            <span class="rate-indicator"></span>
+                            <span class="rate-label">{{ tax.name }}</span>
+                        </div>
 
+                        <strong class="rate-value">{{ tax.rate }}%</strong>
 
-        <section class="form-card">
+                        <span class="rate-caption">
+                            {{ tax.rate === 0 ? 'Zero rate' : 'Tax rate' }}
+                        </span>
+                    </div>
+                    }
+                </div>
 
-            <div class="card-header">
-
-                <h2>Common GST Rates</h2>
-
-                <p>
-                    Commonly used GST rates in the application.
-                </p>
-
-            </div>
-
-
-            <div class="tax-rate-grid">
-
-                <div class="tax-rate-card" *ngFor="let tax of taxRates">
-
-                    <strong>
-                        {{ tax.name }}
-                    </strong>
+                <div class="rates-footnote">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
 
                     <span>
-                        {{ tax.rate }}%
+                        These are reference cards only. Selecting a card does not change
+                        the default tax rate.
                     </span>
-
                 </div>
-
             </div>
-
         </section>
 
+        <!-- Success Message -->
+        @if (saved) {
+        <div class="success-message" role="status" aria-live="polite">
+            <span class="success-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 12 4 4L19 6"></path>
+                </svg>
+            </span>
 
-        <div *ngIf="saved" class="success-message">
-            Tax settings saved successfully.
+            <div>
+                <strong>Tax settings saved successfully</strong>
+                <p>Your tax preferences have been updated.</p>
+            </div>
         </div>
+        }
 
+        <!-- Shared Footer -->
+        <div class="form-footer">
+            <div class="footer-note">
+                <span class="required-mark">*</span>
+                Required fields
+            </div>
 
-        <div class="form-actions">
-
-            <button type="submit" class="btn btn-primary" [disabled]="saving">
-
-                {{
-                saving
-                ? 'Saving...'
-                : 'Save Changes'
-                }}
-
-            </button>
-
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="saving">
+                    @if (saving) {
+                    <span class="button-spinner" aria-hidden="true"></span>
+                    Saving Changes...
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                        <path d="M17 21v-8H7v8"></path>
+                        <path d="M7 3v5h8"></path>
+                    </svg>
+                    Save Changes
+                    }
+                </button>
+            </div>
         </div>
-
     </form>
-
 </div>

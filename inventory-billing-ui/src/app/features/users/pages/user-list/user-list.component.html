@@ -1,245 +1,405 @@
-<div class="page-container">
+<div class="users-page">
 
-    <div class="page-header">
-
-        <div>
-
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="eyebrow">USER MANAGEMENT</span>
             <h1>Users</h1>
-
-            <p>
+            <p class="page-description">
                 Manage users who can access Stockly.
             </p>
-
         </div>
 
-        <a routerLink="/users/create" class="btn btn-primary">
-            + Add User
-        </a>
+        <nav class="header-actions desktop-header-actions" aria-label="User management actions">
+            <a routerLink="/users/create" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Add User
+            </a>
+        </nav>
+    </header>
 
-    </div>
+    <!-- User Summary -->
+    <section class="summary-grid" aria-label="User summary">
 
-
-    <!-- Summary -->
-
-    <section class="summary-grid">
-
-        <div class="summary-card">
-
-            <span>Total Users</span>
-
-            <strong>
-                {{ totalUsers }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>Active Users</span>
-
-            <strong>
-                {{ activeUsers }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>Inactive Users</span>
-
-            <strong>
-                {{ inactiveUsers }}
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <!-- Filters -->
-
-    <section class="filter-card">
-
-        <div class="filter-group search-group">
-
-            <label>
-                Search
-            </label>
-
-            <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
-                placeholder="Search username, name, email or role..." />
-
-        </div>
-
-
-        <div class="filter-group">
-
-            <label>
-                Status
-            </label>
-
-            <select [(ngModel)]="selectedStatus" (change)="onStatusChange()">
-
-                <option value="all">
-                    All Users
-                </option>
-
-                <option value="active">
-                    Active
-                </option>
-
-                <option value="inactive">
-                    Inactive
-                </option>
-
-            </select>
-
-        </div>
-
-    </section>
-
-
-    <!-- Error -->
-
-    <div *ngIf="errorMessage" class="state-card error">
-        {{ errorMessage }}
-    </div>
-
-
-    <!-- Loading -->
-
-    <div *ngIf="loading" class="state-card">
-        Loading users...
-    </div>
-
-
-    <!-- User Table -->
-
-    <section class="card" *ngIf="!loading">
-
-        <div class="card-header">
-
-            <div>
-
-                <h2>User List</h2>
-
-                <p>
-                    {{ filteredUsers.length }} user(s) found.
-                </p>
-
+        <article class="summary-card">
+            <div class="summary-icon icon-total" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 5.5h16v13H4zM8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </div>
 
+            <div class="summary-copy">
+                <span class="summary-label">Total Users</span>
+                <strong>{{ totalUsers | number }}</strong>
+                <span class="summary-hint">Registered system users</span>
+            </div>
+        </article>
+
+        <article class="summary-card">
+            <div class="summary-icon icon-active" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <div class="summary-copy">
+                <span class="summary-label">Active Users</span>
+                <strong class="user-count-active">
+                    {{ activeUsers | number }}
+                </strong>
+                <span class="summary-hint">Users with active access</span>
+            </div>
+        </article>
+
+        <article class="summary-card">
+            <div class="summary-icon icon-inactive" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14m-6-6 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <div class="summary-copy">
+                <span class="summary-label">Inactive Users</span>
+                <strong class="user-count-inactive">
+                    {{ inactiveUsers | number }}
+                </strong>
+                <span class="summary-hint">Users with inactive access</span>
+            </div>
+        </article>
+
+    </section>
+
+    <!-- Search and Filters -->
+    <section class="filter-card" aria-label="Search and filter users">
+
+        <div class="filter-heading">
+            <h2>User Search</h2>
+            <p>
+                Find users by username, name, email, phone, or role.
+            </p>
+        </div>
+
+        <div class="filter-controls">
+
+            <div class="filter-group search-group">
+                <label for="user-search">Search users</label>
+
+                <div class="input-with-icon">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8" />
+                        <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+
+                    <input id="user-search" name="userSearch" type="search" autocomplete="off" [(ngModel)]="searchTerm"
+                        (ngModelChange)="onSearch()" placeholder="Search username, name, email or role..." />
+                </div>
+            </div>
+
+            <div class="filter-group status-group">
+                <label for="user-status">Account status</label>
+
+                <select id="user-status" name="userStatus" [(ngModel)]="selectedStatus"
+                    (ngModelChange)="onStatusChange()">
+
+                    <option value="all">All users</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-clear filter-clear-button" (click)="clearFilters()"
+                [disabled]="!hasActiveFilters()">
+                Clear filters
+            </button>
+
+            <button type="button" class="btn btn-secondary refresh-button desktop-refresh-button" (click)="loadUsers()"
+                [disabled]="loading">
+
+                <svg class="refresh-icon" [class.is-spinning]="loading" viewBox="0 0 24 24" fill="none"
+                    aria-hidden="true">
+                    <path d="M20 7v5h-5M4.5 16.5A8 8 0 0 0 18 19l2-2M4 12V7h5m-3-2A8 8 0 0 1 20 12"
+                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+
+                {{ loading ? 'Refreshing...' : 'Refresh' }}
+            </button>
+
         </div>
 
 
-        <div class="table-wrapper">
 
-            <table>
+        <!-- Mobile actions -->
+        <nav class="mobile-navigation-actions" aria-label="Mobile user actions">
 
+            <button type="button" class="btn btn-secondary" (click)="loadUsers()" [disabled]="loading">
+
+                <svg class="refresh-icon" [class.is-spinning]="loading" viewBox="0 0 24 24" fill="none"
+                    aria-hidden="true">
+                    <path d="M20 7v5h-5M4.5 16.5A8 8 0 0 0 18 19l2-2M4 12V7h5m-3-2A8 8 0 0 1 20 12"
+                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+
+                {{ loading ? 'Refreshing...' : 'Refresh' }}
+            </button>
+
+            <a routerLink="/users/create" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Add User
+            </a>
+        </nav>
+    </section>
+
+    <!-- Loading State -->
+    <section *ngIf="loading" class="state-card" role="status" aria-live="polite">
+
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading users</h2>
+        <p>Please wait while we retrieve your user records.</p>
+    </section>
+
+    <!-- Error State -->
+    <section *ngIf="!loading && errorMessage" class="state-card error-state" role="alert">
+
+        <div class="state-icon error-icon" aria-hidden="true">!</div>
+        <h2>Unable to load users</h2>
+        <p>{{ errorMessage }}</p>
+
+        <button type="button" class="btn btn-primary" (click)="loadUsers()">
+            Try again
+        </button>
+    </section>
+
+    <!-- User Directory -->
+    <section class="user-directory" *ngIf="!loading && !errorMessage">
+
+        <div class="table-header">
+            <div class="table-heading-copy">
+                <h2>User Directory</h2>
+                <p>
+                    Showing <strong>{{ filteredUsers.length }}</strong> of
+                    <strong>{{ totalUsers }}</strong>
+                    {{ totalUsers === 1 ? 'user' : 'users' }}
+                </p>
+            </div>
+
+            <span class="directory-results-badge">
+                {{ filteredUsers.length }}
+                {{ filteredUsers.length === 1 ? 'result' : 'results' }}
+            </span>
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="table-wrapper desktop-user-table" *ngIf="filteredUsers.length > 0">
+
+            <table class="user-table">
                 <thead>
-
                     <tr>
-
-                        <th>Username</th>
-
-                        <th>Name</th>
-
-                        <th>Email</th>
-
-                        <th>Phone</th>
-
-                        <th>Role</th>
-
-                        <th>Status</th>
-
-                        <th>Actions</th>
-
+                        <th scope="col" class="username-column">User</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="actions-column">Actions</th>
                     </tr>
-
                 </thead>
 
-
                 <tbody>
+                    <tr *ngFor="let user of paginatedUsers; trackBy: trackByUser">
 
-                    <tr *ngFor="let user of filteredUsers">
+                        <td class="user-cell">
+                            <div class="user-identity">
+                                <span class="user-avatar" aria-hidden="true">
+                                    {{
+                                    (user.fullName || user.username || 'U')
+                                    .charAt(0).toUpperCase()
+                                    }}
+                                </span>
 
-                        <td class="strong">
-                            {{ user.username }}
+                                <div class="user-copy">
+                                    <strong>
+                                        {{ user.fullName || 'Unnamed user' }}
+                                    </strong>
+                                    <span>
+                                        {{ user.username || 'No username' }}
+                                    </span>
+                                </div>
+                            </div>
                         </td>
 
-                        <td>
-                            {{ user.fullName }}
-                        </td>
-
-                        <td>
-                            {{ user.email }}
-                        </td>
-
-                        <td>
-                            {{ user.phone || '—' }}
-                        </td>
-
-                        <td>
-                            {{ user.roleName }}
-                        </td>
-
-                        <td>
-
-                            <span class="status-badge" [ngClass]="
-                                    user.isActive
-                                        ? 'status-active'
-                                        : 'status-inactive'
-                                ">
-
-                                {{
-                                user.isActive
-                                ? 'Active'
-                                : 'Inactive'
-                                }}
-
+                        <td class="email-cell">
+                            <span [title]="user.email || ''">
+                                {{ user.email || '—' }}
                             </span>
+                        </td>
 
+                        <td>{{ user.phone || '—' }}</td>
+
+                        <td>
+                            <span class="role-value">
+                                {{ user.roleName || '—' }}
+                            </span>
                         </td>
 
                         <td>
+                            <span class="status-badge" [ngClass]="user.isActive
+                                    ? 'status-active'
+                                    : 'status-inactive'">
 
+                                <span class="status-dot" aria-hidden="true"></span>
+                                {{ user.isActive ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+
+                        <td>
                             <div class="action-buttons">
-
-                                <a [routerLink]="[
-                                        '/users',
-                                        user.id,
-                                        'edit'
-                                    ]" class="action-link">
+                                <a [routerLink]="['/users', user.id, 'edit']" class="action-link"
+                                    [attr.aria-label]="'Edit ' + user.fullName">
                                     Edit
                                 </a>
 
-                                <button type="button" class="action-link danger" (click)="deleteUser(user)">
+                                <button type="button" class="action-link danger" (click)="deleteUser(user)"
+                                    [attr.aria-label]="'Delete ' + user.fullName">
                                     Delete
                                 </button>
-
                             </div>
-
                         </td>
-
                     </tr>
-
-
-                    <tr *ngIf="filteredUsers.length === 0">
-
-                        <td colspan="7" class="empty-state">
-                            No users found.
-                        </td>
-
-                    </tr>
-
                 </tbody>
-
             </table>
-
         </div>
 
-    </section>
+        <!-- Mobile User Cards -->
+        <div class="mobile-user-list" *ngIf="filteredUsers.length > 0">
 
+            <article class="mobile-user-card" *ngFor="let user of paginatedUsers; trackBy: trackByUser">
+
+                <div class="mobile-card-header">
+                    <div class="user-identity">
+                        <span class="user-avatar" aria-hidden="true">
+                            {{
+                            (user.fullName || user.username || 'U')
+                            .charAt(0).toUpperCase()
+                            }}
+                        </span>
+
+                        <div class="user-copy">
+                            <strong>
+                                {{ user.fullName || 'Unnamed user' }}
+                            </strong>
+                            <span>
+                                {{ user.username || 'No username' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <span class="status-badge" [ngClass]="user.isActive
+                            ? 'status-active'
+                            : 'status-inactive'">
+
+                        <span class="status-dot" aria-hidden="true"></span>
+                        {{ user.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+
+                <div class="mobile-detail">
+                    <span class="detail-label">Email</span>
+                    <strong>{{ user.email || '—' }}</strong>
+                </div>
+
+                <div class="mobile-detail">
+                    <span class="detail-label">Phone</span>
+                    <strong>{{ user.phone || '—' }}</strong>
+                </div>
+
+                <div class="mobile-detail">
+                    <span class="detail-label">Role</span>
+                    <strong>{{ user.roleName || '—' }}</strong>
+                </div>
+
+                <div class="mobile-card-actions">
+                    <a [routerLink]="['/users', user.id, 'edit']" class="btn btn-secondary">
+                        Edit User
+                    </a>
+
+                    <button type="button" class="btn btn-delete" (click)="deleteUser(user)">
+                        Delete
+                    </button>
+                </div>
+            </article>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="filteredUsers.length === 0">
+            <div class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7" />
+                    <path d="m16 16 4.5 4.5M8 11h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <h3>
+                {{ users.length === 0 ? 'No users yet' : 'No matching users' }}
+            </h3>
+
+            <p>
+                {{
+                users.length === 0
+                ? 'Users will appear here once they are available.'
+                : 'Try changing your search or account status filter.'
+                }}
+            </p>
+
+            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearFilters()">
+                Clear filters
+            </button>
+
+            <a *ngIf="users.length === 0 && !hasActiveFilters()" routerLink="/users/create" class="btn btn-primary">
+                Add your first user
+            </a>
+        </div>
+
+        <!-- Pagination -->
+        <footer class="pagination-bar" *ngIf="filteredUsers.length > 0">
+
+            <div class="page-size-control">
+                <label for="user-page-size">Rows per page</label>
+
+                <select id="user-page-size" name="userPageSize" [ngModel]="pageSize"
+                    (ngModelChange)="changePageSize($event)">
+
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                        {{ size }}
+                    </option>
+                </select>
+            </div>
+
+            <nav class="pagination-controls" aria-label="User directory pagination">
+
+                <button type="button" class="page-button page-direction" aria-label="Previous page"
+                    (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+                    ‹
+                </button>
+
+                <button type="button" class="page-button" *ngFor="let page of pageNumbers"
+                    [class.page-active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Page ' + page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+
+                <button type="button" class="page-button page-direction" aria-label="Next page"
+                    (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                    ›
+                </button>
+            </nav>
+        </footer>
+
+    </section>
 </div>

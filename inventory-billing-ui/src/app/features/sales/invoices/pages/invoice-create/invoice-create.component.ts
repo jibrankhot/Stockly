@@ -1,3 +1,5 @@
+
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormArray,
@@ -6,15 +8,14 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { Customer } from '../../../../../shared/models/customer';
 import { Invoice } from '../../../../../shared/models/invoice';
 import { InvoiceItem } from '../../../../../shared/models/invoice-item';
+import { Product } from '../../../../../shared/models/product';
 
 import { InvoiceService } from '../../services/invoice.service';
-import { Product } from '../../../../../shared/models/product';
 import { CustomerService } from '../../../../customers/services/customer.service';
 import { ProductService } from '../../../../products/services/product.service';
 
@@ -23,7 +24,7 @@ import { ProductService } from '../../../../products/services/product.service';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './invoice-create.component.html',
   styleUrl: './invoice-create.component.scss'
@@ -90,11 +91,7 @@ export class InvoiceCreateComponent implements OnInit {
         this.isLoadingCustomers = false;
       },
       error: error => {
-        console.error(
-          'Error loading customers:',
-          error
-        );
-
+        console.error('Error loading customers:', error);
         this.isLoadingCustomers = false;
       }
     });
@@ -112,11 +109,7 @@ export class InvoiceCreateComponent implements OnInit {
         this.isLoadingProducts = false;
       },
       error: error => {
-        console.error(
-          'Error loading products:',
-          error
-        );
-
+        console.error('Error loading products:', error);
         this.isLoadingProducts = false;
       }
     });
@@ -191,7 +184,6 @@ export class InvoiceCreateComponent implements OnInit {
 
   addItem(): void {
     this.items.push(this.createItem());
-
     this.calculateTotals();
   }
 
@@ -201,7 +193,6 @@ export class InvoiceCreateComponent implements OnInit {
     }
 
     this.items.removeAt(index);
-
     this.calculateTotals();
   }
 
@@ -231,11 +222,8 @@ export class InvoiceCreateComponent implements OnInit {
       0
     );
 
-    const taxAmount =
-      taxableAmount * taxRate / 100;
-
-    const totalAmount =
-      taxableAmount + taxAmount;
+    const taxAmount = taxableAmount * taxRate / 100;
+    const totalAmount = taxableAmount + taxAmount;
 
     item.patchValue(
       {
@@ -256,7 +244,6 @@ export class InvoiceCreateComponent implements OnInit {
     let discountAmount = 0;
 
     this.items.controls.forEach(item => {
-
       const quantity = Number(
         item.get('quantity')?.value || 0
       );
@@ -295,7 +282,6 @@ export class InvoiceCreateComponent implements OnInit {
   }
 
   submit(): void {
-
     if (this.invoiceForm.invalid) {
       this.invoiceForm.markAllAsTouched();
 
@@ -308,79 +294,56 @@ export class InvoiceCreateComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    const formValue =
-      this.invoiceForm.getRawValue();
+    const formValue = this.invoiceForm.getRawValue();
 
-    const selectedCustomer =
-      this.customers.find(
-        customer =>
-          customer.id === Number(
-            formValue.customerId
-          )
-      );
+    const selectedCustomer = this.customers.find(
+      customer => customer.id === Number(formValue.customerId)
+    );
 
     const invoiceData: Partial<Invoice> = {
       invoiceNumber: formValue.invoiceNumber,
       customerId: Number(formValue.customerId),
-      customerName:
-        selectedCustomer?.name ?? '',
+      customerName: selectedCustomer?.name ?? '',
       invoiceDate: formValue.invoiceDate,
       dueDate: formValue.dueDate,
       status: formValue.status,
       subtotal: Number(formValue.subtotal),
       taxAmount: Number(formValue.taxAmount),
-      discountAmount: Number(
-        formValue.discountAmount
-      ),
-      totalAmount: Number(
-        formValue.totalAmount
-      ),
+      discountAmount: Number(formValue.discountAmount),
+      totalAmount: Number(formValue.totalAmount),
       notes: formValue.notes
     };
 
-    const invoiceItems:
-      Omit<InvoiceItem, 'id' | 'invoiceId'>[] =
-      formValue.items.map(
-        (item: InvoiceItem) => ({
-          productId: Number(item.productId),
-          productName: item.productName,
-          sku: item.sku,
-          quantity: Number(item.quantity),
-          unitPrice: Number(item.unitPrice),
-          taxRate: Number(item.taxRate),
-          taxAmount: Number(item.taxAmount),
-          discountAmount: Number(
-            item.discountAmount
-          ),
-          totalAmount: Number(
-            item.totalAmount
-          )
-        })
-      );
+    const invoiceItems: Omit<InvoiceItem, 'id' | 'invoiceId'>[] =
+      formValue.items.map((item: InvoiceItem) => ({
+        productId: Number(item.productId),
+        productName: item.productName,
+        sku: item.sku,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice),
+        taxRate: Number(item.taxRate),
+        taxAmount: Number(item.taxAmount),
+        discountAmount: Number(item.discountAmount),
+        totalAmount: Number(item.totalAmount)
+      }));
 
-    this.invoiceService
-      .createInvoice(
-        invoiceData,
-        invoiceItems
-      )
-      .subscribe({
-        next: invoice => {
-          this.isSubmitting = false;
+    this.invoiceService.createInvoice(
+      invoiceData,
+      invoiceItems
+    ).subscribe({
+      next: invoice => {
+        this.isSubmitting = false;
 
-          this.router.navigate([
-            '/invoices',
-            invoice.id
-          ]);
-        },
-        error: error => {
-          console.error(
-            'Error creating invoice:',
-            error
-          );
-
-          this.isSubmitting = false;
-        }
-      });
+        this.router.navigate([
+          '/invoices',
+          invoice.id
+        ]);
+      },
+      error: error => {
+        console.error('Error creating invoice:', error);
+        this.isSubmitting = false;
+      }
+    });
   }
 
   onCancel(): void {
@@ -388,8 +351,7 @@ export class InvoiceCreateComponent implements OnInit {
   }
 
   isFieldInvalid(fieldName: string): boolean {
-    const field =
-      this.invoiceForm.get(fieldName);
+    const field = this.invoiceForm.get(fieldName);
 
     return !!(
       field &&
@@ -402,8 +364,7 @@ export class InvoiceCreateComponent implements OnInit {
     index: number,
     fieldName: string
   ): boolean {
-    const field =
-      this.items.at(index).get(fieldName);
+    const field = this.items.at(index).get(fieldName);
 
     return !!(
       field &&
@@ -414,10 +375,7 @@ export class InvoiceCreateComponent implements OnInit {
 
   getItemTotal(index: number): number {
     return Number(
-      this.items
-        .at(index)
-        .get('totalAmount')
-        ?.value || 0
+      this.items.at(index).get('totalAmount')?.value || 0
     );
   }
 
@@ -428,8 +386,7 @@ export class InvoiceCreateComponent implements OnInit {
   }
 
   private setDefaultInvoiceDate(): void {
-    const today =
-      new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
 
     this.invoiceForm.patchValue({
       invoiceDate: today
@@ -438,7 +395,6 @@ export class InvoiceCreateComponent implements OnInit {
 
   private generateInvoiceNumber(): string {
     const date = new Date();
-
     const year = date.getFullYear();
 
     const month = String(

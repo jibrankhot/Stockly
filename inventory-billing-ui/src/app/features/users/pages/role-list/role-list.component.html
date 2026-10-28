@@ -1,153 +1,277 @@
-<div class="page-container">
+<div class="roles-page">
 
-    <div class="page-header">
-
-        <div>
-
+    <!-- Page header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="eyebrow">USER MANAGEMENT</span>
             <h1>Roles</h1>
-
-            <p>
+            <p class="page-description">
                 Manage user roles and access responsibilities.
             </p>
-
         </div>
+    </header>
 
-    </div>
+    <!-- Summary cards -->
+    <section class="summary-grid" aria-label="Role summary">
 
+        <article class="summary-card">
+            <div class="summary-icon icon-total" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 5.5h16v13H4zM8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="summary-copy">
+                <span class="summary-label">Total Roles</span>
+                <strong>{{ totalRoles | number }}</strong>
+                <span class="summary-hint">Configured system roles</span>
+            </div>
+        </article>
 
-    <section class="summary-grid">
+        <article class="summary-card">
+            <div class="summary-icon icon-active" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="summary-copy">
+                <span class="summary-label">Active Roles</span>
+                <strong class="count-active">{{ activeRoles | number }}</strong>
+                <span class="summary-hint">Roles currently enabled</span>
+            </div>
+        </article>
 
-        <div class="summary-card">
-
-            <span>Total Roles</span>
-
-            <strong>
-                {{ roles.length }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>Active Roles</span>
-
-            <strong>
-                {{ activeRoles }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>Inactive Roles</span>
-
-            <strong>
-                {{ inactiveRoles }}
-            </strong>
-
-        </div>
+        <article class="summary-card">
+            <div class="summary-icon icon-inactive" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14m-6-6 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="summary-copy">
+                <span class="summary-label">Inactive Roles</span>
+                <strong class="count-inactive">{{ inactiveRoles | number }}</strong>
+                <span class="summary-hint">Roles currently disabled</span>
+            </div>
+        </article>
 
     </section>
 
+    <!-- Search and filters -->
+    <section class="filter-card" aria-label="Search and filter roles">
 
-    <section class="card">
+        <div class="filter-heading">
+            <h2>Role Search</h2>
+            <p>Find roles by name, description, or account status.</p>
+        </div>
 
-        <div class="card-header">
+        <div class="filter-controls">
 
-            <div>
-
-                <h2>Role List</h2>
-
-                <p>
-                    Available roles in Stockly.
-                </p>
-
+            <div class="filter-group search-group">
+                <label for="role-search">Search roles</label>
+                <div class="input-with-icon">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8" />
+                        <path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                    <input id="role-search" name="roleSearch" type="search" autocomplete="off" [(ngModel)]="searchTerm"
+                        (ngModelChange)="onSearch()" placeholder="Search role name or description..." />
+                </div>
             </div>
+
+            <div class="filter-group status-group">
+                <label for="role-status">Role status</label>
+                <select id="role-status" name="roleStatus" [(ngModel)]="selectedStatus"
+                    (ngModelChange)="onStatusChange()">
+                    <option value="all">All roles</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-clear filter-clear-button" (click)="clearFilters()"
+                [disabled]="!hasActiveFilters()">
+                Clear filters
+            </button>
 
         </div>
 
 
-        <div class="table-wrapper">
 
-            <table>
+    </section>
 
+    <!-- Role directory -->
+    <section class="role-directory">
+
+        <div class="table-header">
+            <div class="table-heading-copy">
+                <h2>Role Directory</h2>
+                <p>
+                    Showing <strong>{{ filteredRoles.length }}</strong> of
+                    <strong>{{ totalRoles }}</strong>
+                    {{ totalRoles === 1 ? 'role' : 'roles' }}
+                </p>
+            </div>
+
+            <span class="directory-results-badge">
+                {{ filteredRoles.length }}
+                {{ filteredRoles.length === 1 ? 'result' : 'results' }}
+            </span>
+        </div>
+
+        <!-- Desktop table -->
+        <div class="table-wrapper desktop-role-table" *ngIf="filteredRoles.length > 0">
+
+            <table class="role-table">
                 <thead>
-
                     <tr>
-
-                        <th>Role</th>
-
-                        <th>Description</th>
-
-                        <th>Users</th>
-
-                        <th>Status</th>
-
-                        <th>Action</th>
-
+                        <th scope="col">Role</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Users</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="actions-column">Action</th>
                     </tr>
-
                 </thead>
 
-
                 <tbody>
-
-                    <tr *ngFor="let role of roles">
-
-                        <td class="strong">
-                            {{ role.name }}
+                    <tr *ngFor="let role of paginatedRoles; trackBy: trackByRole">
+                        <td class="role-cell">
+                            <div class="role-identity">
+                                <span class="role-avatar" aria-hidden="true">
+                                    {{ role.name.charAt(0).toUpperCase() }}
+                                </span>
+                                <div class="role-copy">
+                                    <strong>{{ role.name }}</strong>
+                                    <span>Role ID: {{ role.id }}</span>
+                                </div>
+                            </div>
                         </td>
 
-                        <td>
+                        <td class="description-cell">
                             {{ role.description }}
                         </td>
 
                         <td>
-                            {{ role.userCount }}
-                        </td>
-
-                        <td>
-
-                            <span class="status-badge" [ngClass]="
-                                    role.isActive
-                                        ? 'status-active'
-                                        : 'status-inactive'
-                                ">
-
-                                {{
-                                role.isActive
-                                ? 'Active'
-                                : 'Inactive'
-                                }}
-
+                            <span class="user-count">
+                                {{ role.userCount }}
+                                {{ role.userCount === 1 ? 'user' : 'users' }}
                             </span>
-
                         </td>
 
                         <td>
-
-                            <button type="button" class="action-link" (click)="toggleStatus(role)">
-
-                                {{
-                                role.isActive
-                                ? 'Deactivate'
-                                : 'Activate'
-                                }}
-
-                            </button>
-
+                            <span class="status-badge" [ngClass]="role.isActive ? 'status-active' : 'status-inactive'">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                {{ role.isActive ? 'Active' : 'Inactive' }}
+                            </span>
                         </td>
 
+                        <td>
+                            <button type="button" class="action-link" [class.danger]="role.isActive"
+                                [class.activate]="!role.isActive" (click)="toggleStatus(role)"
+                                [attr.aria-label]="(role.isActive ? 'Deactivate ' : 'Activate ') + role.name">
+                                {{ role.isActive ? 'Deactivate' : 'Activate' }}
+                            </button>
+                        </td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
 
-    </section>
+        <!-- Mobile role cards -->
+        <div class="mobile-role-list" *ngIf="filteredRoles.length > 0">
 
+            <article class="mobile-role-card" *ngFor="let role of paginatedRoles; trackBy: trackByRole">
+
+                <div class="mobile-card-header">
+                    <div class="role-identity">
+                        <span class="role-avatar" aria-hidden="true">
+                            {{ role.name.charAt(0).toUpperCase() }}
+                        </span>
+                        <div class="role-copy">
+                            <strong>{{ role.name }}</strong>
+                            <span>Role ID: {{ role.id }}</span>
+                        </div>
+                    </div>
+
+                    <span class="status-badge" [ngClass]="role.isActive ? 'status-active' : 'status-inactive'">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        {{ role.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+
+                <div class="mobile-detail">
+                    <span class="detail-label">Description</span>
+                    <strong>{{ role.description }}</strong>
+                </div>
+
+                <div class="mobile-detail">
+                    <span class="detail-label">Assigned users</span>
+                    <strong>
+                        {{ role.userCount }}
+                        {{ role.userCount === 1 ? 'user' : 'users' }}
+                    </strong>
+                </div>
+
+                <div class="mobile-card-actions">
+                    <button type="button" class="btn" [ngClass]="role.isActive ? 'btn-delete' : 'btn-primary'"
+                        (click)="toggleStatus(role)">
+                        {{ role.isActive ? 'Deactivate Role' : 'Activate Role' }}
+                    </button>
+                </div>
+
+            </article>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" *ngIf="filteredRoles.length === 0">
+            <div class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7" />
+                    <path d="m16 16 4.5 4.5M8 11h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+            </div>
+            <h3>No matching roles</h3>
+            <p>Try changing your search or role status filter.</p>
+            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearFilters()">
+                Clear filters
+            </button>
+        </div>
+
+        <!-- Pagination -->
+        <footer class="pagination-bar" *ngIf="filteredRoles.length > 0">
+
+            <div class="page-size-control">
+                <label for="role-page-size">Rows per page</label>
+                <select id="role-page-size" name="rolePageSize" [ngModel]="pageSize"
+                    (ngModelChange)="changePageSize($event)">
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                        {{ size }}
+                    </option>
+                </select>
+            </div>
+
+            <nav class="pagination-controls" aria-label="Role directory pagination">
+
+                <button type="button" class="page-button page-direction" aria-label="Previous page"
+                    (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+                    ‹
+                </button>
+
+                <button type="button" class="page-button" *ngFor="let page of pageNumbers"
+                    [class.page-active]="page === currentPage"
+                    [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Page ' + page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+
+                <button type="button" class="page-button page-direction" aria-label="Next page"
+                    (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                    ›
+                </button>
+
+            </nav>
+        </footer>
+
+    </section>
 </div>

@@ -1864,3 +1864,21 @@ select:focus-visible {
     margin: 0;
   }
 }
+
+/* Fix Stock Overview header colors for global themes */
+:host {
+  --stock-header-surface: #fbfdfb;
+}
+
+:host-context([data-theme='blue']) {
+  --stock-header-surface: #ffffff;
+}
+
+.page-header {
+  border-left-color: var(--stock-accent) !important;
+  background: var(--stock-header-surface) !important;
+}
+
+.eyebrow {
+  color: var(--stock-accent) !important;
+}

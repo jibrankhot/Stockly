@@ -1,198 +1,265 @@
-<div class="page-container">
-
-    <div class="page-header">
-
-        <div>
+<div class="company-profile-page">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SETTINGS
+            </div>
 
             <h1>Company Profile</h1>
-
             <p>
-                Manage your company information used throughout Stockly.
+                Manage your company details, business address, and online presence.
             </p>
-
         </div>
 
-    </div>
+        <div class="header-status">
+            <span class="status-indicator"></span>
+            Profile Settings
+        </div>
+    </header>
 
+    <!-- Profile Form -->
+    <form [formGroup]="companyForm" (ngSubmit)="save()" class="company-profile-form">
+        <div class="profile-layout">
+            <!-- LEFT COLUMN: Company Information -->
+            <section class="form-card company-information-card">
+                <div class="form-card-header">
+                    <div class="section-icon company-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M3 21h18"></path>
+                            <path d="M5 21V7l8-4v18"></path>
+                            <path d="M19 21V11l-6-4"></path>
+                            <path d="M9 9v.01"></path>
+                            <path d="M9 12v.01"></path>
+                            <path d="M9 15v.01"></path>
+                            <path d="M9 18v.01"></path>
+                            <path d="M16 14v.01"></path>
+                            <path d="M16 17v.01"></path>
+                        </svg>
+                    </div>
 
-    <form
-        [formGroup]="companyForm"
-        (ngSubmit)="save()"
-    >
+                    <div class="form-card-heading">
+                        <h2>Company Information</h2>
+                        <p>Basic details used across your business.</p>
+                    </div>
+                </div>
 
-        <section class="form-card">
+                <div class="form-card-body">
+                    <div class="form-content">
+                        <!-- Company Name -->
+                        <div class="form-group full-width">
+                            <label for="companyName">
+                                Company Name
+                                <span class="required-mark">*</span>
+                            </label>
 
-            <div class="card-header">
+                            <input id="companyName" type="text" formControlName="companyName"
+                                placeholder="Enter company name" autocomplete="organization"
+                                [class.invalid]="isInvalid('companyName')"
+                                [attr.aria-invalid]="isInvalid('companyName')" aria-describedby="companyName-error" />
 
-                <h2>Company Information</h2>
+                            @if (isInvalid('companyName')) {
+                            <span id="companyName-error" class="field-error">
+                                Company name is required.
+                            </span>
+                            }
+                        </div>
 
+                        <!-- Email -->
+                        <div class="form-group full-width">
+                            <label for="email">
+                                Email Address
+                                <span class="required-mark">*</span>
+                            </label>
+
+                            <input id="email" type="email" formControlName="email" placeholder="name@company.com"
+                                autocomplete="email" [class.invalid]="isInvalid('email')"
+                                [attr.aria-invalid]="isInvalid('email')" aria-describedby="email-error" />
+
+                            @if (isInvalid('email')) {
+                            <span id="email-error" class="field-error">
+                                @if (companyForm.get('email')?.hasError('required')) {
+                                Email address is required.
+                                } @else if (companyForm.get('email')?.hasError('email')) {
+                                Enter a valid email address.
+                                }
+                            </span>
+                            }
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-group full-width">
+                            <label for="phone">
+                                Phone Number
+                                <span class="required-mark">*</span>
+                            </label>
+
+                            <input id="phone" type="tel" formControlName="phone" placeholder="Enter phone number"
+                                autocomplete="tel" [class.invalid]="isInvalid('phone')"
+                                [attr.aria-invalid]="isInvalid('phone')" aria-describedby="phone-error" />
+
+                            @if (isInvalid('phone')) {
+                            <span id="phone-error" class="field-error">
+                                Phone number is required.
+                            </span>
+                            }
+                        </div>
+
+                        <!-- Tax Number -->
+                        <div class="form-group full-width">
+                            <label for="taxNumber">Tax / GST Number</label>
+
+                            <input id="taxNumber" type="text" formControlName="taxNumber"
+                                placeholder="Enter GST or tax number" autocomplete="off" />
+
+                            <span class="field-hint">
+                                Your company's registered tax identification.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN -->
+            <div class="profile-side-column">
+                <!-- Business Address -->
+                <section class="form-card address-card">
+                    <div class="form-card-header">
+                        <div class="section-icon address-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                <circle cx="12" cy="10" r="2.5"></circle>
+                            </svg>
+                        </div>
+
+                        <div class="form-card-heading">
+                            <h2>Business Address</h2>
+                            <p>Your company's registered or business location.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-card-body">
+                        <div class="form-content">
+                            <!-- Street Address -->
+                            <div class="form-group full-width">
+                                <label for="address">Street Address</label>
+
+                                <textarea id="address" formControlName="address" rows="3"
+                                    placeholder="Enter street address" autocomplete="street-address"></textarea>
+                            </div>
+
+                            <!-- City -->
+                            <div class="form-group">
+                                <label for="city">City</label>
+
+                                <input id="city" type="text" formControlName="city" placeholder="Enter city"
+                                    autocomplete="address-level2" />
+                            </div>
+
+                            <!-- State -->
+                            <div class="form-group">
+                                <label for="state">State</label>
+
+                                <input id="state" type="text" formControlName="state" placeholder="Enter state"
+                                    autocomplete="address-level1" />
+                            </div>
+
+                            <!-- Postal Code -->
+                            <div class="form-group full-width">
+                                <label for="postalCode">Postal Code / PIN Code</label>
+
+                                <input id="postalCode" type="text" formControlName="postalCode"
+                                    placeholder="Enter postal code" autocomplete="postal-code" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Online Presence -->
+                <section class="form-card online-presence-card">
+                    <div class="form-card-header">
+                        <div class="section-icon website-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M2 12h20"></path>
+                                <path
+                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <div class="form-card-heading">
+                            <h2>Online Presence</h2>
+                            <p>Connect your business website.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-card-body">
+                        <div class="form-content single-column-content">
+                            <div class="form-group full-width">
+                                <label for="website">Website URL</label>
+
+                                <input id="website" type="text" formControlName="website"
+                                    placeholder="www.yourcompany.com" autocomplete="url" inputmode="url" />
+
+                                <span class="field-hint">
+                                    Enter your company's website address.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Save Feedback -->
+        @if (saved) {
+        <div class="success-message" role="status" aria-live="polite">
+            <span class="success-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 12 4 4L19 6"></path>
+                </svg>
+            </span>
+
+            <div>
+                <strong>Changes saved successfully</strong>
+                <p>Your company profile has been updated.</p>
+            </div>
+        </div>
+        }
+
+        <!-- Shared Form Footer -->
+        <div class="form-footer">
+            <div class="footer-note">
+                <span class="required-mark">*</span>
+                Required fields
             </div>
 
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        Company Name <span>*</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="companyName"
-                        placeholder="Enter company name"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Email <span>*</span>
-                    </label>
-
-                    <input
-                        type="email"
-                        formControlName="email"
-                        placeholder="Enter company email"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Phone <span>*</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="phone"
-                        placeholder="Enter phone number"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Tax / GST Number
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="taxNumber"
-                        placeholder="Enter tax number"
-                    />
-
-                </div>
-
-
-                <div class="form-group full-width">
-
-                    <label>
-                        Address
-                    </label>
-
-                    <textarea
-                        rows="3"
-                        formControlName="address"
-                        placeholder="Enter company address"
-                    ></textarea>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        City
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="city"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        State
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="state"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Postal Code
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="postalCode"
-                    />
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Website
-                    </label>
-
-                    <input
-                        type="text"
-                        formControlName="website"
-                        placeholder="www.example.com"
-                    />
-
-                </div>
-
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="saving">
+                    @if (saving) {
+                    <span class="button-spinner" aria-hidden="true"></span>
+                    Saving Changes...
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                        <path d="M17 21v-8H7v8"></path>
+                        <path d="M7 3v5h8"></path>
+                    </svg>
+                    Save Changes
+                    }
+                </button>
             </div>
-
-        </section>
-
-
-        <div
-            *ngIf="saved"
-            class="success-message"
-        >
-            Company profile saved successfully.
         </div>
-
-
-        <div class="form-actions">
-
-            <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="saving"
-            >
-
-                {{
-                    saving
-                        ? 'Saving...'
-                        : 'Save Changes'
-                }}
-
-            </button>
-
-        </div>
-
     </form>
-
 </div>

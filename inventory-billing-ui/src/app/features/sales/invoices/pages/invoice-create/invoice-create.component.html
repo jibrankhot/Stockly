@@ -1,468 +1,401 @@
 <div class="invoice-create-page">
-
     <!-- Page Header -->
-    <div class="page-header">
+    <header class="page-header">
+        <button type="button" class="back-button" (click)="onCancel()" aria-label="Back to invoices">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path d="m15 18-6-6 6-6"></path>
+                <path d="M9 12h12"></path>
+            </svg>
+            <span>Back to Invoices</span>
+        </button>
 
-        <div class="header-left">
-
-            <button type="button" class="back-button" (click)="onCancel()">
-                ← Back
-            </button>
-
-            <div>
-                <h1>Create Invoice</h1>
-                <p>Create a new customer invoice.</p>
+        <div class="page-header-content">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SALES
             </div>
 
+            <h1>Create Invoice</h1>
+            <p>Create an invoice for a customer and add the products being sold.</p>
         </div>
 
-    </div>
+        <div class="draft-badge">
+            <span class="draft-dot"></span>
+            New Invoice
+        </div>
+    </header>
 
-
-    <form [formGroup]="invoiceForm" (ngSubmit)="submit()">
-
+    <form [formGroup]="invoiceForm" (ngSubmit)="submit()" class="invoice-form">
         <!-- Invoice Information -->
         <section class="form-section">
-
             <div class="section-header">
-                <h2>Invoice Information</h2>
-                <p>
-                    Enter the basic invoice details.
-                </p>
+                <div class="section-icon invoice-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <path d="M14 2v6h6"></path>
+                        <path d="M8 13h8"></path>
+                        <path d="M8 17h5"></path>
+                    </svg>
+                </div>
+
+                <div class="section-heading-copy">
+                    <h2>Invoice Information</h2>
+                    <p>Enter the invoice details and select the customer.</p>
+                </div>
             </div>
 
             <div class="form-grid">
-
-                <!-- Invoice Number -->
                 <div class="form-group">
+                    <label for="invoiceNumber">Invoice Number <span class="required-mark">*</span></label>
 
-                    <label for="invoiceNumber">
-                        Invoice Number
-                    </label>
-
-                    <input id="invoiceNumber" type="text" formControlName="invoiceNumber"
-                        [class.invalid]="isFieldInvalid('invoiceNumber')">
+                    <input id="invoiceNumber" type="text" formControlName="invoiceNumber" autocomplete="off"
+                        [class.invalid]="isFieldInvalid('invoiceNumber')"
+                        [attr.aria-invalid]="isFieldInvalid('invoiceNumber')" />
 
                     @if (isFieldInvalid('invoiceNumber')) {
-                    <span class="error-message">
-                        Invoice number is required.
-                    </span>
+                    <span class="error-message">Invoice number is required.</span>
                     }
-
                 </div>
 
-
-                <!-- Customer -->
                 <div class="form-group">
+                    <label for="customerId">Customer <span class="required-mark">*</span></label>
 
-                    <label for="customerId">
-                        Customer
-                    </label>
-
-                    <select id="customerId" formControlName="customerId" [class.invalid]="isFieldInvalid('customerId')">
-
+                    <select id="customerId" formControlName="customerId" [class.invalid]="isFieldInvalid('customerId')"
+                        [attr.aria-invalid]="isFieldInvalid('customerId')">
                         <option [ngValue]="null">
-
                             @if (isLoadingCustomers) {
                             Loading customers...
                             } @else {
-                            Select customer
+                            Select a customer
                             }
-
                         </option>
 
-                        @for (
-                        customer of customers;
-                        track customer.id
-                        ) {
-
+                        @for (customer of customers; track customer.id) {
                         <option [ngValue]="customer.id">
-                            {{ customer.name }}
-                            ({{ customer.code }})
+                            {{ customer.name }} ({{ customer.code }})
                         </option>
-
                         }
-
                     </select>
 
                     @if (isFieldInvalid('customerId')) {
-                    <span class="error-message">
-                        Please select a customer.
-                    </span>
+                    <span class="error-message">Please select a customer.</span>
                     }
-
                 </div>
 
-
-                <!-- Invoice Date -->
                 <div class="form-group">
-
-                    <label for="invoiceDate">
-                        Invoice Date
-                    </label>
+                    <label for="invoiceDate">Invoice Date <span class="required-mark">*</span></label>
 
                     <input id="invoiceDate" type="date" formControlName="invoiceDate"
-                        [class.invalid]="isFieldInvalid('invoiceDate')">
+                        [class.invalid]="isFieldInvalid('invoiceDate')"
+                        [attr.aria-invalid]="isFieldInvalid('invoiceDate')" />
 
                     @if (isFieldInvalid('invoiceDate')) {
-                    <span class="error-message">
-                        Invoice date is required.
-                    </span>
+                    <span class="error-message">Invoice date is required.</span>
                     }
-
                 </div>
 
-
-                <!-- Due Date -->
                 <div class="form-group">
+                    <label for="dueDate">Due Date</label>
 
-                    <label for="dueDate">
-                        Due Date
-                    </label>
-
-                    <input id="dueDate" type="date" formControlName="dueDate">
-
+                    <input id="dueDate" type="date" formControlName="dueDate" />
+                    <span class="field-hint">Optional payment due date.</span>
                 </div>
 
-
-                <!-- Status -->
                 <div class="form-group">
+                    <label for="status">Invoice Status <span class="required-mark">*</span></label>
 
-                    <label for="status">
-                        Status
-                    </label>
-
-                    <select id="status" formControlName="status" [class.invalid]="isFieldInvalid('status')">
-
-                        <option value="draft">
-                            Draft
-                        </option>
-
-                        <option value="issued">
-                            Issued
-                        </option>
-
-                        <option value="partially-paid">
-                            Partially Paid
-                        </option>
-
-                        <option value="paid">
-                            Paid
-                        </option>
-
-                        <option value="cancelled">
-                            Cancelled
-                        </option>
-
+                    <select id="status" formControlName="status" [class.invalid]="isFieldInvalid('status')"
+                        [attr.aria-invalid]="isFieldInvalid('status')">
+                        <option value="draft">Draft</option>
+                        <option value="issued">Issued</option>
+                        <option value="partially-paid">Partially Paid</option>
+                        <option value="paid">Paid</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
 
                     @if (isFieldInvalid('status')) {
-                    <span class="error-message">
-                        Status is required.
-                    </span>
+                    <span class="error-message">Status is required.</span>
                     }
-
                 </div>
-
             </div>
-
         </section>
-
 
         <!-- Invoice Items -->
-        <section class="form-section">
-
+        <section class="form-section items-section">
             <div class="section-header section-header-with-action">
+                <div class="section-heading-main">
+                    <div class="section-icon items-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="m16.5 9.4-9-5.19"></path>
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
+                            <path d="m3.3 7 8.7 5 8.7-5"></path>
+                            <path d="M12 22V12"></path>
+                        </svg>
+                    </div>
 
-                <div>
-                    <h2>Invoice Items</h2>
-                    <p>
-                        Add the products being sold.
-                    </p>
+                    <div class="section-heading-copy">
+                        <h2>Invoice Items</h2>
+                        <p>Add products, quantities, pricing, tax, and discounts.</p>
+                    </div>
                 </div>
 
-                <button type="button" class="secondary-button" (click)="addItem()">
-                    + Add Item
+                <button type="button" class="secondary-button add-item-button" (click)="addItem()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                    </svg>
+                    Add Item
                 </button>
-
             </div>
-
 
             <div class="items-container" formArrayName="items">
-
-                @for (
-                item of items.controls;
-                track $index;
-                let i = $index
-                ) {
-
+                @for (item of items.controls; track $index; let i = $index) {
                 <div class="item-row" [formGroupName]="i">
-
-                    <div class="item-number">
-                        {{ i + 1 }}
-                    </div>
-
-
-                    <!-- Product -->
-                    <div class="form-group product-field">
-
-                        <label>
-                            Product
-                        </label>
-
-                        <select formControlName="productId" [class.invalid]="
-                                    isItemFieldInvalid(i, 'productId')
-                                " (change)="onProductChange(i)">
-
-                            <option [ngValue]="null">
-
-                                @if (isLoadingProducts) {
-                                Loading products...
-                                } @else {
-                                Select product
-                                }
-
-                            </option>
-
-                            @for (
-                            product of products;
-                            track product.id
-                            ) {
-
-                            <option [ngValue]="product.id">
-                                {{ product.name }}
-                                ({{ product.sku }})
-                            </option>
-
-                            }
-
-                        </select>
-
-                        @if (
-                        isItemFieldInvalid(i, 'productId')
-                        ) {
-                        <span class="error-message">
-                            Please select a product.
-                        </span>
-                        }
-
-                    </div>
-
-
-                    <!-- SKU -->
-                    <div class="form-group sku-field">
-
-                        <label>
-                            SKU
-                        </label>
-
-                        <input type="text" formControlName="sku" readonly>
-
-                    </div>
-
-
-                    <!-- Quantity -->
-                    <div class="form-group quantity-field">
-
-                        <label>
-                            Quantity
-                        </label>
-
-                        <input type="number" formControlName="quantity" min="1" [class.invalid]="
-                                    isItemFieldInvalid(i, 'quantity')
-                                " (input)="calculateItemTotal(i)">
-
-                        @if (
-                        isItemFieldInvalid(i, 'quantity')
-                        ) {
-                        <span class="error-message">
-                            Quantity must be at least 1.
-                        </span>
-                        }
-
-                    </div>
-
-
-                    <!-- Unit Price -->
-                    <div class="form-group price-field">
-
-                        <label>
-                            Unit Price
-                        </label>
-
-                        <input type="number" formControlName="unitPrice" min="0" step="0.01" [class.invalid]="
-                                    isItemFieldInvalid(i, 'unitPrice')
-                                " (input)="calculateItemTotal(i)">
-
-                        @if (
-                        isItemFieldInvalid(i, 'unitPrice')
-                        ) {
-                        <span class="error-message">
-                            Unit price cannot be negative.
-                        </span>
-                        }
-
-                    </div>
-
-
-                    <!-- Tax -->
-                    <div class="form-group tax-field">
-
-                        <label>
-                            Tax %
-                        </label>
-
-                        <input type="number" formControlName="taxRate" min="0" max="100" step="0.01" [class.invalid]="
-                                    isItemFieldInvalid(i, 'taxRate')
-                                " (input)="calculateItemTotal(i)">
-
-                    </div>
-
-
-                    <!-- Discount -->
-                    <div class="form-group discount-field">
-
-                        <label>
-                            Discount
-                        </label>
-
-                        <input type="number" formControlName="discountAmount" min="0" step="0.01"
-                            (input)="calculateItemTotal(i)">
-
-                    </div>
-
-
-                    <!-- Tax Amount -->
-                    <div class="form-group calculated-field">
-
-                        <label>
-                            Tax Amount
-                        </label>
-
-                        <input type="number" formControlName="taxAmount" readonly>
-
-                    </div>
-
-
-                    <!-- Total -->
-                    <div class="form-group total-field">
-
-                        <label>
-                            Total
-                        </label>
-
-                        <input type="number" formControlName="totalAmount" readonly>
-
-                    </div>
-
-
-                    <!-- Remove -->
-                    <div class="item-actions">
+                    <div class="item-row-header">
+                        <div class="item-number">{{ i + 1 }}</div>
+                        <div class="item-row-title">
+                            <strong>Item {{ i + 1 }}</strong>
+                            <span>Product details and pricing</span>
+                        </div>
 
                         <button type="button" class="remove-button" (click)="removeItem(i)"
-                            [disabled]="items.length === 1">
+                            [disabled]="items.length === 1" [attr.aria-label]="'Remove item ' + (i + 1)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 6h18"></path>
+                                <path d="M8 6V4h8v2"></path>
+                                <path d="m19 6-1 14H6L5 6"></path>
+                                <path d="M10 11v5"></path>
+                                <path d="M14 11v5"></path>
+                            </svg>
                             Remove
                         </button>
-
                     </div>
 
+                    <div class="item-fields">
+                        <div class="form-group product-field">
+                            <label [for]="'product-' + i">Product <span class="required-mark">*</span></label>
+
+                            <select [id]="'product-' + i" formControlName="productId"
+                                [class.invalid]="isItemFieldInvalid(i, 'productId')"
+                                [attr.aria-invalid]="isItemFieldInvalid(i, 'productId')" (change)="onProductChange(i)">
+                                <option [ngValue]="null">
+                                    @if (isLoadingProducts) {
+                                    Loading products...
+                                    } @else {
+                                    Select a product
+                                    }
+                                </option>
+
+                                @for (product of products; track product.id) {
+                                <option [ngValue]="product.id">
+                                    {{ product.name }} ({{ product.sku }})
+                                </option>
+                                }
+                            </select>
+
+                            @if (isItemFieldInvalid(i, 'productId')) {
+                            <span class="error-message">Please select a product.</span>
+                            }
+                        </div>
+
+                        <div class="form-group sku-field">
+                            <label [for]="'sku-' + i">SKU</label>
+                            <input [id]="'sku-' + i" type="text" formControlName="sku" readonly
+                                placeholder="Auto-filled" />
+                        </div>
+
+                        <div class="form-group quantity-field">
+                            <label [for]="'quantity-' + i">Quantity <span class="required-mark">*</span></label>
+                            <input [id]="'quantity-' + i" type="number" formControlName="quantity" min="1" step="1"
+                                [class.invalid]="isItemFieldInvalid(i, 'quantity')"
+                                [attr.aria-invalid]="isItemFieldInvalid(i, 'quantity')"
+                                (input)="calculateItemTotal(i)" />
+
+                            @if (isItemFieldInvalid(i, 'quantity')) {
+                            <span class="error-message">Quantity must be at least 1.</span>
+                            }
+                        </div>
+
+                        <div class="form-group price-field">
+                            <label [for]="'unitPrice-' + i">Unit Price (₹) <span class="required-mark">*</span></label>
+                            <input [id]="'unitPrice-' + i" type="number" formControlName="unitPrice" min="0" step="0.01"
+                                [class.invalid]="isItemFieldInvalid(i, 'unitPrice')"
+                                [attr.aria-invalid]="isItemFieldInvalid(i, 'unitPrice')"
+                                (input)="calculateItemTotal(i)" />
+
+                            @if (isItemFieldInvalid(i, 'unitPrice')) {
+                            <span class="error-message">Price cannot be negative.</span>
+                            }
+                        </div>
+
+                        <div class="form-group tax-field">
+                            <label [for]="'taxRate-' + i">Tax (%)</label>
+                            <input [id]="'taxRate-' + i" type="number" formControlName="taxRate" min="0" max="100"
+                                step="0.01" [class.invalid]="isItemFieldInvalid(i, 'taxRate')"
+                                [attr.aria-invalid]="isItemFieldInvalid(i, 'taxRate')"
+                                (input)="calculateItemTotal(i)" />
+
+                            @if (isItemFieldInvalid(i, 'taxRate')) {
+                            <span class="error-message">Enter a rate from 0 to 100.</span>
+                            }
+                        </div>
+
+                        <div class="form-group discount-field">
+                            <label [for]="'discount-' + i">Discount (₹)</label>
+                            <input [id]="'discount-' + i" type="number" formControlName="discountAmount" min="0"
+                                step="0.01" [class.invalid]="isItemFieldInvalid(i, 'discountAmount')"
+                                [attr.aria-invalid]="isItemFieldInvalid(i, 'discountAmount')"
+                                (input)="calculateItemTotal(i)" />
+
+                            @if (isItemFieldInvalid(i, 'discountAmount')) {
+                            <span class="error-message">Discount cannot be negative.</span>
+                            }
+                        </div>
+
+                        <div class="form-group calculated-field">
+                            <label [for]="'taxAmount-' + i">Tax Amount (₹)</label>
+                            <input [id]="'taxAmount-' + i" type="number" formControlName="taxAmount" readonly />
+                        </div>
+
+                        <div class="form-group total-field">
+                            <label [for]="'total-' + i">Line Total (₹)</label>
+                            <input [id]="'total-' + i" type="number" formControlName="totalAmount" readonly />
+                        </div>
+                    </div>
                 </div>
-
                 }
-
             </div>
 
-        </section>
+            <div class="items-footer">
+                <span>
+                    {{ items.length }} {{ items.length === 1 ? 'item' : 'items' }} added
+                </span>
 
+
+            </div>
+        </section>
 
         <!-- Summary -->
         <section class="form-section summary-section">
-
             <div class="section-header">
-                <h2>Invoice Summary</h2>
+                <div class="section-icon summary-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M8 6h13"></path>
+                        <path d="M8 12h13"></path>
+                        <path d="M8 18h13"></path>
+                        <path d="M3 6h.01"></path>
+                        <path d="M3 12h.01"></path>
+                        <path d="M3 18h.01"></path>
+                    </svg>
+                </div>
+
+                <div class="section-heading-copy">
+                    <h2>Invoice Summary</h2>
+                    <p>Review the totals before saving the invoice.</p>
+                </div>
             </div>
 
-            <div class="summary">
+            <div class="summary-content">
+                <div class="summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <strong>₹{{ invoiceForm.get('subtotal')?.value | number:'1.2-2' }}</strong>
+                    </div>
 
-                <div class="summary-row">
-                    <span>Subtotal</span>
+                    <div class="summary-row">
+                        <span>Tax</span>
+                        <strong>₹{{ invoiceForm.get('taxAmount')?.value | number:'1.2-2' }}</strong>
+                    </div>
 
-                    <strong>
-                        ₹{{ invoiceForm.get('subtotal')?.value | number:'1.2-2' }}
-                    </strong>
+                    <div class="summary-row">
+                        <span>Discount</span>
+                        <strong class="discount-value">− ₹{{ invoiceForm.get('discountAmount')?.value | number:'1.2-2'
+                            }}</strong>
+                    </div>
+
+                    <div class="summary-row total-row">
+                        <div>
+                            <span>Total Amount</span>
+                            <small>Including tax and discounts</small>
+                        </div>
+
+                        <strong class="grand-total">
+                            ₹{{ invoiceForm.get('totalAmount')?.value | number:'1.2-2' }}
+                        </strong>
+                    </div>
                 </div>
-
-
-                <div class="summary-row">
-                    <span>Tax</span>
-
-                    <strong>
-                        ₹{{ invoiceForm.get('taxAmount')?.value | number:'1.2-2' }}
-                    </strong>
-                </div>
-
-
-                <div class="summary-row">
-                    <span>Discount</span>
-
-                    <strong>
-                        ₹{{ invoiceForm.get('discountAmount')?.value | number:'1.2-2' }}
-                    </strong>
-                </div>
-
-
-                <div class="summary-row total-row">
-                    <span>Total</span>
-
-                    <strong>
-                        ₹{{ invoiceForm.get('totalAmount')?.value | number:'1.2-2' }}
-                    </strong>
-                </div>
-
             </div>
-
         </section>
 
-
         <!-- Notes -->
-        <section class="form-section">
-
+        <section class="form-section notes-section">
             <div class="section-header">
-                <h2>Notes</h2>
+                <div class="section-icon notes-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <path d="M14 2v6h6"></path>
+                        <path d="M8 13h8"></path>
+                        <path d="M8 17h6"></path>
+                    </svg>
+                </div>
 
-                <p>
-                    Add any additional information about this invoice.
-                </p>
+                <div class="section-heading-copy">
+                    <h2>Notes</h2>
+                    <p>Add any additional information for this invoice.</p>
+                </div>
             </div>
 
             <div class="form-group">
-
-                <textarea id="notes" formControlName="notes" rows="5" placeholder="Enter notes..."></textarea>
-
+                <label for="notes">Invoice Notes <span class="optional-label">Optional</span></label>
+                <textarea id="notes" formControlName="notes" rows="4"
+                    placeholder="Enter payment instructions, delivery details, or other notes..."></textarea>
             </div>
-
         </section>
 
+        <!-- Form Actions -->
+        <footer class="form-footer">
+            <div class="footer-note">
+                <span class="required-mark">*</span>
+                Required fields
+            </div>
 
-        <!-- Actions -->
-        <div class="form-actions">
+            <div class="form-actions">
+                <button type="button" class="cancel-button" (click)="onCancel()" [disabled]="isSubmitting">
+                    Cancel
+                </button>
 
-            <button type="button" class="cancel-button" (click)="onCancel()" [disabled]="isSubmitting">
-                Cancel
-            </button>
-
-            <button type="submit" class="primary-button" [disabled]="isSubmitting">
-
-                @if (isSubmitting) {
-                Saving...
-                } @else {
-                Save Invoice
-                }
-
-            </button>
-
-        </div>
-
+                <button type="submit" class="primary-button" [disabled]="isSubmitting">
+                    @if (isSubmitting) {
+                    <span class="button-spinner" aria-hidden="true"></span>
+                    Saving Invoice...
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                        <path d="M17 21v-8H7v8"></path>
+                        <path d="M7 3v5h8"></path>
+                    </svg>
+                    Save Invoice
+                    }
+                </button>
+            </div>
+        </footer>
     </form>
-
 </div>

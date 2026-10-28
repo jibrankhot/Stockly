@@ -1,268 +1,305 @@
-<div class="page-container">
-
-    <!-- Header -->
-    <div class="page-header">
-
-        <div>
+<div class="low-stock-page">
+    <!-- Page header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="eyebrow">INVENTORY MANAGEMENT</span>
             <h1>Low Stock</h1>
-
-            <p>
-                Products that need attention or replenishment.
-            </p>
+            <p class="page-description">Products that need attention or replenishment.</p>
         </div>
 
-        <div class="header-actions">
-
-            <a routerLink="/inventory" class="btn btn-outline">
+        <!-- Desktop navigation; duplicated below search for mobile -->
+        <nav class="header-actions desktop-header-actions" aria-label="Inventory navigation">
+            <a routerLink="/inventory" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
                 Stock Overview
             </a>
-
             <a routerLink="/inventory/adjustment" class="btn btn-primary">
-                Stock Adjustment
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Adjust Stock
             </a>
-
-        </div>
-
-    </div>
-
-
-    <!-- Summary -->
-    <div class="summary-grid">
-
-        <div class="summary-card warning">
-
-            <span class="summary-label">
-                Low Stock
-            </span>
-
-            <strong>
-                {{ lowStockItems.length }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card danger">
-
-            <span class="summary-label">
-                Out of Stock
-            </span>
-
-            <strong>
-                {{ outOfStockItems.length }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span class="summary-label">
-                Total Attention Needed
-            </span>
-
-            <strong>
-                {{ stockItems.length }}
-            </strong>
-
-        </div>
-
-    </div>
-
-
-    <!-- Search -->
-    <section class="filter-card">
-
-        <div class="filter-group">
-
-            <label for="search">
-                Search
-            </label>
-
-            <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
-                placeholder="Search product or SKU">
-
-        </div>
-
-        <button type="button" class="btn btn-outline" (click)="clearSearch()">
-            Clear
-        </button>
-
-    </section>
-
+        </nav>
+    </header>
 
     <!-- Loading -->
-    <div *ngIf="isLoading" class="state-card">
-
-        Loading low stock items...
-
-    </div>
-
-
-    <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-message">
-
-        {{ errorMessage }}
-
-    </div>
-
-
-    <!-- Table -->
-    <section *ngIf="!isLoading && !errorMessage" class="table-card">
-
-        <div class="table-header">
-
-            <div>
-
-                <h2>
-                    Stock Alerts
-                </h2>
-
-                <span>
-                    {{ filteredItems.length }}
-                    {{ filteredItems.length === 1
-                    ? 'product'
-                    : 'products' }}
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>Product</th>
-                        <th>SKU</th>
-                        <th class="text-right">
-                            Current Stock
-                        </th>
-                        <th class="text-right">
-                            Reorder Level
-                        </th>
-                        <th class="text-right">
-                            Shortage
-                        </th>
-                        <th>Status</th>
-                        <th class="actions-column">
-                            Action
-                        </th>
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    <tr *ngFor="let item of filteredItems">
-
-                        <td>
-
-                            <div class="product-name">
-                                {{ item.productName }}
-                            </div>
-
-                        </td>
-
-
-                        <td>
-
-                            <span class="sku">
-                                {{ item.sku }}
-                            </span>
-
-                        </td>
-
-
-                        <td class="text-right">
-
-                            <span class="quantity" [class.danger-quantity]="
-                  item.quantity === 0
-                ">
-
-                                {{ item.quantity }}
-
-                            </span>
-
-                        </td>
-
-
-                        <td class="text-right">
-
-                            {{ item.reorderLevel }}
-
-                        </td>
-
-
-                        <td class="text-right">
-
-                            <span class="shortage">
-
-                                {{
-                                item.quantity >= item.reorderLevel
-                                ? 0
-                                : item.reorderLevel - item.quantity
-                                }}
-
-                            </span>
-
-                        </td>
-
-
-                        <td>
-
-                            <span class="status-badge" [ngClass]="
-                  getStatusClass(item.status)
-                ">
-
-                                {{ getStatusLabel(item.status) }}
-
-                            </span>
-
-                        </td>
-
-
-                        <td>
-
-                            <a routerLink="/inventory/adjustment" class="action-link">
-
-                                Adjust Stock
-
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-
-                    <!-- Empty -->
-                    <tr *ngIf="filteredItems.length === 0">
-
-                        <td colspan="7" class="empty-state">
-
-                            <strong>
-                                No low stock items found
-                            </strong>
-
-                            <p>
-                                Your current inventory has no matching stock alerts.
-                            </p>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
+    <section *ngIf="isLoading" class="state-card" aria-live="polite" aria-busy="true">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading stock alerts</h2>
+        <p>Please wait while we retrieve your inventory information.</p>
     </section>
 
+    <!-- Error -->
+    <section *ngIf="!isLoading && errorMessage" class="state-card error-state" role="alert">
+        <span class="state-icon" aria-hidden="true">!</span>
+        <h2>Unable to load stock alerts</h2>
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="btn btn-primary" (click)="loadLowStockItems()">Try Again</button>
+    </section>
+
+    <ng-container *ngIf="!isLoading && !errorMessage">
+        <!-- Summary cards -->
+        <section class="summary-grid" aria-label="Stock alert summary">
+            <article class="summary-card summary-warning">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3 22 20H2L12 3Z" stroke="currentColor" stroke-width="1.7"
+                            stroke-linejoin="round" />
+                        <path d="M12 9v5m0 3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="summary-copy">
+                    <span class="summary-label">Low Stock</span>
+                    <strong>{{ lowStockItems.length }}</strong>
+                    <small>Products needing replenishment</small>
+                </div>
+            </article>
+
+            <article class="summary-card summary-danger">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7" />
+                        <path d="m9 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="summary-copy">
+                    <span class="summary-label">Out of Stock</span>
+                    <strong>{{ outOfStockItems.length }}</strong>
+                    <small>Products currently unavailable</small>
+                </div>
+            </article>
+
+            <article class="summary-card summary-total">
+                <div class="summary-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 5h16v14H4zM8 9h8m-8 3h8m-8 3h5" stroke="currentColor" stroke-width="1.7"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="summary-copy">
+                    <span class="summary-label">Total Attention Needed</span>
+                    <strong>{{ totalAttentionNeeded }}</strong>
+                    <small>Inventory items requiring attention</small>
+                </div>
+            </article>
+        </section>
+
+        <!-- Search and navigation -->
+        <section class="filter-card" aria-label="Stock alert search">
+            <div class="section-heading">
+                <div>
+                    <h2>Stock Alert Search</h2>
+                    <p>Find products by name or SKU.</p>
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <div class="filter-search-row">
+                    <div class="filter-group">
+                        <label for="low-stock-search">Search inventory</label>
+                        <div class="search-input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7" />
+                                <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                            </svg>
+                            <input id="low-stock-search" name="lowStockSearch" type="search" [(ngModel)]="searchTerm"
+                                (ngModelChange)="applyFilter()" placeholder="Search product name or SKU..."
+                                autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary clear-button" (click)="clearSearch()"
+                        [disabled]="!hasActiveFilters()">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M4 7v5h5M5.5 16a7 7 0 1 0-.5-7" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Clear filters
+                    </button>
+                </div>
+
+                <!-- Mobile-only navigation row -->
+                <nav class="mobile-header-actions" aria-label="Inventory navigation">
+                    <a routerLink="/inventory" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5Z" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Stock Overview
+                    </a>
+                    <a routerLink="/inventory/adjustment" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" />
+                        </svg>
+                        Adjust Stock
+                    </a>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Stock alerts directory -->
+        <section class="table-card">
+            <div class="table-header">
+                <div>
+                    <h2>Stock Alerts</h2>
+                    <p class="results-caption" aria-live="polite">
+                        Showing {{ paginationStart }}–{{ paginationEnd }} of {{ filteredItems.length }}
+                        {{ filteredItems.length === 1 ? 'product' : 'products' }}
+                    </p>
+                </div>
+                <span class="result-badge">
+                    {{ filteredItems.length }}
+                    {{ filteredItems.length === 1 ? 'result' : 'results' }}
+                </span>
+            </div>
+
+            <!-- Desktop table -->
+            <div class="table-wrapper" *ngIf="filteredItems.length > 0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="product-column">Product</th>
+                            <th scope="col" class="sku-column">SKU</th>
+                            <th scope="col" class="status-column">Status</th>
+                            <th scope="col" class="actions-column">Action</th>
+                            <th scope="col" class="numeric-column">Current Stock</th>
+                            <th scope="col" class="numeric-column">Reorder Level</th>
+                            <th scope="col" class="numeric-column">Shortage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of paginatedItems; trackBy: trackByStockItem">
+                            <td class="product-cell"><span class="product-name">{{ item.productName }}</span></td>
+                            <td class="sku-cell"><span class="sku">{{ item.sku || '—' }}</span></td>
+                            <td class="status-cell">
+                                <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                                    <span class="status-dot" aria-hidden="true"></span>
+                                    {{ getStatusLabel(item.status) }}
+                                </span>
+                            </td>
+                            <td class="action-cell">
+                                <a routerLink="/inventory/adjustment" class="action-link"
+                                    [attr.aria-label]="'Adjust stock for ' + item.productName">
+                                    Adjust Stock
+                                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="numeric-cell">
+                                <span class="quantity" [class.danger-quantity]="item.quantity === 0">
+                                    {{ item.quantity | number:'1.0-2' }}
+                                </span>
+                            </td>
+                            <td class="numeric-cell">{{ item.reorderLevel | number:'1.0-2' }}</td>
+                            <td class="numeric-cell">
+                                <span class="shortage">
+                                    {{ item.quantity >= item.reorderLevel ? 0 : item.reorderLevel - item.quantity }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile product cards -->
+            <div class="mobile-stock-list" *ngIf="filteredItems.length > 0">
+                <article class="mobile-stock-card" *ngFor="let item of paginatedItems; trackBy: trackByStockItem">
+                    <div class="mobile-card-heading">
+                        <div class="mobile-product-copy">
+                            <strong class="product-name">{{ item.productName }}</strong>
+                            <span class="sku">SKU: {{ item.sku || '—' }}</span>
+                        </div>
+                        <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                            <span class="status-dot" aria-hidden="true"></span>
+                            {{ getStatusLabel(item.status) }}
+                        </span>
+                    </div>
+
+                    <div class="mobile-stock-metrics">
+                        <div>
+                            <span>Current Stock</span>
+                            <strong [class.danger-quantity]="item.quantity === 0">
+                                {{ item.quantity | number:'1.0-2' }}
+                            </strong>
+                        </div>
+                        <div>
+                            <span>Reorder Level</span>
+                            <strong>{{ item.reorderLevel | number:'1.0-2' }}</strong>
+                        </div>
+                        <div>
+                            <span>Shortage</span>
+                            <strong class="shortage">
+                                {{ item.quantity >= item.reorderLevel ? 0 : item.reorderLevel - item.quantity }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <a routerLink="/inventory/adjustment" class="mobile-adjust-link"
+                        [attr.aria-label]="'Adjust stock for ' + item.productName">
+                        Adjust Stock
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                </article>
+            </div>
+
+            <!-- Empty state -->
+            <div *ngIf="filteredItems.length === 0" class="empty-state">
+                <span class="empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                </span>
+                <strong>No stock alerts found</strong>
+                <p>{{ searchTerm.trim() ? 'Try another product name or SKU.' : 'Your inventory has no matching stock
+                    alerts.' }}</p>
+                <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearSearch()">
+                    Clear search
+                </button>
+            </div>
+
+            <!-- Pagination: page size left, page controls right -->
+            <footer class="pagination-bar" *ngIf="filteredItems.length > 0">
+                <div class="page-size-control">
+                    <label for="lowStockPageSize">Rows per page</label>
+                    <select id="lowStockPageSize" [ngModel]="pageSize" (ngModelChange)="changePageSize($event)">
+                        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+                    </select>
+                </div>
+
+                <nav class="pagination-controls" aria-label="Stock alerts pagination">
+                    <button type="button" class="page-button page-direction" aria-label="Previous page"
+                        (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button type="button" class="page-button" *ngFor="let page of pageNumbers"
+                        [class.page-active]="page === currentPage"
+                        [attr.aria-current]="page === currentPage ? 'page' : null" [attr.aria-label]="'Page ' + page"
+                        (click)="goToPage(page)">
+                        {{ page }}
+                    </button>
+                    <button type="button" class="page-button page-direction" aria-label="Next page"
+                        (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </nav>
+            </footer>
+        </section>
+    </ng-container>
 </div>

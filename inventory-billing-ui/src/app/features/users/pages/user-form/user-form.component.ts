@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -28,26 +29,13 @@ interface RoleOption {
   styleUrl: './user-form.component.scss'
 })
 export class UserFormComponent implements OnInit {
-
   userForm: FormGroup;
 
   roles: RoleOption[] = [
-    {
-      id: 1,
-      name: 'Administrator'
-    },
-    {
-      id: 2,
-      name: 'Manager'
-    },
-    {
-      id: 3,
-      name: 'Sales Executive'
-    },
-    {
-      id: 4,
-      name: 'Inventory Executive'
-    }
+    { id: 1, name: 'Administrator' },
+    { id: 2, name: 'Manager' },
+    { id: 3, name: 'Sales Executive' },
+    { id: 4, name: 'Inventory Executive' }
   ];
 
   editing = false;
@@ -58,10 +46,10 @@ export class UserFormComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService
+    private readonly fb: FormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly userService: UserService
   ) {
     this.userForm = this.fb.group({
       username: [
@@ -71,12 +59,10 @@ export class UserFormComponent implements OnInit {
           Validators.minLength(3)
         ]
       ],
-
       fullName: [
         '',
         Validators.required
       ],
-
       email: [
         '',
         [
@@ -84,30 +70,22 @@ export class UserFormComponent implements OnInit {
           Validators.email
         ]
       ],
-
       phone: [
         '',
         [
           Validators.pattern(/^[0-9]{10}$/)
         ]
       ],
-
       roleId: [
         '',
         Validators.required
       ],
-
-      isActive: [
-        true
-      ]
+      isActive: [true]
     });
   }
 
   ngOnInit(): void {
-
-    const id = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (id) {
       this.editing = true;
@@ -117,21 +95,14 @@ export class UserFormComponent implements OnInit {
   }
 
   private loadUser(id: number): void {
-
     this.loading = true;
     this.errorMessage = '';
 
     this.userService.getUserById(id).subscribe({
-
-      next: (user) => {
-
+      next: (user: User | null | undefined) => {
         if (!user) {
-
-          this.errorMessage =
-            'User not found.';
-
+          this.errorMessage = 'User not found.';
           this.loading = false;
-
           return;
         }
 
@@ -145,42 +116,27 @@ export class UserFormComponent implements OnInit {
         });
 
         this.loading = false;
-
       },
-
       error: () => {
-
-        this.errorMessage =
-          'Unable to load user.';
-
+        this.errorMessage = 'Unable to load user.';
         this.loading = false;
-
       }
-
     });
   }
 
   isInvalid(controlName: string): boolean {
-
-    const control =
-      this.userForm.get(controlName);
+    const control = this.userForm.get(controlName);
 
     return !!(
       control &&
       control.invalid &&
-      (
-        control.dirty ||
-        control.touched
-      )
+      (control.dirty || control.touched)
     );
   }
 
   save(): void {
-
     if (this.userForm.invalid) {
-
       this.userForm.markAllAsTouched();
-
       return;
     }
 
@@ -189,18 +145,13 @@ export class UserFormComponent implements OnInit {
 
     const formValue = this.userForm.value;
 
-    const selectedRole =
-      this.roles.find(
-        role => role.id === Number(formValue.roleId)
-      );
+    const selectedRole = this.roles.find(
+      role => role.id === Number(formValue.roleId)
+    );
 
     if (!selectedRole) {
-
-      this.errorMessage =
-        'Please select a valid role.';
-
+      this.errorMessage = 'Please select a valid role.';
       this.saving = false;
-
       return;
     }
 
@@ -215,73 +166,41 @@ export class UserFormComponent implements OnInit {
     };
 
     if (this.editing && this.userId !== null) {
-
-      this.userService
-        .updateUser(this.userId, userData)
-        .subscribe({
-
-          next: (user) => {
-
-            if (!user) {
-
-              this.errorMessage =
-                'Unable to update user.';
-
-              this.saving = false;
-
-              return;
-            }
-
-            this.router.navigate([
-              '/users'
-            ]);
-
-          },
-
-          error: () => {
-
-            this.errorMessage =
-              'Unable to update user.';
-
+      this.userService.updateUser(this.userId, userData).subscribe({
+        next: user => {
+          if (!user) {
+            this.errorMessage = 'Unable to update user.';
             this.saving = false;
-
+            return;
           }
 
-        });
+          this.router.navigate(['/users']);
+        },
+        error: () => {
+          this.errorMessage = 'Unable to update user.';
+          this.saving = false;
+        }
+      });
 
       return;
     }
 
-    this.userService
-      .createUser(userData)
-      .subscribe({
-
-        next: () => {
-
-          this.router.navigate([
-            '/users'
-          ]);
-
-        },
-
-        error: () => {
-
-          this.errorMessage =
-            'Unable to create user.';
-
-          this.saving = false;
-
-        }
-
-      });
+    this.userService.createUser(userData).subscribe({
+      next: () => {
+        this.router.navigate(['/users']);
+      },
+      error: () => {
+        this.errorMessage = 'Unable to create user.';
+        this.saving = false;
+      }
+    });
   }
 
   cancel(): void {
-
-    this.router.navigate([
-      '/users'
-    ]);
-
+    this.router.navigate(['/users']);
   }
 
+  trackByRole(_index: number, role: RoleOption): number {
+    return role.id;
+  }
 }
