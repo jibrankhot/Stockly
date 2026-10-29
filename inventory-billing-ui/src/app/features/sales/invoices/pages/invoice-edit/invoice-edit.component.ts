@@ -1,3 +1,4 @@
+
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -31,7 +32,6 @@ import { ProductService } from '../../../../products/services/product.service';
     styleUrl: './invoice-edit.component.scss'
 })
 export class InvoiceEditComponent implements OnInit {
-
     invoiceForm: FormGroup;
 
     invoice: Invoice | null = null;
@@ -43,6 +43,11 @@ export class InvoiceEditComponent implements OnInit {
     errorMessage = '';
 
     invoiceId = 0;
+
+    subtotal = 0;
+    taxAmount = 0;
+    discountAmount = 0;
+    totalAmount = 0;
 
     constructor(
         private fb: FormBuilder,
@@ -63,9 +68,7 @@ export class InvoiceEditComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.invoiceId = Number(
-            this.route.snapshot.paramMap.get('id')
-        );
+        this.invoiceId = Number(this.route.snapshot.paramMap.get('id'));
 
         if (!this.invoiceId) {
             this.errorMessage = 'Invalid invoice ID.';
@@ -85,7 +88,7 @@ export class InvoiceEditComponent implements OnInit {
     loadCustomers(): void {
         this.customerService.getCustomers().subscribe({
             next: (customers) => {
-                this.customers = customers.filter(
+                this.customers = (customers ?? []).filter(
                     customer => customer.isActive
                 );
             },
@@ -98,7 +101,7 @@ export class InvoiceEditComponent implements OnInit {
     loadProducts(): void {
         this.productService.getProducts().subscribe({
             next: (products) => {
-                this.products = products.filter(
+                this.products = (products ?? []).filter(
                     product => product.isActive
                 );
             },
@@ -110,6 +113,7 @@ export class InvoiceEditComponent implements OnInit {
 
     loadInvoice(): void {
         this.isLoading = true;
+        this.errorMessage = '';
 
         this.invoiceService.getInvoiceById(this.invoiceId).subscribe({
             next: (invoice) => {
@@ -128,7 +132,7 @@ export class InvoiceEditComponent implements OnInit {
                         ? this.toDateInputValue(invoice.dueDate)
                         : '',
                     status: invoice.status,
-                    notes: invoice.notes
+                    notes: invoice.notes ?? ''
                 });
 
                 this.loadInvoiceItems();
@@ -145,12 +149,11 @@ export class InvoiceEditComponent implements OnInit {
             next: (items) => {
                 this.items.clear();
 
-                items.forEach(item => {
-                    this.items.push(
-                        this.createItemForm(item)
-                    );
+                (items ?? []).forEach(item => {
+                    this.items.push(this.createItemForm(item));
                 });
 
+                this.calculateTotals();
                 this.isLoading = false;
             },
             error: () => {
@@ -191,9 +194,7 @@ export class InvoiceEditComponent implements OnInit {
     }
 
     addItem(): void {
-        this.items.push(
-            this.createItemForm()
-        );
+        this.items.push(this.createItemForm());
     }
 
     removeItem(index: number): void {
@@ -203,15 +204,23 @@ export class InvoiceEditComponent implements OnInit {
 
     onProductChange(index: number): void {
         const item = this.items.at(index) as FormGroup;
-        const productId = Number(
-            item.get('productId')?.value
-        );
+        const productId = Number(item.get('productId')?.value);
 
         const product = this.products.find(
             p => p.id === productId
         );
 
         if (!product) {
+            item.patchValue({
+                productName: '',
+                sku: '',
+                unitPrice: 0,
+                taxRate: 0,
+                taxAmount: 0,
+                totalAmount: 0
+            });
+
+            this.calculateTotals();
             return;
         }
 
@@ -228,39 +237,24 @@ export class InvoiceEditComponent implements OnInit {
     calculateItem(index: number): void {
         const item = this.items.at(index) as FormGroup;
 
-        const quantity = Number(
-            item.get('quantity')?.value
-        ) || 0;
+        const quantity = Number(item.get('quantity')?.value) || 0;
+        const unitPrice = Number(item.get('unitPrice')?.value) || 0;
+        const taxRate = Number(item.get('taxRate')?.value) || 0;
+        const discountAmount =
+            Number(item.get('discountAmount')?.value) || 0;
 
-        const unitPrice = Number(
-            item.get('unitPrice')?.value
-        ) || 0;
-
-        const taxRate = Number(
-            item.get('taxRate')?.value
-        ) || 0;
-
-        const discountAmount = Number(
-            item.get('discountAmount')?.value
-        ) || 0;
-
-        const subtotal = quantity * unitPrice;
-
+        const lineSubtotal = quantity * unitPrice;
         const taxableAmount = Math.max(
-            subtotal - discountAmount,
+            lineSubtotal - discountAmount,
             0
         );
-
-        const taxAmount =
-            taxableAmount * taxRate / 100;
-
-        const totalAmount =
-            taxableAmount + taxAmount;
+        const lineTax = taxableAmount * taxRate / 100;
+        const lineTotal = taxableAmount + lineTax;
 
         item.patchValue(
             {
-                taxAmount,
-                totalAmount
+                taxAmount: lineTax,
+                totalAmount: lineTotal
             },
             { emitEvent: false }
         );
@@ -277,27 +271,13 @@ export class InvoiceEditComponent implements OnInit {
         this.items.controls.forEach(control => {
             const item = control as FormGroup;
 
-            const quantity = Number(
-                item.get('quantity')?.value
-            ) || 0;
-
-            const unitPrice = Number(
-                item.get('unitPrice')?.value
-            ) || 0;
+            const quantity = Number(item.get('quantity')?.value) || 0;
+            const unitPrice = Number(item.get('unitPrice')?.value) || 0;
 
             subtotal += quantity * unitPrice;
-
-            taxAmount += Number(
-                item.get('taxAmount')?.value
-            ) || 0;
-
-            discountAmount += Number(
-                item.get('discountAmount')?.value
-            ) || 0;
-
-            totalAmount += Number(
-                item.get('totalAmount')?.value
-            ) || 0;
+            taxAmount += Number(item.get('taxAmount')?.value) || 0;
+            discountAmount += Number(item.get('discountAmount')?.value) || 0;
+            totalAmount += Number(item.get('totalAmount')?.value) || 0;
         });
 
         this.subtotal = subtotal;
@@ -306,14 +286,12 @@ export class InvoiceEditComponent implements OnInit {
         this.totalAmount = totalAmount;
     }
 
-    subtotal = 0;
-    taxAmount = 0;
-    discountAmount = 0;
-    totalAmount = 0;
-
     saveInvoice(): void {
+        this.errorMessage = '';
+
         if (this.invoiceForm.invalid) {
             this.invoiceForm.markAllAsTouched();
+            this.errorMessage = 'Please correct the highlighted fields.';
             return;
         }
 
@@ -323,13 +301,11 @@ export class InvoiceEditComponent implements OnInit {
         }
 
         this.isSaving = true;
-        this.errorMessage = '';
 
         const formValue = this.invoiceForm.value;
 
         const selectedCustomer = this.customers.find(
-            customer =>
-                customer.id === Number(formValue.customerId)
+            customer => customer.id === Number(formValue.customerId)
         );
 
         const invoiceData: Partial<Invoice> = {
@@ -347,23 +323,21 @@ export class InvoiceEditComponent implements OnInit {
             notes: formValue.notes ?? ''
         };
 
-        const invoiceItems = this.items.controls.map(
-            control => {
-                const item = control.value;
+        const invoiceItems = this.items.controls.map(control => {
+            const item = control.value;
 
-                return {
-                    productId: Number(item.productId),
-                    productName: item.productName,
-                    sku: item.sku,
-                    quantity: Number(item.quantity),
-                    unitPrice: Number(item.unitPrice),
-                    taxRate: Number(item.taxRate),
-                    taxAmount: Number(item.taxAmount),
-                    discountAmount: Number(item.discountAmount),
-                    totalAmount: Number(item.totalAmount)
-                };
-            }
-        );
+            return {
+                productId: Number(item.productId),
+                productName: item.productName,
+                sku: item.sku,
+                quantity: Number(item.quantity),
+                unitPrice: Number(item.unitPrice),
+                taxRate: Number(item.taxRate),
+                taxAmount: Number(item.taxAmount),
+                discountAmount: Number(item.discountAmount),
+                totalAmount: Number(item.totalAmount)
+            };
+        });
 
         this.invoiceService.updateInvoice(
             this.invoiceId,
@@ -380,8 +354,7 @@ export class InvoiceEditComponent implements OnInit {
             },
             error: () => {
                 this.isSaving = false;
-                this.errorMessage =
-                    'Unable to update invoice.';
+                this.errorMessage = 'Unable to update invoice.';
             }
         });
     }
@@ -393,11 +366,7 @@ export class InvoiceEditComponent implements OnInit {
         ]);
     }
 
-    private toDateInputValue(
-        date: string
-    ): string {
-        return date
-            ? date.substring(0, 10)
-            : '';
+    private toDateInputValue(date: string): string {
+        return date ? date.substring(0, 10) : '';
     }
 }

@@ -1,58 +1,88 @@
-<div class="page-container">
+<div class="invoice-edit-page">
 
-    <div class="page-header">
-        <div>
-            <h1>Edit Invoice</h1>
+    <header class="page-header">
+        <div class="page-heading">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SALES
+            </div>
+
+            <div class="page-title-row">
+                <h1>Edit Invoice</h1>
+
+                <a [routerLink]="['/invoices', invoiceId]" class="btn btn-outline header-back-button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M5 12h14"></path>
+                    </svg>
+                    <span>Back to Details</span>
+                </a>
+            </div>
+
             <p *ngIf="invoice">
-                {{ invoice.invoiceNumber }}
+                Update invoice <strong>{{ invoice.invoiceNumber }}</strong>
+            </p>
+
+            <p *ngIf="!invoice">
+                Update invoice details, products, taxes, and notes.
             </p>
         </div>
+    </header>
 
-        <a [routerLink]="['/invoices', invoiceId]" class="btn btn-outline">
-            Back to Details
-        </a>
+    <!-- Loading -->
+    <section *ngIf="isLoading" class="state-card loading-state" role="status" aria-live="polite">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <h2>Loading invoice</h2>
+        <p>Please wait while we retrieve the invoice details.</p>
+    </section>
+
+    <!-- Error -->
+    <div *ngIf="!isLoading && errorMessage" class="error-message" role="alert">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 8v5M12 16h.01"></path>
+        </svg>
+        <span>{{ errorMessage }}</span>
     </div>
 
-
-    <div *ngIf="isLoading" class="loading-state">
-        Loading invoice...
-    </div>
-
-
-    <div *ngIf="!isLoading && errorMessage" class="error-message">
-        {{ errorMessage }}
-    </div>
-
-
-    <form *ngIf="!isLoading" [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()">
+    <!-- Invoice Form -->
+    <form *ngIf="!isLoading" [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" class="invoice-form">
 
         <!-- Invoice Information -->
         <section class="card">
-
             <div class="card-header">
-                <h2>Invoice Information</h2>
+                <div class="section-heading">
+                    <div class="section-icon invoice-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                            <path d="M14 2v6h6M8 13h8M8 17h5"></path>
+                        </svg>
+                    </div>
+
+                    <div class="section-heading-copy">
+                        <h2>Invoice Information</h2>
+                        <p>Customer, invoice dates, and payment status</p>
+                    </div>
+                </div>
             </div>
 
             <div class="form-grid">
-
                 <div class="form-group">
                     <label for="customerId">
-                        Customer <span>*</span>
+                        Customer <span class="required-mark">*</span>
                     </label>
 
-                    <select id="customerId" formControlName="customerId">
-
-                        <option value="">
-                            Select customer
-                        </option>
-
+                    <select id="customerId" formControlName="customerId" [class.invalid-control]="
+              invoiceForm.get('customerId')?.touched &&
+              invoiceForm.get('customerId')?.invalid
+            ">
+                        <option value="">Select customer</option>
                         <option *ngFor="let customer of customers" [value]="customer.id">
                             {{ customer.name }}
                         </option>
-
                     </select>
 
-                    <small *ngIf="
+                    <small class="field-error" *ngIf="
               invoiceForm.get('customerId')?.touched &&
               invoiceForm.get('customerId')?.invalid
             ">
@@ -60,229 +90,253 @@
                     </small>
                 </div>
 
-
                 <div class="form-group">
                     <label for="invoiceDate">
-                        Invoice Date <span>*</span>
+                        Invoice Date <span class="required-mark">*</span>
                     </label>
 
-                    <input id="invoiceDate" type="date" formControlName="invoiceDate">
-                </div>
+                    <input id="invoiceDate" type="date" formControlName="invoiceDate" />
 
+                    <small class="field-error" *ngIf="
+              invoiceForm.get('invoiceDate')?.touched &&
+              invoiceForm.get('invoiceDate')?.invalid
+            ">
+                        Invoice date is required.
+                    </small>
+                </div>
 
                 <div class="form-group">
-                    <label for="dueDate">
-                        Due Date
-                    </label>
-
-                    <input id="dueDate" type="date" formControlName="dueDate">
+                    <label for="dueDate">Due Date</label>
+                    <input id="dueDate" type="date" formControlName="dueDate" />
                 </div>
-
 
                 <div class="form-group">
                     <label for="status">
-                        Status <span>*</span>
+                        Status <span class="required-mark">*</span>
                     </label>
 
                     <select id="status" formControlName="status">
-
                         <option value="draft">Draft</option>
                         <option value="issued">Issued</option>
-                        <option value="partially-paid">
-                            Partially Paid
-                        </option>
+                        <option value="partially-paid">Partially Paid</option>
                         <option value="paid">Paid</option>
-                        <option value="cancelled">
-                            Cancelled
-                        </option>
-
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
-
             </div>
-
         </section>
 
+        <!-- Invoice Items -->
+        <section class="card items-card">
+            <div class="card-header items-card-header">
+                <div class="section-heading">
+                    <div class="section-icon items-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m12 3 9 5-9 5-9-5 9-5Z"></path>
+                            <path d="m3 12 9 5 9-5M3 16l9 5 9-5"></path>
+                        </svg>
+                    </div>
 
-        <!-- Items -->
-        <section class="card">
-
-            <div class="card-header">
-                <div>
-                    <h2>Invoice Items</h2>
-                    <p>Add or update products in this invoice.</p>
+                    <div class="section-heading-copy">
+                        <h2>Invoice Items</h2>
+                        <p>Add or update products, quantities, taxes, and discounts.</p>
+                    </div>
                 </div>
 
-                <button type="button" class="btn btn-secondary" (click)="addItem()">
-                    + Add Item
+                <button type="button" class="btn btn-secondary add-item-button" (click)="addItem()">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    Add Item
                 </button>
             </div>
 
-
             <div formArrayName="items" class="items-container">
-
                 <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="item-row">
+                    <div class="item-row-heading">
+                        <span class="item-number">{{ i + 1 }}</span>
+                        <span class="item-row-title">Item {{ i + 1 }}</span>
 
-                    <div class="item-number">
-                        {{ i + 1 }}
+                        <button type="button" class="remove-btn" (click)="removeItem(i)" [disabled]="items.length === 1"
+                            [attr.aria-label]="'Remove item ' + (i + 1)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"></path>
+                            </svg>
+                            Remove
+                        </button>
                     </div>
 
+                    <div class="item-fields">
+                        <div class="form-group product-field">
+                            <label [for]="'product-' + i">Product</label>
 
-                    <div class="form-group product-field">
-                        <label>Product</label>
+                            <select [id]="'product-' + i" formControlName="productId" (change)="onProductChange(i)">
+                                <option value="">Select product</option>
+                                <option *ngFor="let product of products" [value]="product.id">
+                                    {{ product.name }}
+                                </option>
+                            </select>
 
-                        <select formControlName="productId" (change)="onProductChange(i)">
+                            <small class="field-error" *ngIf="
+                  item.get('productId')?.touched &&
+                  item.get('productId')?.invalid
+                ">
+                                Select a product.
+                            </small>
+                        </div>
 
-                            <option value="">
-                                Select product
-                            </option>
+                        <div class="form-group">
+                            <label [for]="'sku-' + i">SKU</label>
+                            <input [id]="'sku-' + i" type="text" formControlName="sku" readonly
+                                placeholder="Auto-filled" />
+                        </div>
 
-                            <option *ngFor="let product of products" [value]="product.id">
-                                {{ product.name }}
-                            </option>
+                        <div class="form-group quantity-field">
+                            <label [for]="'quantity-' + i">Quantity</label>
+                            <input [id]="'quantity-' + i" type="number" min="1" step="1" formControlName="quantity"
+                                (input)="calculateItem(i)" />
 
-                        </select>
+                            <small class="field-error" *ngIf="
+                  item.get('quantity')?.touched &&
+                  item.get('quantity')?.invalid
+                ">
+                                Quantity must be at least 1.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label [for]="'price-' + i">Unit Price (₹)</label>
+                            <input [id]="'price-' + i" type="number" min="0" step="0.01" formControlName="unitPrice"
+                                (input)="calculateItem(i)" />
+                        </div>
+
+                        <div class="form-group tax-field">
+                            <label [for]="'tax-' + i">Tax (%)</label>
+                            <input [id]="'tax-' + i" type="number" min="0" step="0.01" formControlName="taxRate"
+                                (input)="calculateItem(i)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label [for]="'discount-' + i">Discount (₹)</label>
+                            <input [id]="'discount-' + i" type="number" min="0" step="0.01"
+                                formControlName="discountAmount" (input)="calculateItem(i)" />
+                        </div>
                     </div>
-
-
-                    <div class="form-group">
-                        <label>SKU</label>
-
-                        <input type="text" formControlName="sku" readonly>
-                    </div>
-
-
-                    <div class="form-group small-field">
-                        <label>Qty</label>
-
-                        <input type="number" min="1" formControlName="quantity" (input)="calculateItem(i)">
-                    </div>
-
-
-                    <div class="form-group">
-                        <label>Unit Price</label>
-
-                        <input type="number" min="0" step="0.01" formControlName="unitPrice" (input)="calculateItem(i)">
-                    </div>
-
-
-                    <div class="form-group small-field">
-                        <label>Tax %</label>
-
-                        <input type="number" min="0" step="0.01" formControlName="taxRate" (input)="calculateItem(i)">
-                    </div>
-
-
-                    <div class="form-group">
-                        <label>Discount</label>
-
-                        <input type="number" min="0" step="0.01" formControlName="discountAmount"
-                            (input)="calculateItem(i)">
-                    </div>
-
 
                     <div class="item-total">
-                        <span>Total</span>
+                        <span>Line Total</span>
                         <strong>
                             ₹{{ item.get('totalAmount')?.value | number:'1.2-2' }}
                         </strong>
                     </div>
-
-
-                    <button type="button" class="remove-btn" (click)="removeItem(i)" [disabled]="items.length === 1">
-                        Remove
-                    </button>
-
                 </div>
-
 
                 <div *ngIf="items.length === 0" class="empty-items">
+                    <span class="empty-items-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 7h16M4 12h16M4 17h10"></path>
+                        </svg>
+                    </span>
 
-                    <p>No items added.</p>
+                    <strong>No invoice items added</strong>
+                    <p>Add a product to start building this invoice.</p>
 
                     <button type="button" class="btn btn-secondary" (click)="addItem()">
-                        + Add First Item
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        Add First Item
                     </button>
+                </div>
+            </div>
+        </section>
 
+        <!-- Summary and Notes -->
+        <div class="edit-bottom-grid">
+
+            <section class="summary-card">
+                <div class="summary-heading">
+                    <div class="section-icon summary-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16M4 10h16M4 15h10"></path>
+                            <path d="M16 18h5M18.5 15.5v5"></path>
+                        </svg>
+                    </div>
+
+                    <div class="section-heading-copy">
+                        <h2>Invoice Summary</h2>
+                        <p>Updated totals for this invoice</p>
+                    </div>
                 </div>
 
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>₹{{ subtotal | number:'1.2-2' }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Tax</span>
+                    <strong>₹{{ taxAmount | number:'1.2-2' }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Discount</span>
+                    <strong class="discount-value">
+                        − ₹{{ discountAmount | number:'1.2-2' }}
+                    </strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row grand-total">
+                    <div class="grand-total-copy">
+                        <span>Total Amount</span>
+                        <small>Including applicable taxes and discounts</small>
+                    </div>
+                    <strong>₹{{ totalAmount | number:'1.2-2' }}</strong>
+                </div>
+            </section>
+
+            <div class="edit-side-column">
+
+                <section class="card notes-card">
+                    <div class="card-header">
+                        <div class="section-heading">
+                            <div class="section-icon notes-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path>
+                                    <path d="M14 2v6h6M8 13h8M8 17h6"></path>
+                                </svg>
+                            </div>
+
+                            <div class="section-heading-copy">
+                                <h2>Notes</h2>
+                                <p>Additional information for this invoice</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notes-field">
+                        <textarea id="invoiceNotes" formControlName="notes" rows="5"
+                            placeholder="Enter invoice notes..."></textarea>
+                    </div>
+                </section>
+
+                <footer class="form-actions">
+                    <button type="button" class="btn btn-outline cancel-button" (click)="cancel()"
+                        [disabled]="isSaving">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary save-button" [disabled]="isSaving">
+                        <svg *ngIf="!isSaving" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11Z"></path>
+                            <path d="M17 21v-8H7v8M7 3v5h8"></path>
+                        </svg>
+                        <span>{{ isSaving ? 'Saving...' : 'Save Changes' }}</span>
+                    </button>
+                </footer>
             </div>
-
-        </section>
-
-
-        <!-- Summary -->
-        <section class="summary-card">
-
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <strong>
-                    ₹{{ subtotal | number:'1.2-2' }}
-                </strong>
-            </div>
-
-            <div class="summary-row">
-                <span>Tax</span>
-                <strong>
-                    ₹{{ taxAmount | number:'1.2-2' }}
-                </strong>
-            </div>
-
-            <div class="summary-row">
-                <span>Discount</span>
-                <strong>
-                    ₹{{ discountAmount | number:'1.2-2' }}
-                </strong>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="summary-row grand-total">
-                <span>Total</span>
-                <strong>
-                    ₹{{ totalAmount | number:'1.2-2' }}
-                </strong>
-            </div>
-
-        </section>
-
-
-        <!-- Notes -->
-        <section class="card">
-
-            <div class="card-header">
-                <h2>Notes</h2>
-            </div>
-
-            <div class="notes-field">
-                <textarea formControlName="notes" rows="4" placeholder="Enter invoice notes...">
-        </textarea>
-            </div>
-
-        </section>
-
-
-        <!-- Error -->
-        <div *ngIf="errorMessage" class="error-message">
-            {{ errorMessage }}
         </div>
-
-
-        <!-- Actions -->
-        <div class="form-actions">
-
-            <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="isSaving">
-                Cancel
-            </button>
-
-            <button type="submit" class="btn btn-primary" [disabled]="isSaving">
-
-                {{ isSaving ? 'Saving...' : 'Save Changes' }}
-
-            </button>
-
-        </div>
-
     </form>
-
 </div>

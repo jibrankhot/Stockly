@@ -1,123 +1,77 @@
 <div class="print-page">
-
     <!-- Screen-only toolbar -->
     <div class="print-toolbar no-print">
-
         <a [routerLink]="['/invoices', invoiceId]" class="btn btn-outline">
+            <span aria-hidden="true">←</span>
             Back to Invoice
         </a>
 
-        <button type="button" class="btn btn-primary" (click)="printInvoice()">
+        <button type="button" class="btn btn-primary" [disabled]="isLoading || !invoice || !!errorMessage"
+            (click)="printInvoice()">
+            <span aria-hidden="true">⎙</span>
             Print Invoice
         </button>
-
     </div>
 
-
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-state no-print">
-        Loading invoice...
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="state-card loading-state no-print" role="status" aria-live="polite">
+        Loading invoice details...
     </div>
 
-
-    <!-- Error -->
-    <div *ngIf="!isLoading && errorMessage" class="error-state no-print">
-
+    <!-- Error state -->
+    <div *ngIf="!isLoading && errorMessage" class="state-card error-state no-print" role="alert">
+        <h2>Unable to display invoice</h2>
         <p>{{ errorMessage }}</p>
-
         <a [routerLink]="['/invoices']" class="btn btn-outline">
             Back to Invoices
         </a>
-
     </div>
 
-
-    <!-- Printable Invoice -->
-    <main *ngIf="!isLoading && invoice" class="invoice">
-
-        <!-- Header -->
+    <!-- Invoice report -->
+    <main *ngIf="!isLoading && invoice && !errorMessage" class="invoice" aria-label="Invoice report">
         <header class="invoice-header">
-
             <div class="company-section">
-
                 <h1>Stockly</h1>
-
-                <p>
-                    Inventory & Billing Management
-                </p>
-
+                <p>Inventory &amp; Billing Management</p>
             </div>
 
             <div class="invoice-title">
-
                 <h2>INVOICE</h2>
-
-                <div class="invoice-number">
-                    {{ invoice.invoiceNumber }}
-                </div>
-
+                <p class="invoice-number">{{ invoice.invoiceNumber }}</p>
             </div>
-
         </header>
 
-
-        <!-- Invoice Meta -->
         <section class="meta-section">
-
             <div class="customer-section">
-
                 <h3>Bill To</h3>
-
-                <strong>
-                    {{ invoice.customerName }}
-                </strong>
-
-                <p>
-                    Customer ID:
-                    {{ invoice.customerId }}
+                <p class="customer-name">{{ invoice.customerName }}</p>
+                <p class="customer-id">
+                    Customer ID: {{ invoice.customerId }}
                 </p>
-
             </div>
 
-
             <div class="date-section">
-
                 <div class="date-row">
                     <span>Invoice Date</span>
-
-                    <strong>
-                        {{ invoice.invoiceDate | date:'dd MMM yyyy' }}
-                    </strong>
+                    <strong>{{ invoice.invoiceDate | date:'dd MMM yyyy' }}</strong>
                 </div>
 
                 <div *ngIf="invoice.dueDate" class="date-row">
-
                     <span>Due Date</span>
-
-                    <strong>
-                        {{ invoice.dueDate | date:'dd MMM yyyy' }}
-                    </strong>
-
+                    <strong>{{ invoice.dueDate | date:'dd MMM yyyy' }}</strong>
                 </div>
 
                 <div class="date-row">
                     <span>Status</span>
-
-                    <strong>
+                    <strong class="status-value">
                         {{ getStatusLabel(invoice.status) }}
                     </strong>
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- Items -->
-        <section class="items-section">
-
+        <section class="items-section" aria-label="Invoice items">
             <table>
-
                 <thead>
                     <tr>
                         <th class="number-column">#</th>
@@ -132,44 +86,23 @@
                 </thead>
 
                 <tbody>
-
-                    <tr *ngFor="
-              let item of invoiceItems;
-              let i = index
-            ">
-
-                        <td class="number-column">
-                            {{ i + 1 }}
-                        </td>
-
-                        <td>
-                            {{ item.productName }}
-                        </td>
-
-                        <td>
-                            {{ item.sku }}
-                        </td>
-
-                        <td class="right">
-                            {{ item.quantity }}
-                        </td>
-
+                    <tr *ngFor="let item of invoiceItems; let i = index">
+                        <td class="number-column">{{ i + 1 }}</td>
+                        <td class="product-name">{{ item.productName }}</td>
+                        <td>{{ item.sku }}</td>
+                        <td class="right">{{ item.quantity }}</td>
                         <td class="right">
                             ₹{{ item.unitPrice | number:'1.2-2' }}
                         </td>
-
                         <td class="right">
                             ₹{{ item.taxAmount | number:'1.2-2' }}
                         </td>
-
                         <td class="right">
                             ₹{{ item.discountAmount | number:'1.2-2' }}
                         </td>
-
                         <td class="right amount">
                             ₹{{ item.totalAmount | number:'1.2-2' }}
                         </td>
-
                     </tr>
 
                     <tr *ngIf="invoiceItems.length === 0">
@@ -177,84 +110,52 @@
                             No invoice items found.
                         </td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </section>
 
-
-        <!-- Bottom Section -->
         <section class="bottom-section">
-
-            <!-- Notes -->
             <div *ngIf="invoice.notes" class="notes-section">
-
                 <h3>Notes</h3>
-
-                <p>
-                    {{ invoice.notes }}
-                </p>
-
+                <p>{{ invoice.notes }}</p>
             </div>
 
-
-            <!-- Totals -->
             <div class="totals-section">
-
                 <div class="total-row">
                     <span>Subtotal</span>
-
-                    <span>
+                    <strong>
                         ₹{{ invoice.subtotal | number:'1.2-2' }}
-                    </span>
+                    </strong>
                 </div>
 
                 <div class="total-row">
                     <span>Tax</span>
-
-                    <span>
+                    <strong>
                         ₹{{ invoice.taxAmount | number:'1.2-2' }}
-                    </span>
+                    </strong>
                 </div>
 
                 <div class="total-row">
                     <span>Discount</span>
-
-                    <span>
+                    <strong>
                         ₹{{ invoice.discountAmount | number:'1.2-2' }}
-                    </span>
+                    </strong>
                 </div>
 
                 <div class="total-divider"></div>
 
                 <div class="total-row grand-total">
                     <strong>Total</strong>
-
                     <strong>
                         ₹{{ invoice.totalAmount | number:'1.2-2' }}
                     </strong>
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- Footer -->
         <footer class="invoice-footer">
-
-            <p>
-                Thank you for your business.
-            </p>
-
-            <p>
-                Generated by Stockly
-            </p>
-
+            <p>Thank you for your business.</p>
+            <p>Generated by Stockly</p>
         </footer>
-
     </main>
-
 </div>

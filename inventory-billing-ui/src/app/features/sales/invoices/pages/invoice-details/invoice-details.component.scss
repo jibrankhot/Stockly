@@ -1184,3 +1184,43 @@ tbody tr:last-child td {
     scroll-behavior: auto !important;
   }
 }
+
+/* Print buttons: consistent styling for button elements */
+.header-actions button.btn,
+.action-group button.btn {
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.header-actions button.btn:disabled,
+.action-group button.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.header-actions button.btn:focus-visible,
+.action-group button.btn:focus-visible {
+  outline: 3px solid var(--details-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Keep the print button aligned with the other header actions */
+.header-actions > .btn {
+  flex-shrink: 0;
+}
+
+/* Make buttons fit their containers on mobile */
+@media (max-width: 760px) {
+  .header-actions > button.btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .action-group > button.btn {
+    width: 100%;
+    min-width: 0;
+  }
+}

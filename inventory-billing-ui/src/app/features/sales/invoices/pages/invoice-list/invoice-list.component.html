@@ -1,434 +1,537 @@
 <div class="invoice-list-page">
 
     <!-- Page Header -->
-    <div class="page-header">
+    <header class="page-header">
+        <div class="page-header-content">
+            <div class="page-heading">
+                <span class="page-eyebrow">
+                    <span class="eyebrow-dot" aria-hidden="true"></span>
+                    SALES MANAGEMENT
+                </span>
 
-        <div>
-            <h1>Invoices</h1>
+                <h1>Invoices</h1>
 
-            <p>
-                Manage customer invoices and billing.
-            </p>
+                <p class="page-description">
+                    Manage customer invoices, billing, and payment status.
+                </p>
+            </div>
+
+            <nav class="header-actions" aria-label="Invoice actions">
+                <a routerLink="/invoices/create" class="btn btn-primary">
+                    <span class="btn-icon" aria-hidden="true">+</span>
+                    Create Invoice
+                </a>
+            </nav>
         </div>
-
-        <a
-            routerLink="/invoices/create"
-            class="primary-button"
-        >
-            + Create Invoice
-        </a>
-
-    </div>
-
+    </header>
 
     <!-- Summary Cards -->
-    <div class="summary-cards">
+    <section class="summary-grid" aria-label="Invoice summary">
+        <article class="summary-card summary-card-total">
+            <div class="summary-icon icon-total" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3.75h7l5 5V20a.75.75 0 0 1-.75.75h-11.5A.75.75 0 0 1 6 20V4.5a.75.75 0 0 1 .75-.75Z"
+                        stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="M14 3.75v5h5M9 13h6M9 16.5h6" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
 
-        <div class="summary-card">
-
-            <div class="summary-card-content">
-                <span class="summary-label">
-                    Total Invoices
+            <div class="summary-content">
+                <span class="summary-label">Total Invoices</span>
+                <strong class="summary-value">
+                    {{ totalInvoices | number }}
+                </strong>
+                <span class="summary-description">
+                    All recorded invoices
                 </span>
+            </div>
+        </article>
 
-                <strong>
+        <article class="summary-card summary-card-draft">
+            <div class="summary-icon icon-draft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="m14.5 5.5 4 4M4 20l4.2-.9L19 8.3a2.12 2.12 0 0 0-3-3L5.2 16.1 4 20Z" stroke="currentColor"
+                        stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <div class="summary-content">
+                <span class="summary-label">Draft</span>
+                <strong class="summary-value">
+                    {{ draftInvoices | number }}
+                </strong>
+                <span class="summary-description">
+                    Work in progress
+                </span>
+            </div>
+        </article>
+
+        <article class="summary-card summary-card-issued">
+            <div class="summary-icon icon-issued" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3.75h7l5 5V20a.75.75 0 0 1-.75.75h-11.5A.75.75 0 0 1 6 20V4.5a.75.75 0 0 1 .75-.75Z"
+                        stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                    <path d="M14 3.75v5h5M9 13h6M9 16.5h4" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <div class="summary-content">
+                <span class="summary-label">Issued</span>
+                <strong class="summary-value">
+                    {{ issuedInvoices | number }}
+                </strong>
+                <span class="summary-description">
+                    Invoices sent
+                </span>
+            </div>
+        </article>
+
+        <article class="summary-card summary-card-paid">
+            <div class="summary-icon icon-paid" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="8.75" stroke="currentColor" stroke-width="1.6" />
+                    <path d="m8.25 12.25 2.5 2.5 5-5.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <div class="summary-content">
+                <span class="summary-label">Paid</span>
+                <strong class="summary-value">
+                    {{ paidInvoices | number }}
+                </strong>
+                <span class="summary-description">
+                    Fully paid invoices
+                </span>
+            </div>
+        </article>
+
+        <article class="summary-card summary-card-value">
+            <div class="summary-icon icon-value" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M16.5 7.5h-6a3 3 0 0 0 0 6h3a3 3 0 0 1 0 6h-6M12 4v16" stroke="currentColor"
+                        stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+
+            <div class="summary-content">
+                <span class="summary-label">Invoice Value</span>
+                <strong class="summary-value summary-amount">
+                    {{ totalInvoiceAmount | currency:'INR':'symbol':'1.2-2' }}
+                </strong>
+                <span class="summary-description">
+                    Combined invoice total
+                </span>
+            </div>
+        </article>
+    </section>
+
+    <!-- Search and Filters -->
+    <section class="filter-card" aria-label="Search and filter invoices">
+        <div class="section-heading filter-heading">
+            <div>
+                <h2>Invoice Search</h2>
+                <p>
+                    Find invoices by invoice number, customer, or payment status.
+                </p>
+            </div>
+
+            <span class="result-badge" aria-live="polite">
+                {{ filteredInvoices.length }}
+                {{ filteredInvoices.length === 1 ? 'result' : 'results' }}
+            </span>
+        </div>
+
+        <div class="filter-controls">
+
+            <!-- Search -->
+            <div class="filter-field search-field">
+                <label for="invoice-search">
+                    Search invoices
+                </label>
+
+                <div class="input-with-icon">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7" />
+                        <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                    </svg>
+
+                    <input id="invoice-search" name="invoiceSearch" type="search" [(ngModel)]="searchTerm"
+                        (ngModelChange)="applyFilters()" placeholder="Search invoice number or customer..."
+                        autocomplete="off" />
+                </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="filter-field status-field">
+                <label for="invoice-status">
+                    Payment status
+                </label>
+
+                <select id="invoice-status" name="invoiceStatus" [(ngModel)]="selectedStatus"
+                    (ngModelChange)="applyFilters()">
+                    <option value="all">All statuses</option>
+                    <option value="draft">Draft</option>
+                    <option value="issued">Issued</option>
+                    <option value="partially-paid">Partially Paid</option>
+                    <option value="paid">Paid</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+
+            <!-- Filter Actions -->
+            <div class="filter-actions">
+                <button type="button" class="btn btn-clear" (click)="clearFilters()" [disabled]="!hasActiveFilters()">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4.5 7h15M9 7V4.5h6V7m-8 0 .8 12h8.4L17 7M10 10.5v5M14 10.5v5" stroke="currentColor"
+                            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Clear Filters
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-refresh" (click)="refreshInvoices()"
+                    [disabled]="isLoading">
+                    <svg class="refresh-icon" [class.is-spinning]="isLoading" viewBox="0 0 24 24" fill="none"
+                        aria-hidden="true">
+                        <path d="M20 11a8 8 0 0 0-14.7-3L4 10M4 5v5h5M4 13a8 8 0 0 0 14.7 3L20 14m0 5v-5h-5"
+                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+
+                    {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-summary" aria-live="polite">
+            Showing {{ filteredInvoices.length }}
+            matching
+            {{ filteredInvoices.length === 1 ? 'invoice' : 'invoices' }}
+        </div>
+    </section>
+
+    <!-- Invoice Directory -->
+    <section class="invoice-directory">
+
+        <div class="directory-header">
+            <div>
+                <h2>Invoice Directory</h2>
+                <p>
+                    Showing {{ filteredInvoices.length }} of
                     {{ totalInvoices }}
-                </strong>
+                    {{ totalInvoices === 1 ? 'invoice' : 'invoices' }}
+                </p>
             </div>
 
+            <span class="directory-count">
+                {{ filteredInvoices.length }}
+                {{ filteredInvoices.length === 1 ? 'result' : 'results' }}
+            </span>
         </div>
 
+        <!-- Loading State -->
+        <section *ngIf="isLoading" class="state-container" aria-live="polite">
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <h3>Loading invoices</h3>
+            <p>Please wait while we retrieve your invoice records.</p>
+        </section>
 
-        <div class="summary-card">
+        <!-- Error State -->
+        <section *ngIf="!isLoading && errorMessage" class="state-container state-error" role="alert">
+            <div class="state-icon" aria-hidden="true">!</div>
+            <h3>Unable to load invoices</h3>
+            <p>{{ errorMessage }}</p>
 
-            <div class="summary-card-content">
-                <span class="summary-label">
-                    Draft
-                </span>
+            <button type="button" class="btn btn-primary" (click)="refreshInvoices()">
+                Try Again
+            </button>
+        </section>
 
-                <strong>
-                    {{ draftInvoices }}
-                </strong>
+        <!-- Empty State -->
+        <section *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredInvoices.length === 0
+      " class="state-container empty-state">
+            <div class="state-icon empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3.75h7l5 5V20a.75.75 0 0 1-.75.75h-11.5A.75.75 0 0 1 6 20V4.5a.75.75 0 0 1 .75-.75Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                    <path d="M14 3.75v5h5M9 13h6M9 16.5h6" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                </svg>
             </div>
 
-        </div>
+            <h3>
+                {{ hasActiveFilters() ? 'No matching invoices' : 'No invoices yet' }}
+            </h3>
 
+            <p>
+                {{
+                hasActiveFilters()
+                ? 'Try changing your search or status filters.'
+                : 'Create your first invoice to get started.'
+                }}
+            </p>
 
-        <div class="summary-card">
-
-            <div class="summary-card-content">
-                <span class="summary-label">
-                    Issued
-                </span>
-
-                <strong>
-                    {{ issuedInvoices }}
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-card-content">
-                <span class="summary-label">
-                    Paid
-                </span>
-
-                <strong>
-                    {{ paidInvoices }}
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-card-content">
-                <span class="summary-label">
-                    Invoice Value
-                </span>
-
-                <strong>
-                    ₹{{ totalInvoiceAmount | number:'1.2-2' }}
-                </strong>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Filters -->
-    <div class="filters-card">
-
-        <div class="search-box">
-
-            <label for="invoiceSearch">
-                Search
-            </label>
-
-            <input
-                id="invoiceSearch"
-                type="text"
-                placeholder="Search invoice number or customer..."
-                [value]="searchTerm"
-                (input)="onSearchChange($event)"
-            >
-
-        </div>
-
-
-        <div class="status-filter">
-
-            <label for="statusFilter">
-                Status
-            </label>
-
-            <select
-                id="statusFilter"
-                [value]="selectedStatus"
-                (change)="onStatusChange($event)"
-            >
-
-                <option value="all">
-                    All Statuses
-                </option>
-
-                <option value="draft">
-                    Draft
-                </option>
-
-                <option value="issued">
-                    Issued
-                </option>
-
-                <option value="partially-paid">
-                    Partially Paid
-                </option>
-
-                <option value="paid">
-                    Paid
-                </option>
-
-                <option value="cancelled">
-                    Cancelled
-                </option>
-
-            </select>
-
-        </div>
-
-
-        @if (searchTerm || selectedStatus !== 'all') {
-
-            <button
-                type="button"
-                class="clear-button"
-                (click)="clearFilters()"
-            >
+            <button *ngIf="hasActiveFilters()" type="button" class="btn btn-secondary" (click)="clearFilters()">
                 Clear Filters
             </button>
 
-        }
+            <a *ngIf="!hasActiveFilters()" routerLink="/invoices/create" class="btn btn-primary">
+                <span class="btn-icon" aria-hidden="true">+</span>
+                Create Invoice
+            </a>
+        </section>
 
-    </div>
+        <!-- Desktop Invoice Table -->
+        <div class="table-wrapper desktop-invoice-table" *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredInvoices.length > 0
+      ">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="invoice-column">Invoice</th>
+                        <th scope="col" class="customer-id-column">Customer ID</th>
+                        <th scope="col" class="customer-column">Customer</th>
+                        <th scope="col">Invoice Date</th>
+                        <th scope="col">Due Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="amount-column">Total</th>
+                        <th scope="col" class="actions-column">Actions</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+                    <tr *ngFor="
+              let invoice of paginatedInvoices;
+              trackBy: trackByInvoiceId
+            ">
+                        <td class="invoice-column">
+                            <span class="invoice-number">
+                                {{ invoice.invoiceNumber || '—' }}
+                            </span>
+                        </td>
 
-    <!-- Error -->
-    @if (errorMessage) {
+                        <td class="customer-id-column">
+                            <span *ngIf="invoice.customerId != null; else noCustomerId">
+                                {{ invoice.customerId }}
+                            </span>
 
-        <div class="error-banner">
-            {{ errorMessage }}
+                            <ng-template #noCustomerId>
+                                <span class="customer-id-empty">—</span>
+                            </ng-template>
+                        </td>
 
-            <button
-                type="button"
-                (click)="loadInvoices()"
-            >
-                Retry
-            </button>
+                        <td class="customer-column">
+                            <span class="customer-name">
+                                {{ invoice.customerName || '—' }}
+                            </span>
+                        </td>
+
+                        <td class="date-cell">
+                            {{ invoice.invoiceDate | date:'dd MMM yyyy' }}
+                        </td>
+
+                        <td class="date-cell">
+                            {{
+                            invoice.dueDate
+                            ? (invoice.dueDate | date:'dd MMM yyyy')
+                            : '—'
+                            }}
+                        </td>
+
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                {{ getStatusLabel(invoice.status) }}
+                            </span>
+                        </td>
+
+                        <td class="amount-cell">
+                            {{ invoice.totalAmount | currency:'INR':'symbol':'1.2-2' }}
+                        </td>
+
+                        <td class="actions-column">
+                            <div class="row-actions">
+
+                                <button type="button" class="icon-action action-view" title="View invoice"
+                                    [attr.aria-label]="'View invoice ' + invoice.invoiceNumber"
+                                    (click)="viewInvoice(invoice)">
+                                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+                                            stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                        <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.7" />
+                                    </svg>
+                                    <span>View</span>
+                                </button>
+
+                                <button type="button" class="icon-action action-edit" title="Edit invoice"
+                                    [attr.aria-label]="'Edit invoice ' + invoice.invoiceNumber"
+                                    (click)="editInvoice(invoice)">
+                                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m14.5 5.5 4 4M4 20l4.2-.9L19 8.3a2.12 2.12 0 0 0-3-3L5.2 16.1 4 20Z"
+                                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button type="button" class="icon-action action-delete" title="Delete invoice"
+                                    [attr.aria-label]="'Delete invoice ' + invoice.invoiceNumber"
+                                    (click)="deleteInvoice(invoice)">
+                                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M4.5 7h15M9 7V4.5h6V7m-8 0 .8 12h8.4L17 7M10 10.5v5M14 10.5v5"
+                                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-    }
+        <!-- Mobile Invoice Cards -->
+        <div class="mobile-invoice-list" *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredInvoices.length > 0
+      ">
+            <article class="mobile-invoice-card" *ngFor="
+          let invoice of paginatedInvoices;
+          trackBy: trackByInvoiceId
+        ">
+                <div class="mobile-card-top">
+                    <div>
+                        <span class="mobile-invoice-label">Invoice</span>
+                        <strong class="invoice-number">
+                            {{ invoice.invoiceNumber || '—' }}
+                        </strong>
+                    </div>
 
+                    <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        {{ getStatusLabel(invoice.status) }}
+                    </span>
+                </div>
 
-    <!-- Loading -->
-    @if (isLoading) {
+                <div class="mobile-customer">
+                    <span class="mobile-field-label">Customer</span>
+                    <strong>{{ invoice.customerName || '—' }}</strong>
 
-        <div class="loading-state">
+                    <span class="customer-reference" *ngIf="invoice.customerId != null">
+                        Customer #{{ invoice.customerId }}
+                    </span>
+                </div>
 
-            <div class="spinner"></div>
+                <div class="mobile-detail-grid">
+                    <div>
+                        <span class="mobile-field-label">Invoice Date</span>
+                        <span>
+                            {{ invoice.invoiceDate | date:'dd MMM yyyy' }}
+                        </span>
+                    </div>
 
-            <p>
-                Loading invoices...
-            </p>
+                    <div>
+                        <span class="mobile-field-label">Due Date</span>
+                        <span>
+                            {{
+                            invoice.dueDate
+                            ? (invoice.dueDate | date:'dd MMM yyyy')
+                            : '—'
+                            }}
+                        </span>
+                    </div>
+                </div>
 
+                <div class="mobile-card-bottom">
+                    <div class="mobile-total">
+                        <span class="mobile-field-label">Total Amount</span>
+                        <strong class="amount-cell">
+                            {{ invoice.totalAmount | currency:'INR':'symbol':'1.2-2' }}
+                        </strong>
+                    </div>
+
+                    <div class="row-actions mobile-row-actions mobile-card-actions">
+
+                        <button type="button" class="mobile-action-button action-view"
+                            [attr.aria-label]="'View invoice ' + invoice.invoiceNumber" (click)="viewInvoice(invoice)">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor"
+                                    stroke-width="1.7" stroke-linejoin="round" />
+                                <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.7" />
+                            </svg>
+                            <span>View</span>
+                        </button>
+
+                        <button type="button" class="mobile-action-button action-edit"
+                            [attr.aria-label]="'Edit invoice ' + invoice.invoiceNumber" (click)="editInvoice(invoice)">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m14.5 5.5 4 4M4 20l4.2-.9L19 8.3a2.12 2.12 0 0 0-3-3L5.2 16.1 4 20Z"
+                                    stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <span>Edit</span>
+                        </button>
+
+                        <button type="button" class="mobile-action-button action-delete"
+                            [attr.aria-label]="'Delete invoice ' + invoice.invoiceNumber"
+                            (click)="deleteInvoice(invoice)">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M4.5 7h15M9 7V4.5h6V7m-8 0 .8 12h8.4L17 7M10 10.5v5M14 10.5v5"
+                                    stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <span>Delete</span>
+                        </button>
+
+                    </div>
+                </div>
+            </article>
         </div>
 
-    } @else {
+        <!-- Pagination Footer -->
+        <footer class="pagination-bar" *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredInvoices.length > 0
+      ">
+            <div class="pagination-size">
+                <label for="invoice-page-size">Rows per page</label>
 
-        <!-- Invoice Table -->
-        @if (filteredInvoices.length > 0) {
-
-            <div class="table-card">
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-                                <th>Invoice</th>
-                                <th>Customer</th>
-                                <th>Invoice Date</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
-                                <th class="amount-column">
-                                    Total
-                                </th>
-                                <th class="actions-column">
-                                    Actions
-                                </th>
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            @for (
-                                invoice of filteredInvoices;
-                                track invoice.id
-                            ) {
-
-                                <tr>
-
-                                    <!-- Invoice -->
-                                    <td>
-
-                                        <a
-                                            [routerLink]="[
-                                                '/invoices',
-                                                invoice.id
-                                            ]"
-                                            class="invoice-number"
-                                        >
-                                            {{ invoice.invoiceNumber }}
-                                        </a>
-
-                                    </td>
-
-
-                                    <!-- Customer -->
-                                    <td>
-
-                                        <div class="customer-info">
-                                            <strong>
-                                                {{ invoice.customerName }}
-                                            </strong>
-
-                                            <span>
-                                                Customer #{{ invoice.customerId }}
-                                            </span>
-                                        </div>
-
-                                    </td>
-
-
-                                    <!-- Invoice Date -->
-                                    <td>
-                                        {{ invoice.invoiceDate | date:'dd MMM yyyy' }}
-                                    </td>
-
-
-                                    <!-- Due Date -->
-                                    <td>
-
-                                        @if (invoice.dueDate) {
-                                            {{ invoice.dueDate | date:'dd MMM yyyy' }}
-                                        } @else {
-                                            <span class="not-available">
-                                                —
-                                            </span>
-                                        }
-
-                                    </td>
-
-
-                                    <!-- Status -->
-                                    <td>
-
-                                        <span
-                                            class="status-badge"
-                                            [ngClass]="
-                                                getStatusClass(invoice.status)
-                                            "
-                                        >
-                                            {{ getStatusLabel(invoice.status) }}
-                                        </span>
-
-                                    </td>
-
-
-                                    <!-- Total -->
-                                    <td class="amount-column">
-
-                                        <strong>
-                                            ₹{{ invoice.totalAmount | number:'1.2-2' }}
-                                        </strong>
-
-                                    </td>
-
-
-                                    <!-- Actions -->
-                                    <td class="actions-column">
-
-                                        <div class="action-buttons">
-
-                                            <a
-                                                [routerLink]="[
-                                                    '/invoices',
-                                                    invoice.id
-                                                ]"
-                                                class="action-button view"
-                                                title="View invoice"
-                                            >
-                                                View
-                                            </a>
-
-                                            <a
-                                                [routerLink]="[
-                                                    '/invoices',
-                                                    invoice.id,
-                                                    'edit'
-                                                ]"
-                                                class="action-button edit"
-                                                title="Edit invoice"
-                                            >
-                                                Edit
-                                            </a>
-
-                                            <button
-                                                type="button"
-                                                class="action-button delete"
-                                                title="Delete invoice"
-                                                (click)="deleteInvoice(invoice)"
-                                            >
-                                                Delete
-                                            </button>
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
+                <select id="invoice-page-size" name="invoicePageSize" [ngModel]="pageSize"
+                    (ngModelChange)="changePageSize($event)">
+                    <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                        {{ size }}
+                    </option>
+                </select>
             </div>
 
-        } @else {
+            <nav class="pagination-controls" aria-label="Invoice pagination">
+                <button type="button" class="pagination-btn pagination-arrow" aria-label="Previous page"
+                    [disabled]="currentPage === 1" (click)="previousPage()">
+                    ‹
+                </button>
 
-            <!-- Empty State -->
-            <div class="empty-state">
+                <button *ngFor="let page of pageNumbers" type="button" class="pagination-btn"
+                    [class.active]="page === currentPage" [attr.aria-current]="page === currentPage ? 'page' : null"
+                    [attr.aria-label]="'Page ' + page" (click)="goToPage(page)">
+                    {{ page }}
+                </button>
 
-                <div class="empty-icon">
-                    $
-                </div>
+                <button type="button" class="pagination-btn pagination-arrow" aria-label="Next page"
+                    [disabled]="currentPage === totalPages" (click)="nextPage()">
+                    ›
+                </button>
+            </nav>
+        </footer>
 
-                <h2>
-                    @if (invoices.length === 0) {
-                        No invoices yet
-                    } @else {
-                        No invoices found
-                    }
-                </h2>
-
-                <p>
-
-                    @if (invoices.length === 0) {
-                        Create your first invoice to get started.
-                    } @else {
-                        Try changing your search or filter criteria.
-                    }
-
-                </p>
-
-
-                @if (invoices.length === 0) {
-
-                    <a
-                        routerLink="/invoices/create"
-                        class="primary-button"
-                    >
-                        + Create Invoice
-                    </a>
-
-                } @else {
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        (click)="clearFilters()"
-                    >
-                        Clear Filters
-                    </button>
-
-                }
-
-            </div>
-
-        }
-
-    }
-
+    </section>
 </div>

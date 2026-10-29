@@ -27,14 +27,15 @@
                 Back to Invoices
             </a>
 
-            <a *ngIf="invoice" [routerLink]="['/invoices', invoice.id, 'print']" class="btn btn-secondary">
+            <button *ngIf="invoice" type="button" class="btn btn-secondary" [disabled]="isLoading || !!errorMessage"
+                (click)="openPrintPreview()">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M6 9V2h12v7"></path>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                     <path d="M6 14h12v8H6z"></path>
                 </svg>
                 Print
-            </a>
+            </button>
 
             <a *ngIf="invoice" [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -255,10 +256,10 @@
             </div>
         </section>
 
-        <!-- Lower Content: Summary Left, Notes and Actions Right -->
+        <!-- Summary, Notes and Actions -->
         <div class="details-bottom-grid">
 
-            <!-- Invoice Summary: Left Column -->
+            <!-- Invoice Summary -->
             <section class="summary-card">
                 <div class="summary-heading">
                     <div class="section-icon summary-icon" aria-hidden="true">
@@ -303,7 +304,7 @@
                 </div>
             </section>
 
-            <!-- Notes and Actions: Right Column -->
+            <!-- Notes and Actions -->
             <div class="details-side-column">
 
                 <!-- Notes -->
@@ -339,9 +340,10 @@
                     </a>
 
                     <div class="action-group">
-                        <a [routerLink]="['/invoices', invoice.id, 'print']" class="btn btn-secondary">
+                        <button type="button" class="btn btn-secondary" [disabled]="isLoading || !!errorMessage"
+                            (click)="openPrintPreview()">
                             Print Invoice
-                        </a>
+                        </button>
 
                         <a [routerLink]="['/invoices', invoice.id, 'edit']" class="btn btn-primary">
                             Edit Invoice

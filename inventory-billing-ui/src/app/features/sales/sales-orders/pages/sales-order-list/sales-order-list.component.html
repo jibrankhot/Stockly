@@ -10,9 +10,7 @@
       </p>
     </div>
 
-    <a
-      routerLink="/sales-orders/create"
-      class="btn btn-primary">
+    <a routerLink="/sales-orders/create" class="btn btn-primary">
       + Create Sales Order
     </a>
 
@@ -44,19 +42,14 @@
     <div class="search-wrapper">
       <label>Search</label>
 
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (input)="applyFilters()"
+      <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()"
         placeholder="Search order number or customer..." />
     </div>
 
     <div class="filter-wrapper">
       <label>Status</label>
 
-      <select
-        [(ngModel)]="selectedStatus"
-        (change)="applyFilters()">
+      <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
 
         <option value="">All Statuses</option>
         <option value="draft">Draft</option>
@@ -68,10 +61,7 @@
       </select>
     </div>
 
-    <button
-      type="button"
-      class="btn btn-outline"
-      (click)="clearFilters()">
+    <button type="button" class="btn btn-outline" (click)="clearFilters()">
       Clear
     </button>
 
@@ -83,34 +73,25 @@
   </div>
 
 
-  <div
-    *ngIf="!isLoading && errorMessage"
-    class="error-message">
+  <div *ngIf="!isLoading && errorMessage" class="error-message">
 
     {{ errorMessage }}
 
-    <button
-      type="button"
-      class="btn btn-outline"
-      (click)="loadSalesOrders()">
+    <button type="button" class="btn btn-outline" (click)="loadSalesOrders()">
       Retry
     </button>
 
   </div>
 
 
-  <div
-    *ngIf="!isLoading && !errorMessage && filteredOrders.length === 0"
-    class="state-card">
+  <div *ngIf="!isLoading && !errorMessage && filteredOrders.length === 0" class="state-card">
 
     No sales orders found.
 
   </div>
 
 
-  <div
-    *ngIf="!isLoading && !errorMessage && filteredOrders.length > 0"
-    class="table-card">
+  <div *ngIf="!isLoading && !errorMessage && filteredOrders.length > 0" class="table-card">
 
     <div class="table-wrapper">
 
@@ -146,14 +127,12 @@
 
             <td>
               {{ order.expectedDeliveryDate
-                ? (order.expectedDeliveryDate | date:'dd MMM yyyy')
-                : '—' }}
+              ? (order.expectedDeliveryDate | date:'dd MMM yyyy')
+              : '—' }}
             </td>
 
             <td>
-              <span
-                class="status-badge"
-                [ngClass]="getStatusClass(order.status)">
+              <span class="status-badge" [ngClass]="getStatusClass(order.status)">
                 {{ getStatusLabel(order.status) }}
               </span>
             </td>
@@ -165,9 +144,7 @@
             </td>
 
             <td>
-              <a
-                [routerLink]="['/sales-orders', order.id]"
-                class="view-link">
+              <a [routerLink]="['/sales-orders', order.id]" class="view-link">
                 View
               </a>
             </td>

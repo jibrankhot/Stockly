@@ -1,7 +1,7 @@
 
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Invoice } from '../../../../../shared/models/invoice';
 import { InvoiceItem } from '../../../../../shared/models/invoice-item';
@@ -27,8 +27,9 @@ export class InvoiceDetailsComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private route: ActivatedRoute,
-    private invoiceService: InvoiceService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly invoiceService: InvoiceService
   ) { }
 
   ngOnInit(): void {
@@ -51,14 +52,13 @@ export class InvoiceDetailsComponent implements OnInit {
 
     this.invoiceService.getInvoiceById(id).subscribe({
       next: (invoice) => {
-        this.invoice = invoice;
-
         if (!invoice) {
           this.errorMessage = 'Invoice not found.';
           this.isLoading = false;
           return;
         }
 
+        this.invoice = invoice;
         this.loadInvoiceItems(invoice.id);
       },
       error: () => {
@@ -79,6 +79,27 @@ export class InvoiceDetailsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /**
+   * Opens the invoice print report in a new browser tab.
+   * Keeps the current invoice details page open.
+   */
+  openPrintPreview(): void {
+    if (!this.invoice || this.isLoading || this.errorMessage) {
+      return;
+    }
+
+    const urlTree = this.router.createUrlTree([
+      '/invoices',
+      this.invoice.id,
+      'print'
+    ]);
+
+    const url = this.router.serializeUrl(urlTree);
+    const absoluteUrl = new URL(url, window.location.origin).href;
+
+    window.open(absoluteUrl, '_blank');
   }
 
   getStatusLabel(status: Invoice['status']): string {
